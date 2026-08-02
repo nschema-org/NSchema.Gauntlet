@@ -33,5 +33,5 @@ public sealed record Scenario
     /// <summary>
     /// How the destructive-action policy is enforced for the change under test.
     /// </summary>
-    public string? DestructiveActions { get; init; }
+    public required DestructiveActionPolicy DestructiveActions { get; init; }
 }

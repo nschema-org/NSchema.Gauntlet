@@ -8,7 +8,7 @@ namespace NSchema.Gauntlet.Model;
 /// engines it touches. Its lifecycle is <see cref="IAsyncDisposable"/> rather than a test-framework
 /// lifetime because the model does not know it is being run by a test framework.
 /// </remarks>
-public abstract class Engine : IAsyncDisposable
+public abstract class Engine(string name) : IAsyncDisposable
 {
     private readonly SemaphoreSlim _gate = new(1, 1);
     private bool _started;
@@ -16,7 +16,7 @@ public abstract class Engine : IAsyncDisposable
     /// <summary>
     /// The engine's name, as it appears in the matrix and in per-engine case files.
     /// </summary>
-    public abstract string Name { get; }
+    public string Name { get; } = name;
 
     /// <summary>
     /// The schema a case's objects land in on this engine.

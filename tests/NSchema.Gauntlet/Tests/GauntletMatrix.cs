@@ -5,25 +5,28 @@ namespace NSchema.Gauntlet.Tests;
 /// <summary>
 /// The cells a run consists of.
 /// </summary>
-/// <remarks>
-/// One test per cell, so an engine that fails a case fails visibly rather than inside a case named after
-/// something else, and so a run can be filtered to one engine. Enumerating it starts nothing.
-/// </remarks>
 public static class GauntletMatrix
 {
     /// <summary>
     /// Every scenario against every engine.
     /// </summary>
-    public static TheoryData<string, string> ScenariosAndEngines => Across();
+    public static TheoryData<string, string> ScenariosAndEngines
+    {
+        get
+        {
+            var run = new GauntletRun();
+            return CrossProduct(run.Scenarios, run.Engines);
+        }
+    }
 
-    private static TheoryData<string, string> Across()
+    private static TheoryData<string, string> CrossProduct(ScenarioCatalog scenarios, EngineFleet engines)
     {
         var matrix = new TheoryData<string, string>();
-        foreach (var name in ScenarioCatalog.Names)
+        foreach (var scenario in scenarios.Names)
         {
-            foreach (var engine in EngineCatalog.Names)
+            foreach (var engine in engines.Names)
             {
-                matrix.Add(name, engine);
+                matrix.Add(scenario, engine);
             }
         }
         return matrix;
