@@ -6,8 +6,8 @@ on:
     branches: [ main ]
 
 jobs:
-  gauntlet:
-    name: Gauntlet
+  build:
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
