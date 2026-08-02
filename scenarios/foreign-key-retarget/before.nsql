@@ -1,0 +1,16 @@
+CREATE TABLE {schema}.customers (
+  id int NOT NULL,
+  CONSTRAINT pk_customers PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.accounts (
+  id int NOT NULL,
+  CONSTRAINT pk_accounts PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  owner_id int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id),
+  CONSTRAINT fk_orders_owner FOREIGN KEY (owner_id) REFERENCES {schema}.customers(id)
+);

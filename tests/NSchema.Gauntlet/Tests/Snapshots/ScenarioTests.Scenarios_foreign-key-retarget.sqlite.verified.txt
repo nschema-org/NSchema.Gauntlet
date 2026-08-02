@@ -1,0 +1,46 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ table main.orders
+    - foreign key fk_orders_owner
+    + foreign key fk_orders_owner
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+Diagnostics                                                                                                
+╭──────────┬─────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Message                                                                                                                                                               │
+├──────────┼─────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ Sqlite cannot drop a foreign key in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                     │
+│ error    │ sqlite-dialect      │ Sqlite cannot add a foreign key to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+│ info     │ destructive-actions │ This plan contains destructive actions: DropForeignKey.                                                                                                               │
+╰──────────┴─────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ table main.orders
+    - foreign key fk_orders_owner
+    + foreign key fk_orders_owner
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+Diagnostics                                                                                                
+╭──────────┬─────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Message                                                                                                                                                               │
+├──────────┼─────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ Sqlite cannot drop a foreign key in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                     │
+│ error    │ sqlite-dialect      │ Sqlite cannot add a foreign key to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+│ info     │ destructive-actions │ This plan contains destructive actions: DropForeignKey.                                                                                                               │
+╰──────────┴─────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+blocked: True
+converged: True
