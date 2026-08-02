@@ -8,7 +8,7 @@ public sealed class ScenarioTests(GauntletRun run)
 {
     [Theory]
     [MemberData(nameof(GauntletMatrix.ScenariosAndEngines), MemberType = typeof(GauntletMatrix))]
-    public async Task Transitions(string name, string engineName)
+    public async Task Scenarios(string name, string engineName)
     {
         // Arrange
         var ct = TestContext.Current.CancellationToken;
