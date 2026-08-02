@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "nschema": {
+      "version": "5.0.1",
+      "commands": [
+        "nschema"
+      ],
+      "rollForward": false
+    }
+  }
+}
