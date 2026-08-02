@@ -1,7 +1,7 @@
 using Microsoft.Data.Sqlite;
 using NSchema.Gauntlet.Model;
 
-namespace NSchema.Gauntlet.Services.Sqlite;
+namespace NSchema.Gauntlet.Services.Engines.Sqlite;
 
 /// <inheritdoc />
 public sealed class SqliteEngineDatabase(string file, string directory, PluginSettings plugin, string label) : EngineDatabase

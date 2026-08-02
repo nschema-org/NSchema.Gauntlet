@@ -1,6 +1,6 @@
 using NSchema.Gauntlet.Model;
 
-namespace NSchema.Gauntlet.Services.Sqlite;
+namespace NSchema.Gauntlet.Services.Engines.Sqlite;
 
 /// <summary>
 /// SQLite, one file per case.
@@ -9,8 +9,10 @@ namespace NSchema.Gauntlet.Services.Sqlite;
 /// There is nothing to start, which is the point of the engine owning its own lifecycle: not every engine
 /// is a container.
 /// </remarks>
-public sealed class SqliteEngine(string name, EngineSettings settings) : Engine(name)
+public sealed class SqliteEngine(SqliteSettings settings) : Engine
 {
+    internal const string Name = "sqlite";
+
     /// <remarks>
     /// SQLite's primary database is always <c>main</c>; it has no other schema.
     /// </remarks>

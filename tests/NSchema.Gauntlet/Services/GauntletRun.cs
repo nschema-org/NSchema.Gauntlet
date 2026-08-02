@@ -1,3 +1,6 @@
+using NSchema.Gauntlet.Services.Engines;
+using NSchema.Gauntlet.Services.Scenarios;
+
 namespace NSchema.Gauntlet.Services;
 
 /// <summary>
@@ -12,7 +15,7 @@ public sealed class GauntletRun : IAsyncLifetime
     {
         var settings = GauntletSettings.Load();
         Scenarios = new ScenarioCatalog(settings.Root, settings.Scenarios);
-        Engines = new EngineFleet(settings);
+        Engines = new EngineFleet(settings.Engines);
     }
 
     /// <summary>

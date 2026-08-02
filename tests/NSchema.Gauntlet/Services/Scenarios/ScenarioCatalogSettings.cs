@@ -1,4 +1,4 @@
-namespace NSchema.Gauntlet.Services;
+namespace NSchema.Gauntlet.Services.Scenarios;
 
 public record ScenarioCatalogSettings
 {

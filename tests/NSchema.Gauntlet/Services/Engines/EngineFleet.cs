@@ -1,8 +1,8 @@
 using NSchema.Gauntlet.Model;
-using NSchema.Gauntlet.Services.Postgres;
-using NSchema.Gauntlet.Services.Sqlite;
+using NSchema.Gauntlet.Services.Engines.Postgres;
+using NSchema.Gauntlet.Services.Engines.Sqlite;
 
-namespace NSchema.Gauntlet.Services;
+namespace NSchema.Gauntlet.Services.Engines;
 
 /// <summary>
 /// The engines alive in this run.
@@ -11,10 +11,10 @@ public sealed class EngineFleet : IAsyncDisposable
 {
     private readonly Dictionary<string, Lazy<Engine>> _engines = new(StringComparer.Ordinal);
 
-    public EngineFleet(GauntletSettings settings)
+    public EngineFleet(EngineSettings settings)
     {
-        _engines.Add("postgres", new Lazy<Engine>(() => new PostgresEngine("postgres", settings.Engine("postgres"))));
-        _engines.Add("sqlite", new Lazy<Engine>(() => new SqliteEngine("sqlite", settings.Engine("sqlite"))));
+        _engines.Add(PostgresEngine.Name, new Lazy<Engine>(() => new PostgresEngine(settings.Postgres)));
+        _engines.Add(SqliteEngine.Name, new Lazy<Engine>(() => new SqliteEngine(settings.Sqlite)));
     }
 
     /// <summary>

@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Configuration;
+using NSchema.Gauntlet.Services.Engines;
+using NSchema.Gauntlet.Services.Scenarios;
 
 namespace NSchema.Gauntlet.Services;
 
@@ -15,12 +17,12 @@ public sealed class GauntletSettings
     /// <summary>
     /// Where the case directories are.
     /// </summary>
-    public ScenarioCatalogSettings Scenarios { get; set; } = new();
+    public required ScenarioCatalogSettings Scenarios { get; init; }
 
     /// <summary>
     /// Gets the settings for the different database engines.
     /// </summary>
-    public Dictionary<string, EngineSettings> Engines { get; init; } = new(StringComparer.OrdinalIgnoreCase);
+    public required EngineSettings Engines { get; init; }
 
     /// <summary>
     /// Reads the settings for a run.
@@ -30,13 +32,6 @@ public sealed class GauntletSettings
         .AddJsonFile("appsettings.json", optional: false)
         .Build()
         .Get<GauntletSettings>() ?? throw new InvalidOperationException("appsettings.json is empty.");
-
-    /// <summary>
-    /// The settings for one engine.
-    /// </summary>
-    public EngineSettings Engine(string name) => Engines.TryGetValue(name, out var settings)
-        ? settings
-        : throw new InvalidOperationException($"No engine is configured as '{name}' in appsettings.json.");
 
     // Finding the repository is not configuration: an absolute path in a settings file is one nobody
     // else's checkout can use. Lazy, so configuring a root skips the walk entirely.
@@ -55,7 +50,6 @@ public sealed class GauntletSettings
             directory = directory.Parent;
         }
 
-        throw new InvalidOperationException(
-            $"Could not locate {rootMarker} above {AppContext.BaseDirectory}. Set paths:root to say where the cases are.");
+        throw new InvalidOperationException($"Could not locate {rootMarker} above {AppContext.BaseDirectory}. Set paths:root to say where the cases are.");
     }
 }

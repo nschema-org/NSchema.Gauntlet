@@ -1,7 +1,7 @@
 using Npgsql;
 using NSchema.Gauntlet.Model;
 
-namespace NSchema.Gauntlet.Services.Postgres;
+namespace NSchema.Gauntlet.Services.Engines.Postgres;
 
 /// <inheritdoc />
 public sealed class PostgresEngineDatabase(string connectionString, PluginSettings plugin, string label) : EngineDatabase

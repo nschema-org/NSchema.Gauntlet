@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NSchema.Gauntlet.Model;
 
-namespace NSchema.Gauntlet.Services;
+namespace NSchema.Gauntlet.Services.Scenarios;
 
 /// <summary>
 /// Every scenario the gauntlet can run.

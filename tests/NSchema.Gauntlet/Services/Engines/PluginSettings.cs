@@ -1,4 +1,4 @@
-namespace NSchema.Gauntlet.Services;
+namespace NSchema.Gauntlet.Services.Engines;
 
 /// <summary>
 /// A provider package, as a project declares it.

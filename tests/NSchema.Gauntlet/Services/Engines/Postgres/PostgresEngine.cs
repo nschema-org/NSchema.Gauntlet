@@ -2,14 +2,16 @@ using Npgsql;
 using NSchema.Gauntlet.Model;
 using Testcontainers.PostgreSql;
 
-namespace NSchema.Gauntlet.Services.Postgres;
+namespace NSchema.Gauntlet.Services.Engines.Postgres;
 
 /// <summary>
 /// Postgres, backed by one container serving a database per case.
 /// </summary>
-public sealed class PostgresEngine(string name, EngineSettings settings) : Engine(name)
+public sealed class PostgresEngine(PostgresSettings settings) : Engine
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder(settings.RequiredImage(name)).Build();
+    internal const string Name = "postgres";
+
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder(settings.Image).Build();
 
     public override string DefaultSchema => "public";
 

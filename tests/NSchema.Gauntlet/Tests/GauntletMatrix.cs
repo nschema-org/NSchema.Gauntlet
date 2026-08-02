@@ -1,4 +1,6 @@
 using NSchema.Gauntlet.Services;
+using NSchema.Gauntlet.Services.Engines;
+using NSchema.Gauntlet.Services.Scenarios;
 
 namespace NSchema.Gauntlet.Tests;
 
