@@ -1,0 +1,6 @@
+{
+  "description": "Retargets a foreign key at a different table, leaving the column in place.",
+  "destructiveActions": "Allow",
+  "beforeFile": "before.nsql",
+  "afterFile": "after.nsql"
+}
