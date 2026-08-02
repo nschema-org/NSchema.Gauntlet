@@ -45,9 +45,14 @@ public sealed class NSchemaCli(string projectDirectory)
             .. arguments
         ];
 
+        List<string> invocation = ["tool", "run", Executable, .. full];
+
         // Qualified: this namespace is itself called Cli, which shadows CliWrap's entry point.
-        var result = await CliWrap.Cli.Wrap(Executable)
-            .WithArguments(full)
+        var result = await CliWrap.Cli.Wrap("dotnet")
+            .WithArguments(invocation)
+            // Anchored at the harness, not at the cases: the tool manifest that pins the CLI belongs to this
+            // repository, and the case directories may live anywhere.
+            .WithWorkingDirectory(AppContext.BaseDirectory)
             .WithValidation(CommandResultValidation.None)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(output))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(error))
