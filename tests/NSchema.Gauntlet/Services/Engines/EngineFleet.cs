@@ -1,5 +1,6 @@
 using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Services.Engines.Postgres;
+using NSchema.Gauntlet.Services.Engines.SqlServer;
 using NSchema.Gauntlet.Services.Engines.Sqlite;
 
 namespace NSchema.Gauntlet.Services.Engines;
@@ -14,6 +15,7 @@ public sealed class EngineFleet : IAsyncDisposable
     public EngineFleet(EngineSettings settings)
     {
         _engines.Add(PostgresEngine.Name, new Lazy<Engine>(() => new PostgresEngine(settings.Postgres)));
+        _engines.Add(SqlServerEngine.Name, new Lazy<Engine>(() => new SqlServerEngine(settings.SqlServer)));
         _engines.Add(SqliteEngine.Name, new Lazy<Engine>(() => new SqliteEngine(settings.Sqlite)));
     }
 

@@ -18,12 +18,12 @@ public sealed record Scenario
     /// <summary>
     /// The declared schema the database starts at.
     /// </summary>
-    public required string BeforeNsql { get; init; } = "before.nsql";
+    public required string BeforeNsql { get; init; }
 
     /// <summary>
     /// The declared schema the database is moved to.
     /// </summary>
-    public required string AfterNsql { get; init; } = "after.nsql";
+    public required string AfterNsql { get; init; }
 
     /// <summary>
     /// Engine-native rows loaded once the before state is established, for hazards that only data triggers.

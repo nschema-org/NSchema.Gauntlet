@@ -41,7 +41,7 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
             Description = manifest.Description,
             BeforeNsql = File.ReadAllText(Path.Combine(directory, manifest.BeforeFile)),
             AfterNsql = File.ReadAllText(Path.Combine(directory, manifest.AfterFile)),
-            DataSql = manifest.DataFile == null ? null : File.ReadAllText(Path.Combine(directory, manifest.DataFile)),
+            DataSql = string.IsNullOrEmpty(manifest.DataFile) ? null : File.ReadAllText(Path.Combine(directory, manifest.DataFile)),
             DestructiveActions = manifest.DestructiveActions,
         };
     }
@@ -50,9 +50,9 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
 
     private sealed record ScenarioManifest(
         string Description,
-        string BeforeFile,
-        string AfterFile,
-        string? DataFile,
-        DestructiveActionPolicy DestructiveActions
+        DestructiveActionPolicy DestructiveActions,
+        string BeforeFile = "before.nsql",
+        string AfterFile = "after.nsql",
+        string DataFile = "data.sql"
     );
 }
