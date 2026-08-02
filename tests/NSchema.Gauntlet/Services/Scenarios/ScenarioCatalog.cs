@@ -53,6 +53,6 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
         DestructiveActionPolicy DestructiveActions,
         string BeforeFile = "before.nsql",
         string AfterFile = "after.nsql",
-        string DataFile = "data.sql"
+        string? DataFile = null
     );
 }
