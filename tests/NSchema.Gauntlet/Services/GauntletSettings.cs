@@ -27,17 +27,12 @@ public sealed class GauntletSettings
     /// <summary>
     /// Reads the settings for a run.
     /// </summary>
-    public static GauntletSettings Load()
-    {
-        return new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build()
-            .Get<GauntletSettings>() ?? throw new InvalidOperationException("appsettings.json is empty.");
-    }
+    public static GauntletSettings Load() => new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile("appsettings.json", optional: false)
+        .Build()
+        .Get<GauntletSettings>() ?? throw new InvalidOperationException("appsettings.json is empty.");
 
-    // Finding the repository is not configuration: an absolute path in a settings file is one nobody
-    // else's checkout can use. Lazy, so configuring a root skips the walk entirely.
     private static string RepositoryRoot()
     {
         const string rootMarker = ".git";
@@ -52,7 +47,6 @@ public sealed class GauntletSettings
 
             directory = directory.Parent;
         }
-
-        throw new InvalidOperationException($"Could not locate {rootMarker} above {AppContext.BaseDirectory}. Set paths:root to say where the cases are.");
+        throw new InvalidOperationException($"Could not locate {rootMarker} above {AppContext.BaseDirectory}.");
     }
 }
