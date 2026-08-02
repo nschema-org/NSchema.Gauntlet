@@ -1,6 +1,6 @@
 namespace NSchema.Gauntlet.Services.Scenarios;
 
-public record ScenarioCatalogSettings
+public sealed class ScenarioCatalogSettings
 {
     /// <summary>
     /// The directory, relative to the root, where scenarios are held.
