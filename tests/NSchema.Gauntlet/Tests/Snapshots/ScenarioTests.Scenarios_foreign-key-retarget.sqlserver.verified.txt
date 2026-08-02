@@ -1,11 +1,11 @@
 ﻿=== plan ===
 Planning schema migration. No changes will be applied to the database.
 Loading project...
-Migration will be scoped to: public
+Migration will be scoped to: dbo
 Computing migration plan...
 Plan
 ────
-~ table public.orders
+~ table dbo.orders
     - foreign key fk_orders_owner
     + foreign key fk_orders_owner
 
@@ -14,10 +14,10 @@ Plan: 1 to add, 1 to change, 1 to destroy.
 SQL
 ───
 -- [1/2]
-ALTER TABLE "public"."orders" DROP CONSTRAINT "fk_orders_owner"
+ALTER TABLE [dbo].[orders] DROP CONSTRAINT [fk_orders_owner]
 
 -- [2/2]
-ALTER TABLE "public"."orders" ADD CONSTRAINT "fk_orders_owner" FOREIGN KEY ("owner_id") REFERENCES "public"."accounts" ("id")
+ALTER TABLE [dbo].[orders] ADD CONSTRAINT [fk_orders_owner] FOREIGN KEY ([owner_id]) REFERENCES [dbo].[accounts] ([id])
 
                                         Diagnostics                                         
 ╭──────────┬─────────────────────┬─────────────────────────────────────────────────────────╮
@@ -30,11 +30,11 @@ exit: 0
 === apply ===
 Applying schema migration. Changes will be applied to the database.
 Loading project...
-Migration will be scoped to: public
+Migration will be scoped to: dbo
 Computing migration plan...
 Plan
 ────
-~ table public.orders
+~ table dbo.orders
     - foreign key fk_orders_owner
     + foreign key fk_orders_owner
 
@@ -43,10 +43,10 @@ Plan: 1 to add, 1 to change, 1 to destroy.
 SQL
 ───
 -- [1/2]
-ALTER TABLE "public"."orders" DROP CONSTRAINT "fk_orders_owner"
+ALTER TABLE [dbo].[orders] DROP CONSTRAINT [fk_orders_owner]
 
 -- [2/2]
-ALTER TABLE "public"."orders" ADD CONSTRAINT "fk_orders_owner" FOREIGN KEY ("owner_id") REFERENCES "public"."accounts" ("id")
+ALTER TABLE [dbo].[orders] ADD CONSTRAINT [fk_orders_owner] FOREIGN KEY ([owner_id]) REFERENCES [dbo].[accounts] ([id])
 
                                         Diagnostics                                         
 ╭──────────┬─────────────────────┬─────────────────────────────────────────────────────────╮

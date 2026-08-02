@@ -19,6 +19,13 @@ public sealed class ScenarioRunner(GauntletProject project)
             return ScenarioOutcome.Failed(restore);
         }
 
+        // Take a first snapshot of the database.
+        var adopt = await _cli.Refresh(ct);
+        if (!adopt.Succeeded)
+        {
+            return ScenarioOutcome.Failed(adopt);
+        }
+
         project.SetSchema(scenario.BeforeNsql ?? string.Empty);
 
         var seed = await _cli.Apply(DestructiveActionPolicy.Allow, ct);
