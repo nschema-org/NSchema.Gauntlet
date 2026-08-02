@@ -1,36 +1,39 @@
-using System.Collections.Concurrent;
 using NSchema.Gauntlet.Model;
+using NSchema.Gauntlet.Services.Postgres;
+using NSchema.Gauntlet.Services.Sqlite;
 
 namespace NSchema.Gauntlet.Services;
 
 /// <summary>
 /// The engines alive in this run.
 /// </summary>
-/// <remarks>
-/// One fleet is shared by the whole assembly, so an engine is built and started at most once however many
-/// cases ask for it — and never at all if no case does.
-/// </remarks>
-public sealed class EngineFleet : IAsyncLifetime
+public sealed class EngineFleet : IAsyncDisposable
 {
-    private readonly ConcurrentDictionary<string, Lazy<Engine>> _engines = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, Lazy<Engine>> _engines = new(StringComparer.Ordinal);
+
+    public EngineFleet(GauntletSettings settings)
+    {
+        _engines.Add("postgres", new Lazy<Engine>(() => new PostgresEngine("postgres", settings.Engine("postgres"))));
+        _engines.Add("sqlite", new Lazy<Engine>(() => new SqliteEngine("sqlite", settings.Engine("sqlite"))));
+    }
+
+    /// <summary>
+    /// The registered engine names, in matrix order.
+    /// </summary>
+    public IEnumerable<string> Names => _engines.Keys.OrderBy(name => name, StringComparer.Ordinal);
 
     /// <summary>
     /// Gets the named engine, building it on first request.
     /// </summary>
-    public Engine Get(string name) => _engines
-        .GetOrAdd(name, key => new Lazy<Engine>(() => EngineCatalog.Get(key), LazyThreadSafetyMode.ExecutionAndPublication)).Value;
-
-    /// <inheritdoc />
-    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+    public Engine Get(string name) => _engines[name].Value;
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        foreach (var engine in _engines.Values)
+        foreach (var engine in _engines.Values.Where(engine => engine.IsValueCreated))
         {
             await engine.Value.DisposeAsync();
         }
-
         _engines.Clear();
     }
 }
