@@ -16,14 +16,14 @@ public sealed record Scenario
     public required string Description { get; init; }
 
     /// <summary>
-    /// The declared schema the database starts at. A null state is an empty schema.
+    /// The declared schema the database starts at.
     /// </summary>
-    public required string? BeforeNsql { get; init; }
+    public required string BeforeNsql { get; init; } = "before.nsql";
 
     /// <summary>
-    /// The declared schema the database is moved to. A null state is an empty schema.
+    /// The declared schema the database is moved to.
     /// </summary>
-    public required string? AfterNsql { get; init; }
+    public required string AfterNsql { get; init; } = "after.nsql";
 
     /// <summary>
     /// Engine-native rows loaded once the before state is established, for hazards that only data triggers.
