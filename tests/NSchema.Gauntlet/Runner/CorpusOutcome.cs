@@ -46,6 +46,12 @@ public sealed record CorpusOutcome
     /// <summary>
     /// The snapshot surface. The imported project itself is not included.
     /// </summary>
+    /// <remarks>
+    /// The first plan is the one worth recording: both its sides come from the same introspection, one of them
+    /// by way of the writer and the parser, so it is the round trip made visible. The second plan is empty by
+    /// construction — its whole content is <see cref="RoundTrips"/>, until it isn't, and then what it still
+    /// wants to do is the finding.
+    /// </remarks>
     public string Report()
     {
         var report = new StringBuilder();
@@ -59,6 +65,14 @@ public sealed record CorpusOutcome
         if (Adoption?.StandardError.Trim() is { Length: > 0 } diagnostics)
         {
             report.AppendLine(diagnostics);
+        }
+
+        if (!RoundTrips)
+        {
+            report.AppendLine();
+            report.AppendLine("=== left over after adopting ===");
+            report.AppendLine(Verification?.StandardOutput.Trim());
+            report.AppendLine(Verification?.StandardError.Trim());
         }
 
         return report.ToString();
