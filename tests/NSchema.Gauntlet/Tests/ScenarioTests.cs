@@ -15,7 +15,7 @@ public sealed class ScenarioTests(GauntletRun run)
         var scenario = run.Scenarios.Get(name);
         var engine = run.Engines.Get(engineName);
         await using var database = await engine.CreateDatabase(name, ct);
-        using var project = GauntletProject.Create(engine, database);
+        using var project = GauntletProject.Create(engine, database, run.PackageSources);
 
         // Act
         var outcome = await new ScenarioRunner(run.Cli, project).Run(database, scenario, ct);

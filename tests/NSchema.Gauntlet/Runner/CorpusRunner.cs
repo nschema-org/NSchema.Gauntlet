@@ -11,12 +11,12 @@ namespace NSchema.Gauntlet.Runner;
 /// Rebuilding needs a second database, so the runner owns the databases and projects rather than being handed
 /// them: a case is one schema, not one database.
 /// </remarks>
-public sealed class CorpusRunner(CliInstallation cli, Engine engine)
+public sealed class CorpusRunner(CliInstallation cli, Engine engine, IReadOnlyList<string> packageSources)
 {
     public async Task<CorpusOutcome> Run(string name, string ddl, CancellationToken ct)
     {
         await using var source = await engine.CreateDatabase($"{name}_source", ct);
-        using var sourceProject = GauntletProject.Create(engine, source);
+        using var sourceProject = GauntletProject.Create(engine, source, packageSources);
         var nschema = new NSchemaCli(cli, sourceProject.Directory);
 
         // Arrange — establish the schema with the engine's own DDL, bypassing NSchema entirely. What is being
@@ -63,7 +63,7 @@ public sealed class CorpusRunner(CliInstallation cli, Engine engine)
         // Rebuild — the same declarations against an empty database. Nothing above ever ran a statement the
         // dialect rendered; this is what proves the SQL NSchema writes builds the schema it described.
         await using var target = await engine.CreateDatabase($"{name}_target", ct);
-        using var targetProject = GauntletProject.Create(engine, target);
+        using var targetProject = GauntletProject.Create(engine, target, packageSources);
         targetProject.TakeSchemaFrom(sourceProject);
         var rebuild = new NSchemaCli(cli, targetProject.Directory);
 

@@ -10,17 +10,23 @@ namespace NSchema.Gauntlet.Services;
 /// </summary>
 public sealed class GauntletRun : IAsyncLifetime
 {
+    private readonly GauntletSettings _settings = GauntletSettings.Load();
+
     /// <summary>
     /// Builds a run from the settings on disk.
     /// </summary>
     public GauntletRun()
     {
-        var settings = GauntletSettings.Load();
-        Scenarios = new ScenarioCatalog(settings.Root, settings.Scenarios);
-        Corpus = new CorpusCatalog(settings.Root, settings.Corpus);
-        Engines = new EngineFleet(settings.Engines);
-        Cli = new CliInstallation(settings.Cli);
+        Scenarios = new ScenarioCatalog(_settings.Root, _settings.Scenarios);
+        Corpus = new CorpusCatalog(_settings.Root, _settings.Corpus);
+        Engines = new EngineFleet(_settings.Engines);
+        Cli = new CliInstallation(_settings.Cli, _settings.PackageSources);
     }
+
+    /// <summary>
+    /// Extra package sources the run's projects and tool install draw from.
+    /// </summary>
+    public IReadOnlyList<string> PackageSources => _settings.PackageSources;
 
     /// <summary>
     /// Gets the scenarios active in the run.
@@ -43,7 +49,12 @@ public sealed class GauntletRun : IAsyncLifetime
     public CliInstallation Cli { get; }
 
     /// <inheritdoc />
-    public ValueTask InitializeAsync() => Cli.Install(CancellationToken.None);
+    public ValueTask InitializeAsync()
+    {
+        // A version pinned from a local source is mutable, so no cache may vouch for it.
+        PackageCache.Clear(_settings, Cli.Directory);
+        return Cli.Install(CancellationToken.None);
+    }
 
     /// <inheritdoc />
     public ValueTask DisposeAsync() => Engines.DisposeAsync();
