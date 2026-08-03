@@ -18,7 +18,7 @@ public sealed class ScenarioTests(GauntletRun run)
         using var project = GauntletProject.Create(engine, database);
 
         // Act
-        var outcome = await new ScenarioRunner(project).Run(database, scenario, ct);
+        var outcome = await new ScenarioRunner(run.Cli, project).Run(database, scenario, ct);
 
         // Assert
         outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());

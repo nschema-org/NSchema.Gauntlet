@@ -11,13 +11,13 @@ namespace NSchema.Gauntlet.Runner;
 /// Rebuilding needs a second database, so the runner owns the databases and projects rather than being handed
 /// them: a case is one schema, not one database.
 /// </remarks>
-public sealed class CorpusRunner(Engine engine)
+public sealed class CorpusRunner(CliInstallation cli, Engine engine)
 {
     public async Task<CorpusOutcome> Run(string name, string ddl, CancellationToken ct)
     {
         await using var source = await engine.CreateDatabase($"{name}_source", ct);
         using var sourceProject = GauntletProject.Create(engine, source);
-        var nschema = new NSchemaCli(sourceProject.Directory);
+        var nschema = new NSchemaCli(cli, sourceProject.Directory);
 
         // Arrange — establish the schema with the engine's own DDL, bypassing NSchema entirely. What is being
         // tested is whether NSchema can describe a database it did not create.
@@ -65,7 +65,7 @@ public sealed class CorpusRunner(Engine engine)
         await using var target = await engine.CreateDatabase($"{name}_target", ct);
         using var targetProject = GauntletProject.Create(engine, target);
         targetProject.TakeSchemaFrom(sourceProject);
-        var rebuild = new NSchemaCli(targetProject.Directory);
+        var rebuild = new NSchemaCli(cli, targetProject.Directory);
 
         if (await rebuild.Init(ct) is { Succeeded: false } targetRestore)
         {

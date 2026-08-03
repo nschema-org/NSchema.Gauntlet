@@ -15,7 +15,7 @@ public sealed class CorpusTests(GauntletRun run)
         var engine = run.Engines.Get(engineName);
 
         // Act
-        var outcome = await new CorpusRunner(engine).Run(name, corpus.Ddl[engineName], ct);
+        var outcome = await new CorpusRunner(run.Cli, engine).Run(name, corpus.Ddl[engineName], ct);
 
         // Assert
         outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());

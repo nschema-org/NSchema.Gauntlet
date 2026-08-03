@@ -1,3 +1,4 @@
+using NSchema.Gauntlet.Services.Cli;
 using NSchema.Gauntlet.Services.Corpus;
 using NSchema.Gauntlet.Services.Engines;
 using NSchema.Gauntlet.Services.Scenarios;
@@ -18,6 +19,7 @@ public sealed class GauntletRun : IAsyncLifetime
         Scenarios = new ScenarioCatalog(settings.Root, settings.Scenarios);
         Corpus = new CorpusCatalog(settings.Root, settings.Corpus);
         Engines = new EngineFleet(settings.Engines);
+        Cli = new CliInstallation(settings.Cli);
     }
 
     /// <summary>
@@ -35,8 +37,13 @@ public sealed class GauntletRun : IAsyncLifetime
     /// </summary>
     public EngineFleet Engines { get; }
 
+    /// <summary>
+    /// Gets the CLI the run drives.
+    /// </summary>
+    public CliInstallation Cli { get; }
+
     /// <inheritdoc />
-    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+    public ValueTask InitializeAsync() => Cli.Install(CancellationToken.None);
 
     /// <inheritdoc />
     public ValueTask DisposeAsync() => Engines.DisposeAsync();
