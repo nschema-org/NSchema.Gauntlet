@@ -32,6 +32,26 @@ public sealed record CorpusOutcome
     public CliResult? Verification { get; init; }
 
     /// <summary>
+    /// Applying the same declarations to an empty database.
+    /// </summary>
+    public CliResult? Rebuild { get; init; }
+
+    /// <summary>
+    /// A plan against the rebuilt database, which should want nothing.
+    /// </summary>
+    public CliResult? RebuildVerification { get; init; }
+
+    /// <summary>
+    /// Applying a project that declares nothing, which drops what was built.
+    /// </summary>
+    public CliResult? Teardown { get; init; }
+
+    /// <summary>
+    /// A plan against the emptied database, which should want nothing.
+    /// </summary>
+    public CliResult? TeardownVerification { get; init; }
+
+    /// <summary>
     /// The writer emits what the formatter would have written.
     /// </summary>
     public bool Canonical => Format?.ExitCode == 0;
@@ -40,6 +60,16 @@ public sealed record CorpusOutcome
     /// Nothing at all is left to do: NSchema agrees with its own description of the database.
     /// </summary>
     public bool RoundTrips => Verification?.ExitCode == 0;
+
+    /// <summary>
+    /// The SQL NSchema renders builds the schema it described.
+    /// </summary>
+    public bool Rebuilds => RebuildVerification?.ExitCode == 0;
+
+    /// <summary>
+    /// It comes apart again, in an order the engine accepts.
+    /// </summary>
+    public bool TearsDown => TeardownVerification?.ExitCode == 0;
 
     public static CorpusOutcome Failed(CliResult setup) => new() { SetupFailure = setup };
 
@@ -58,6 +88,8 @@ public sealed record CorpusOutcome
 
         report.AppendLine($"canonical: {Canonical}");
         report.AppendLine($"round-trips: {RoundTrips}");
+        report.AppendLine($"rebuilds: {Rebuilds}");
+        report.AppendLine($"tears down: {TearsDown}");
         report.AppendLine();
         report.AppendLine("=== first plan against the imported project ===");
         report.AppendLine(Adoption?.StandardOutput.Trim());
@@ -67,14 +99,24 @@ public sealed record CorpusOutcome
             report.AppendLine(diagnostics);
         }
 
-        if (!RoundTrips)
-        {
-            report.AppendLine();
-            report.AppendLine("=== left over after adopting ===");
-            report.AppendLine(Verification?.StandardOutput.Trim());
-            report.AppendLine(Verification?.StandardError.Trim());
-        }
+        Unfinished(report, "left over after adopting", RoundTrips, Verification);
+        Unfinished(report, "left over after rebuilding", Rebuilds, RebuildVerification);
+        Unfinished(report, "left over after tearing down", TearsDown, TeardownVerification);
 
         return report.ToString();
+    }
+
+    // A leg that settled has nothing to say; one that did not is a finding, and what it still wants to do is it.
+    private static void Unfinished(StringBuilder report, string stage, bool settled, CliResult? result)
+    {
+        if (settled)
+        {
+            return;
+        }
+
+        report.AppendLine();
+        report.AppendLine($"=== {stage} ===");
+        report.AppendLine(result?.StandardOutput.Trim());
+        report.AppendLine(result?.StandardError.Trim());
     }
 }

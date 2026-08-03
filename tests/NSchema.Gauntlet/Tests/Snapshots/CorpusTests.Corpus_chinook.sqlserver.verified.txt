@@ -1,5 +1,7 @@
 ﻿canonical: True
 round-trips: True
+rebuilds: True
+tears down: True
 
 === first plan against the imported project ===
 Planning schema migration. No changes will be applied to the database.
