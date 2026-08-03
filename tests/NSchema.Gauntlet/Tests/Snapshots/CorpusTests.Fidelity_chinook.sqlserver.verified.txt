@@ -1,0 +1,32 @@
+﻿canonical: True
+round-trips: True
+
+=== first plan against the imported project ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: dbo
+Computing migration plan...
+Plan
+────
+Adopting 11 existing objects into management:
+    = dbo.Album
+    = dbo.Artist
+    = dbo.Customer
+    = dbo.Employee
+    = dbo.Genre
+    = dbo.Invoice
+    = dbo.InvoiceLine
+    = dbo.MediaType
+    = dbo.Playlist
+    = dbo.PlaylistTrack
+    = dbo.Track
+
+Plan: 0 to add, 0 to change, 0 to destroy, 11 to adopt.
+
+                                                                               Diagnostics                                                                               
+╭──────────┬──────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source   │ Message                                                                                                                                         │
+├──────────┼──────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ adoption │ Applying this plan will bring 11 existing objects under management: dbo.Album, dbo.Artist, dbo.Customer, dbo.Employee, dbo.Genre, and 6 others. │
+│          │          │                                                                                                                                                 │
+╰──────────┴──────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
