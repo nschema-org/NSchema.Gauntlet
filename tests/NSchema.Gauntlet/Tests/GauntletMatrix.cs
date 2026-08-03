@@ -15,7 +15,17 @@ public static class GauntletMatrix
         get
         {
             var run = new GauntletRun();
-            return CrossProduct(run.Scenarios.Names, run.Engines.Names);
+            var matrix = new TheoryData<string, string>();
+            var scenarios = run.Scenarios.Names.ToList();
+            var engines = run.Engines.Names.ToList();
+            foreach (var scenario in scenarios)
+            {
+                foreach (var engine in engines)
+                {
+                    matrix.Add(scenario, engine);
+                }
+            }
+            return matrix;
         }
     }
 
@@ -27,21 +37,18 @@ public static class GauntletMatrix
         get
         {
             var run = new GauntletRun();
-            return CrossProduct(run.Corpus.Names, run.Engines.Names);
-        }
-    }
+            var matrix = new TheoryData<string, string>();
 
-    private static TheoryData<string, string> CrossProduct(IEnumerable<string> left, IEnumerable<string> right)
-    {
-        var matrix = new TheoryData<string, string>();
-        var rightList = right.ToList();
-        foreach (var l in left)
-        {
-            foreach (var r in rightList)
+            foreach (var corpusName in run.Corpus.Names)
             {
-                matrix.Add(l, r);
+                var corpus = run.Corpus.Get(corpusName);
+                foreach (var engine in corpus.Ddl.Keys)
+                {
+                    matrix.Add(corpusName, engine);
+                }
             }
+
+            return matrix;
         }
-        return matrix;
     }
 }
