@@ -23,8 +23,21 @@ public sealed class ScenarioTests(GauntletRun run)
         // Assert
         outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());
 
-        var report = outcome.Report();
+        var declared = scenario.Limitations.TryGetValue(engineName, out var limitation);
+        var report = outcome.Report(limitation);
         await Verify(report).UseTextForParameters($"{name}.{engineName}");
+
+        // A limitation must be acknowledged/declared in the manifest.
+        if (outcome.Blocked)
+        {
+            declared.ShouldBeTrue(
+                $"'{name}' blocked on {engineName} with no declared limitation. " +
+                $"If this is an engine capability gap, declare it in the scenario manifest, otherwise fix it.");
+        }
+        else
+        {
+            declared.ShouldBeFalse($"'{name}' no longer blocks on {engineName}; remove the stale limitation from the manifest.");
+        }
 
         var expectation = outcome.Blocked
             ? "the change was refused, but the database did not survive it intact"

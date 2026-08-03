@@ -80,6 +80,15 @@ public sealed class CorpusRunner(CliInstallation cli, Engine engine)
         var create = await rebuild.Apply(DestructiveActionPolicy.Error, ct);
         var created = create.Succeeded ? await Settled(rebuild, ct) : create;
 
+        // The oracle outside NSchema: both databases' own accounts of their schemas, compared. Every leg
+        // above compares NSchema to NSchema, so a consistent introspection error passes them all; the
+        // engine's catalog is the one witness NSchema cannot influence.
+        IReadOnlyList<string>? testimony = null;
+        if (create.Succeeded && created.Succeeded)
+        {
+            testimony = Testimony.Differences(await source.Inventory(ct), await target.Inventory(ct));
+        }
+
         // Take away — declaring nothing makes the target an empty database, which for a schema with a foreign
         // key graph is the only test of the order things are dropped in.
         targetProject.ClearSchema();
@@ -95,6 +104,7 @@ public sealed class CorpusRunner(CliInstallation cli, Engine engine)
             Verification = verification,
             Rebuild = create,
             RebuildVerification = created,
+            EngineTestimony = testimony,
             Teardown = teardown,
             TeardownVerification = emptied,
         };

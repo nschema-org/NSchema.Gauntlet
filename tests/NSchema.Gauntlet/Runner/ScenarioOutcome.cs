@@ -48,13 +48,18 @@ public sealed record ScenarioOutcome
     /// Diagnostics are reported on standard error, and an engine limitation reaches the snapshot as a
     /// diagnostic — so leaving them out would silently drop the very thing the matrix records.
     /// </remarks>
-    public string Report()
+    public string Report(string? limitation = null)
     {
         var report = new StringBuilder();
 
         Append(report, "plan", Plan);
         Append(report, "apply", Apply);
         report.AppendLine($"blocked: {Blocked}");
+        if (limitation is not null)
+        {
+            // The declared capability gap rides the snapshot, so the matrix carries its own provenance.
+            report.AppendLine($"limitation: {limitation}");
+        }
         report.AppendLine($"converged: {Converged}");
 
         return report.ToString();

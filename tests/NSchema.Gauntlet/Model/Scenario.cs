@@ -34,4 +34,9 @@ public sealed record Scenario
     /// How the destructive-action policy is enforced for the change under test.
     /// </summary>
     public required DestructiveActionPolicy DestructiveActions { get; init; }
+
+    /// <summary>
+    /// The engines this scenario is declared to block on, and the reason.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> Limitations { get; init; } = new Dictionary<string, string>();
 }

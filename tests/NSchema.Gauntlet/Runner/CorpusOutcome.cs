@@ -42,6 +42,11 @@ public sealed record CorpusOutcome
     public CliResult? RebuildVerification { get; init; }
 
     /// <summary>
+    /// The engines' own accounts of source and rebuild, compared; null when the rebuild did not complete.
+    /// </summary>
+    public IReadOnlyList<string>? EngineTestimony { get; init; }
+
+    /// <summary>
     /// Applying a project that declares nothing, which drops what was built.
     /// </summary>
     public CliResult? Teardown { get; init; }
@@ -67,6 +72,12 @@ public sealed record CorpusOutcome
     public bool Rebuilds => RebuildVerification?.ExitCode == 0;
 
     /// <summary>
+    /// The engine agrees the rebuild holds the source's schema.
+    /// Null when the rebuild did not complete, so there was nothing to compare.
+    /// </summary>
+    public bool? Faithful => EngineTestimony is null ? null : EngineTestimony.Count == 0;
+
+    /// <summary>
     /// It comes apart again, in an order the engine accepts.
     /// </summary>
     public bool TearsDown => TeardownVerification?.ExitCode == 0;
@@ -89,6 +100,7 @@ public sealed record CorpusOutcome
         report.AppendLine($"canonical: {Canonical}");
         report.AppendLine($"round-trips: {RoundTrips}");
         report.AppendLine($"rebuilds: {Rebuilds}");
+        report.AppendLine($"faithful: {Faithful?.ToString() ?? "skipped"}");
         report.AppendLine($"tears down: {TearsDown}");
         report.AppendLine();
         report.AppendLine("=== first plan against the imported project ===");
@@ -102,6 +114,16 @@ public sealed record CorpusOutcome
         Unfinished(report, "left over after adopting", RoundTrips, Verification);
         Unfinished(report, "left over after rebuilding", Rebuilds, RebuildVerification);
         Unfinished(report, "left over after tearing down", TearsDown, TeardownVerification);
+
+        if (EngineTestimony is { Count: > 0 })
+        {
+            report.AppendLine();
+            report.AppendLine("=== the engine disagrees about the rebuild ===");
+            foreach (var line in EngineTestimony)
+            {
+                report.AppendLine(line);
+            }
+        }
 
         return report.ToString();
     }

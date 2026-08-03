@@ -43,6 +43,7 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
             AfterNsql = File.ReadAllText(Path.Combine(directory, manifest.AfterFile)),
             DataSql = string.IsNullOrEmpty(manifest.DataFile) ? null : File.ReadAllText(Path.Combine(directory, manifest.DataFile)),
             DestructiveActions = manifest.DestructiveActions,
+            Limitations = manifest.Limitations ?? new Dictionary<string, string>(),
         };
     }
 
@@ -53,6 +54,7 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
         DestructiveActionPolicy DestructiveActions,
         string BeforeFile = "before.nsql",
         string AfterFile = "after.nsql",
-        string? DataFile = null
+        string? DataFile = null,
+        Dictionary<string, string>? Limitations = null
     );
 }
