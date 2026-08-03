@@ -1,7 +1,7 @@
 ﻿canonical: True
 round-trips: True
 rebuilds: True
-faithful: False
+faithful: True
 tears down: True
 
 === first plan against the imported project ===
@@ -33,59 +33,3 @@ Plan: 0 to add, 0 to change, 0 to destroy, 11 to adopt.
 │ info     │ adoption │ Applying this plan will bring 11 existing objects under management: main.Album, main.Artist, main.Customer, main.Employee, main.Genre, and 6 others. │
 │          │          │                                                                                                                                                      │
 ╰──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-=== the engine disagrees about the rebuild ===
-missing from the rebuild: column | Album.AlbumId | integer notnull=1 default=
-missing from the rebuild: column | Album.ArtistId | integer notnull=1 default=
-missing from the rebuild: column | Artist.ArtistId | integer notnull=1 default=
-missing from the rebuild: column | Customer.CustomerId | integer notnull=1 default=
-missing from the rebuild: column | Customer.SupportRepId | integer notnull=0 default=
-missing from the rebuild: column | Employee.EmployeeId | integer notnull=1 default=
-missing from the rebuild: column | Employee.ReportsTo | integer notnull=0 default=
-missing from the rebuild: column | Genre.GenreId | integer notnull=1 default=
-missing from the rebuild: column | Invoice.CustomerId | integer notnull=1 default=
-missing from the rebuild: column | Invoice.InvoiceId | integer notnull=1 default=
-missing from the rebuild: column | Invoice.Total | numeric(10,2) notnull=1 default=
-missing from the rebuild: column | InvoiceLine.InvoiceId | integer notnull=1 default=
-missing from the rebuild: column | InvoiceLine.InvoiceLineId | integer notnull=1 default=
-missing from the rebuild: column | InvoiceLine.Quantity | integer notnull=1 default=
-missing from the rebuild: column | InvoiceLine.TrackId | integer notnull=1 default=
-missing from the rebuild: column | InvoiceLine.UnitPrice | numeric(10,2) notnull=1 default=
-missing from the rebuild: column | MediaType.MediaTypeId | integer notnull=1 default=
-missing from the rebuild: column | Playlist.PlaylistId | integer notnull=1 default=
-missing from the rebuild: column | PlaylistTrack.PlaylistId | integer notnull=1 default=
-missing from the rebuild: column | PlaylistTrack.TrackId | integer notnull=1 default=
-missing from the rebuild: column | Track.AlbumId | integer notnull=0 default=
-missing from the rebuild: column | Track.Bytes | integer notnull=0 default=
-missing from the rebuild: column | Track.GenreId | integer notnull=0 default=
-missing from the rebuild: column | Track.MediaTypeId | integer notnull=1 default=
-missing from the rebuild: column | Track.Milliseconds | integer notnull=1 default=
-missing from the rebuild: column | Track.TrackId | integer notnull=1 default=
-missing from the rebuild: column | Track.UnitPrice | numeric(10,2) notnull=1 default=
-only in the rebuild: column | Album.AlbumId | int notnull=1 default=
-only in the rebuild: column | Album.ArtistId | int notnull=1 default=
-only in the rebuild: column | Artist.ArtistId | int notnull=1 default=
-only in the rebuild: column | Customer.CustomerId | int notnull=1 default=
-only in the rebuild: column | Customer.SupportRepId | int notnull=0 default=
-only in the rebuild: column | Employee.EmployeeId | int notnull=1 default=
-only in the rebuild: column | Employee.ReportsTo | int notnull=0 default=
-only in the rebuild: column | Genre.GenreId | int notnull=1 default=
-only in the rebuild: column | Invoice.CustomerId | int notnull=1 default=
-only in the rebuild: column | Invoice.InvoiceId | int notnull=1 default=
-only in the rebuild: column | Invoice.Total | decimal(10,2) notnull=1 default=
-only in the rebuild: column | InvoiceLine.InvoiceId | int notnull=1 default=
-only in the rebuild: column | InvoiceLine.InvoiceLineId | int notnull=1 default=
-only in the rebuild: column | InvoiceLine.Quantity | int notnull=1 default=
-only in the rebuild: column | InvoiceLine.TrackId | int notnull=1 default=
-only in the rebuild: column | InvoiceLine.UnitPrice | decimal(10,2) notnull=1 default=
-only in the rebuild: column | MediaType.MediaTypeId | int notnull=1 default=
-only in the rebuild: column | Playlist.PlaylistId | int notnull=1 default=
-only in the rebuild: column | PlaylistTrack.PlaylistId | int notnull=1 default=
-only in the rebuild: column | PlaylistTrack.TrackId | int notnull=1 default=
-only in the rebuild: column | Track.AlbumId | int notnull=0 default=
-only in the rebuild: column | Track.Bytes | int notnull=0 default=
-only in the rebuild: column | Track.GenreId | int notnull=0 default=
-only in the rebuild: column | Track.MediaTypeId | int notnull=1 default=
-only in the rebuild: column | Track.Milliseconds | int notnull=1 default=
-only in the rebuild: column | Track.TrackId | int notnull=1 default=
-only in the rebuild: column | Track.UnitPrice | decimal(10,2) notnull=1 default=

@@ -1,7 +1,7 @@
 ﻿canonical: True
 round-trips: True
 rebuilds: True
-faithful: False
+faithful: True
 tears down: True
 
 === first plan against the imported project ===
@@ -33,11 +33,3 @@ Plan: 0 to add, 0 to change, 0 to destroy, 11 to adopt.
 │ info     │ adoption │ Applying this plan will bring 11 existing objects under management: dbo.Album, dbo.Artist, dbo.Customer, dbo.Employee, dbo.Genre, and 6 others. │
 │          │          │                                                                                                                                                 │
 ╰──────────┴──────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-=== the engine disagrees about the rebuild ===
-missing from the rebuild: column | dbo.Employee.BirthDate | datetime null=1 len=8
-missing from the rebuild: column | dbo.Employee.HireDate | datetime null=1 len=8
-missing from the rebuild: column | dbo.Invoice.InvoiceDate | datetime null=0 len=8
-only in the rebuild: column | dbo.Employee.BirthDate | datetime2 null=1 len=8
-only in the rebuild: column | dbo.Employee.HireDate | datetime2 null=1 len=8
-only in the rebuild: column | dbo.Invoice.InvoiceDate | datetime2 null=0 len=8
