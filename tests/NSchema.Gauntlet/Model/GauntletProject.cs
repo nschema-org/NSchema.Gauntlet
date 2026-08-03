@@ -52,6 +52,42 @@ public sealed class GauntletProject : IDisposable
     public void SetSchema(string nsql) =>
         File.WriteAllText(Path.Combine(Directory, SchemaFile), nsql.Replace(SchemaToken, _defaultSchema, StringComparison.Ordinal));
 
+    /// <summary>
+    /// Takes another project's declarations as this one's, leaving its configuration alone.
+    /// </summary>
+    /// <remarks>
+    /// How a schema imported from one database is pointed at another: the declarations are the same project,
+    /// the configuration is what makes it a different database.
+    /// </remarks>
+    public void TakeSchemaFrom(GauntletProject other)
+    {
+        ClearSchema();
+
+        foreach (var source in Declarations(other.Directory))
+        {
+            var destination = Path.Combine(Directory, Path.GetRelativePath(other.Directory, source));
+            System.IO.Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+            File.Copy(source, destination, overwrite: true);
+        }
+    }
+
+    /// <summary>
+    /// Declares nothing at all — a project whose target is an empty database.
+    /// </summary>
+    public void ClearSchema()
+    {
+        foreach (var file in Declarations(Directory))
+        {
+            File.Delete(file);
+        }
+    }
+
+    // Every .sql file the project declares, which is all of them but the configuration.
+    private static IEnumerable<string> Declarations(string directory) =>
+        System.IO.Directory
+            .EnumerateFiles(directory, "*.sql", SearchOption.AllDirectories)
+            .Where(file => !string.Equals(Path.GetFileName(file), ConfigurationFile, StringComparison.Ordinal));
+
     public void Dispose()
     {
         try

@@ -1,3 +1,4 @@
+using NSchema.Gauntlet.Services.Corpus;
 using NSchema.Gauntlet.Services.Engines;
 using NSchema.Gauntlet.Services.Scenarios;
 
@@ -15,6 +16,7 @@ public sealed class GauntletRun : IAsyncLifetime
     {
         var settings = GauntletSettings.Load();
         Scenarios = new ScenarioCatalog(settings.Root, settings.Scenarios);
+        Corpus = new CorpusCatalog(settings.Root, settings.Corpus);
         Engines = new EngineFleet(settings.Engines);
     }
 
@@ -22,6 +24,11 @@ public sealed class GauntletRun : IAsyncLifetime
     /// Gets the scenarios active in the run.
     /// </summary>
     public ScenarioCatalog Scenarios { get; }
+
+    /// <summary>
+    /// Gets the corpus cases active in the run.
+    /// </summary>
+    public CorpusCatalog Corpus { get; }
 
     /// <summary>
     /// Gets the engines active in the run.

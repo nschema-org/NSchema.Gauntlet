@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using NSchema.Gauntlet.Services.Corpus;
 using NSchema.Gauntlet.Services.Engines;
 using NSchema.Gauntlet.Services.Scenarios;
 
@@ -18,6 +19,11 @@ public sealed class GauntletSettings
     /// Where the case directories are.
     /// </summary>
     public required ScenarioCatalogSettings Scenarios { get; init; }
+
+    /// <summary>
+    /// Where the corpus cases are.
+    /// </summary>
+    public required CorpusCatalogSettings Corpus { get; init; }
 
     /// <summary>
     /// Gets the settings for the different database engines.

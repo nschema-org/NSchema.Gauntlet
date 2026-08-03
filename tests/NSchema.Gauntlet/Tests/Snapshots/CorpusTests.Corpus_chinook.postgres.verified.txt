@@ -1,0 +1,34 @@
+﻿canonical: True
+round-trips: True
+rebuilds: True
+tears down: True
+
+=== first plan against the imported project ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+Adopting 11 existing objects into management:
+    = public.album
+    = public.artist
+    = public.customer
+    = public.employee
+    = public.genre
+    = public.invoice
+    = public.invoice_line
+    = public.media_type
+    = public.playlist
+    = public.playlist_track
+    = public.track
+
+Plan: 0 to add, 0 to change, 0 to destroy, 11 to adopt.
+
+                                                                                      Diagnostics                                                                                       
+╭──────────┬──────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source   │ Message                                                                                                                                                        │
+├──────────┼──────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ adoption │ Applying this plan will bring 11 existing objects under management: public.album, public.artist, public.customer, public.employee, public.genre, and 6 others. │
+│          │          │                                                                                                                                                                │
+╰──────────┴──────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

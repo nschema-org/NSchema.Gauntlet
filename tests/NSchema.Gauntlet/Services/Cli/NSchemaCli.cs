@@ -19,6 +19,11 @@ public sealed class NSchemaCli(string projectDirectory)
 
     public Task<CliResult> Refresh(CancellationToken cancellationToken) => RunCore(["refresh"], cancellationToken);
 
+    public Task<CliResult> Import(CancellationToken cancellationToken) =>
+        RunCore(["import", "--out-dir", projectDirectory, "--force"], cancellationToken);
+
+    public Task<CliResult> Format(CancellationToken cancellationToken) => RunCore(["format", "--check"], cancellationToken);
+
     public Task<CliResult> Plan(DestructiveActionPolicy destructiveActions, bool detailedExitCode, CancellationToken cancellationToken)
     {
         List<string> args = ["plan", "--destructive-actions", destructiveActions.ToString()];

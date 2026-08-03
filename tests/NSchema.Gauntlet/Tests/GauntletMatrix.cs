@@ -1,6 +1,4 @@
 using NSchema.Gauntlet.Services;
-using NSchema.Gauntlet.Services.Engines;
-using NSchema.Gauntlet.Services.Scenarios;
 
 namespace NSchema.Gauntlet.Tests;
 
@@ -17,18 +15,31 @@ public static class GauntletMatrix
         get
         {
             var run = new GauntletRun();
-            return CrossProduct(run.Scenarios, run.Engines);
+            return CrossProduct(run.Scenarios.Names, run.Engines.Names);
         }
     }
 
-    private static TheoryData<string, string> CrossProduct(ScenarioCatalog scenarios, EngineFleet engines)
+    /// <summary>
+    /// Every corpus case against the engines it was acquired for.
+    /// </summary>
+    public static TheoryData<string, string> CorpusAndEngines
+    {
+        get
+        {
+            var run = new GauntletRun();
+            return CrossProduct(run.Corpus.Names, run.Engines.Names);
+        }
+    }
+
+    private static TheoryData<string, string> CrossProduct(IEnumerable<string> left, IEnumerable<string> right)
     {
         var matrix = new TheoryData<string, string>();
-        foreach (var scenario in scenarios.Names)
+        var rightList = right.ToList();
+        foreach (var l in left)
         {
-            foreach (var engine in engines.Names)
+            foreach (var r in rightList)
             {
-                matrix.Add(scenario, engine);
+                matrix.Add(l, r);
             }
         }
         return matrix;
