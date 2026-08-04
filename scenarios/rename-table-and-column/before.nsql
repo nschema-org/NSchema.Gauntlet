@@ -1,0 +1,11 @@
+CREATE TABLE {schema}.users (
+  id int NOT NULL,
+  name varchar(100) NOT NULL,
+  CONSTRAINT pk_users PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  amount int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);

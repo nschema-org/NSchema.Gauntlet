@@ -1,0 +1,8 @@
+{
+  "description": "Appends a value to an enum a column already uses.",
+  "destructiveActions": "Error",
+  "limitations": {
+    "sqlserver": "SQL Server has no enum type, so the scenario's before state cannot be expressed.",
+    "sqlite": "SQLite has no enum type, so the scenario's before state cannot be expressed."
+  }
+}

@@ -65,7 +65,12 @@ public sealed class GauntletProject : IDisposable
     /// Replaces the project's declared schema. An empty schema is the teardown target.
     /// </summary>
     public void SetSchema(string nsql) =>
-        File.WriteAllText(Path.Combine(Directory, SchemaFile), nsql.Replace(SchemaToken, _defaultSchema, StringComparison.Ordinal));
+        File.WriteAllText(Path.Combine(Directory, SchemaFile), Localize(nsql));
+
+    /// <summary>
+    /// Resolves the case's schema token for this engine, for SQL that runs outside the project.
+    /// </summary>
+    public string Localize(string sql) => sql.Replace(SchemaToken, _defaultSchema, StringComparison.Ordinal);
 
     /// <summary>
     /// Takes another project's declarations as this one's, leaving its configuration alone.

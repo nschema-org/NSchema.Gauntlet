@@ -11,9 +11,9 @@ namespace NSchema.Gauntlet.Runner;
 /// Rebuilding needs a second database, so the runner owns the databases and projects rather than being handed
 /// them: a case is one schema, not one database.
 /// </remarks>
-public sealed class CorpusRunner(CliInstallation cli, Engine engine, IReadOnlyList<string> packageSources)
+public sealed class CorpusRunner(CliInstallation cli, IReadOnlyList<string> packageSources)
 {
-    public async Task<CorpusOutcome> Run(string name, string ddl, CancellationToken ct)
+    public async Task<CorpusOutcome> Run(Engine engine, string name, string ddl, CancellationToken ct)
     {
         await using var source = await engine.CreateDatabase($"{name}_source", ct);
         using var sourceProject = GauntletProject.Create(engine, source, packageSources);

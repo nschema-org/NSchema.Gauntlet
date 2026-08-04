@@ -13,9 +13,11 @@ public sealed class CorpusTests(GauntletRun run)
         var ct = TestContext.Current.CancellationToken;
         var corpus = run.Corpus.Get(name);
         var engine = run.Engines.Get(engineName);
+        var runner = new CorpusRunner(run.Cli, run.PackageSources);
+        var ddl = corpus.Ddl[engineName];
 
         // Act
-        var outcome = await new CorpusRunner(run.Cli, engine, run.PackageSources).Run(name, corpus.Ddl[engineName], ct);
+        var outcome = await runner.Run(engine, name, ddl, ct);
 
         // Assert
         outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());
@@ -25,8 +27,7 @@ public sealed class CorpusTests(GauntletRun run)
         outcome.Canonical.ShouldBeTrue($"the imported project was not canonical:{Environment.NewLine}{outcome.Format?.Describe()}");
         outcome.RoundTrips.ShouldBeTrue($"NSchema found differences against its own description of the database:{Environment.NewLine}{outcome.Verification?.Describe()}");
         outcome.Rebuilds.ShouldBeTrue($"the schema NSchema rendered was not the schema it described:{Environment.NewLine}{outcome.RebuildVerification?.Describe()}");
-        outcome.Faithful.ShouldNotBe(false,
-            $"the engine's own account of the rebuild differs from the source:{Environment.NewLine}{string.Join(Environment.NewLine, outcome.EngineTestimony ?? [])}");
+        outcome.Faithful.ShouldNotBe(false, $"the engine's own account of the rebuild differs from the source:{Environment.NewLine}{string.Join(Environment.NewLine, outcome.EngineTestimony ?? [])}");
         outcome.TearsDown.ShouldBeTrue($"the schema would not come apart again:{Environment.NewLine}{outcome.TeardownVerification?.Describe()}");
     }
 }

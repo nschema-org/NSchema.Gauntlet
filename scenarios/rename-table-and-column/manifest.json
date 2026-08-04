@@ -1,0 +1,5 @@
+{
+  "description": "Renames a table, and a column on another table, via directives; state surgery, so an Error policy proves neither decomposes into a drop.",
+  "destructiveActions": "Error",
+  "dataFile": "data.sql"
+}

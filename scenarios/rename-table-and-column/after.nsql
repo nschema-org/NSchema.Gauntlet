@@ -1,0 +1,14 @@
+CREATE TABLE {schema}.clients (
+  id int NOT NULL,
+  name varchar(100) NOT NULL,
+  CONSTRAINT pk_users PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  total int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+RENAME TABLE {schema}.users TO clients;
+RENAME COLUMN {schema}.orders.amount TO total;

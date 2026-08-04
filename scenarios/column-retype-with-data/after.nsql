@@ -1,0 +1,5 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  total bigint NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
