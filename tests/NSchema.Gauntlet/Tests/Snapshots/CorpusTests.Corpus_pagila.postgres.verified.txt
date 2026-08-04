@@ -1,0 +1,80 @@
+﻿canonical: True
+round-trips: True
+rebuilds: True
+faithful: True
+tears down: True
+
+=== first plan against the imported project ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+Adopting 56 existing objects into management:
+    = public._group_concat
+    = public.actor
+    = public.actor_actor_id_seq
+    = public.actor_info
+    = public.address
+    = public.address_address_id_seq
+    = public.bıgınt
+    = public.category
+    = public.category_category_id_seq
+    = public.city
+    = public.city_city_id_seq
+    = public.country
+    = public.country_country_id_seq
+    = public.customer
+    = public.customer_customer_id_seq
+    = public.customer_list
+    = public.film
+    = public.film_actor
+    = public.film_category
+    = public.film_film_id_seq
+    = public.film_in_stock
+    = public.film_list
+    = public.film_not_in_stock
+    = public.get_customer_balance
+    = public.group_concat
+    = public.inventory
+    = public.inventory_held_by_customer
+    = public.inventory_in_stock
+    = public.inventory_inventory_id_seq
+    = public.language
+    = public.language_language_id_seq
+    = public.last_day
+    = public.last_updated
+    = public.mpaa_rating
+    = public.nicer_but_slower_film_list
+    = public.payment
+    = public.payment_p2022_01
+    = public.payment_p2022_02
+    = public.payment_p2022_03
+    = public.payment_p2022_04
+    = public.payment_p2022_05
+    = public.payment_p2022_06
+    = public.payment_p2022_07
+    = public.payment_payment_id_seq
+    = public.rental
+    = public.rental_by_category
+    = public.rental_rental_id_seq
+    = public.rewards_report
+    = public.sales_by_film_category
+    = public.sales_by_store
+    = public.staff
+    = public.staff_list
+    = public.staff_staff_id_seq
+    = public.store
+    = public.store_store_id_seq
+    = public.year
+
+Plan: 0 to add, 0 to change, 0 to destroy, 56 to adopt.
+
+                                                                                                 Diagnostics                                                                                                  
+╭──────────┬──────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source   │ Message                                                                                                                                                                              │
+├──────────┼──────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ adoption │ Applying this plan will bring 56 existing objects under management: public._group_concat, public.actor, public.actor_actor_id_seq, public.actor_info, public.address, and 51 others. │
+│          │          │                                                                                                                                                                                      │
+╰──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯

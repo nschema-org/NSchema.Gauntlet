@@ -1,0 +1,7 @@
+{
+  "description": "Pagila: the Postgres port of Sakila, and the corpus's feature coverage - an enum, two domains, functions, triggers, views, a materialized view and sequences.",
+  "source": "https://github.com/devrimgunduz/pagila",
+  "version": "pagila-v3.1.0",
+  "license": "BSD-3-Clause",
+  "acquisition": "pagila-schema.sql at tag pagila-v3.1.0, verbatim: it is already a schema-only pg_dump with no client directives. The tag matters — later releases default columns to uuidv7(), which needs Postgres 18, and the engine is pinned to 17."
+}

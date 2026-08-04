@@ -5,16 +5,14 @@ using NSchema.Gauntlet.Model;
 namespace NSchema.Gauntlet.Services.Cli;
 
 /// <summary>
-/// Drives the installed NSchema CLI against a project directory.
+/// Drives the run's NSchema CLI against a project directory.
 /// </summary>
 /// <remarks>
 /// The gauntlet runs through the CLI rather than the engine API because that is the surface users have,
 /// and it exercises configuration, plugin loading and state along the way.
 /// </remarks>
-public sealed class NSchemaCli(string projectDirectory)
+public sealed class NSchemaCli(CliInstallation cli, string projectDirectory)
 {
-    private const string Executable = "nschema";
-
     public Task<CliResult> Init(CancellationToken cancellationToken) => RunCore(["init"], cancellationToken);
 
     public Task<CliResult> Refresh(CancellationToken cancellationToken) => RunCore(["refresh"], cancellationToken);
@@ -50,14 +48,9 @@ public sealed class NSchemaCli(string projectDirectory)
             .. arguments
         ];
 
-        List<string> invocation = ["tool", "run", Executable, .. full];
-
         // Qualified: this namespace is itself called Cli, which shadows CliWrap's entry point.
-        var result = await CliWrap.Cli.Wrap("dotnet")
-            .WithArguments(invocation)
-            // Anchored at the harness, not at the cases: the tool manifest that pins the CLI belongs to this
-            // repository, and the case directories may live anywhere.
-            .WithWorkingDirectory(AppContext.BaseDirectory)
+        var result = await CliWrap.Cli.Wrap(cli.Executable)
+            .WithArguments(full)
             .WithValidation(CommandResultValidation.None)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(output))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(error))

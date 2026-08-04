@@ -27,10 +27,25 @@ public sealed class GauntletProject : IDisposable
 
     public string Directory { get; }
 
-    public static GauntletProject Create(Engine engine, EngineDatabase database)
+    public static GauntletProject Create(Engine engine, EngineDatabase database, IReadOnlyList<string>? packageSources = null)
     {
         var directory = Path.Combine(Path.GetTempPath(), "nschema-gauntlet", Path.GetRandomFileName());
         System.IO.Directory.CreateDirectory(directory);
+
+        // The CLI restores plugins under the project, where NuGet's own configuration discovery applies —
+        // so extra sources are declared the NuGet-native way: a NuGet.Config beside the project.
+        if (packageSources is { Count: > 0 })
+        {
+            File.WriteAllText(
+                Path.Combine(directory, "NuGet.Config"),
+                $"""
+                 <configuration>
+                   <packageSources>
+                 {string.Join("\n", packageSources.Select((source, i) => $"""    <add key="gauntlet-{i}" value="{source}" />"""))}
+                   </packageSources>
+                 </configuration>
+                 """);
+        }
 
         File.WriteAllText(
             Path.Combine(directory, ConfigurationFile),

@@ -11,13 +11,13 @@ namespace NSchema.Gauntlet.Runner;
 /// Rebuilding needs a second database, so the runner owns the databases and projects rather than being handed
 /// them: a case is one schema, not one database.
 /// </remarks>
-public sealed class CorpusRunner(Engine engine)
+public sealed class CorpusRunner(CliInstallation cli, Engine engine, IReadOnlyList<string> packageSources)
 {
     public async Task<CorpusOutcome> Run(string name, string ddl, CancellationToken ct)
     {
         await using var source = await engine.CreateDatabase($"{name}_source", ct);
-        using var sourceProject = GauntletProject.Create(engine, source);
-        var nschema = new NSchemaCli(sourceProject.Directory);
+        using var sourceProject = GauntletProject.Create(engine, source, packageSources);
+        var nschema = new NSchemaCli(cli, sourceProject.Directory);
 
         // Arrange — establish the schema with the engine's own DDL, bypassing NSchema entirely. What is being
         // tested is whether NSchema can describe a database it did not create.
@@ -63,9 +63,9 @@ public sealed class CorpusRunner(Engine engine)
         // Rebuild — the same declarations against an empty database. Nothing above ever ran a statement the
         // dialect rendered; this is what proves the SQL NSchema writes builds the schema it described.
         await using var target = await engine.CreateDatabase($"{name}_target", ct);
-        using var targetProject = GauntletProject.Create(engine, target);
+        using var targetProject = GauntletProject.Create(engine, target, packageSources);
         targetProject.TakeSchemaFrom(sourceProject);
-        var rebuild = new NSchemaCli(targetProject.Directory);
+        var rebuild = new NSchemaCli(cli, targetProject.Directory);
 
         if (await rebuild.Init(ct) is { Succeeded: false } targetRestore)
         {
@@ -79,6 +79,15 @@ public sealed class CorpusRunner(Engine engine)
 
         var create = await rebuild.Apply(DestructiveActionPolicy.Error, ct);
         var created = create.Succeeded ? await Settled(rebuild, ct) : create;
+
+        // The oracle outside NSchema: both databases' own accounts of their schemas, compared. Every leg
+        // above compares NSchema to NSchema, so a consistent introspection error passes them all; the
+        // engine's catalog is the one witness NSchema cannot influence.
+        IReadOnlyList<string>? testimony = null;
+        if (create.Succeeded && created.Succeeded)
+        {
+            testimony = Testimony.Differences(await source.Inventory(ct), await target.Inventory(ct));
+        }
 
         // Take away — declaring nothing makes the target an empty database, which for a schema with a foreign
         // key graph is the only test of the order things are dropped in.
@@ -95,6 +104,7 @@ public sealed class CorpusRunner(Engine engine)
             Verification = verification,
             Rebuild = create,
             RebuildVerification = created,
+            EngineTestimony = testimony,
             Teardown = teardown,
             TeardownVerification = emptied,
         };

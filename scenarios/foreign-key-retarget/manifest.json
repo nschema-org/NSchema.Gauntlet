@@ -1,4 +1,7 @@
 {
   "description": "Retargets a foreign key at a different table, leaving the column in place.",
-  "destructiveActions": "Allow"
+  "destructiveActions": "Allow",
+  "limitations": {
+    "sqlite": "SQLite cannot add or drop a foreign key on an existing table in place; it requires a table rebuild, which NSchema.Sqlite does not perform."
+  }
 }

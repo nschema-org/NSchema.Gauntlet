@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using NSchema.Gauntlet.Services.Cli;
 using NSchema.Gauntlet.Services.Corpus;
 using NSchema.Gauntlet.Services.Engines;
 using NSchema.Gauntlet.Services.Scenarios;
@@ -29,6 +30,16 @@ public sealed class GauntletSettings
     /// Gets the settings for the different database engines.
     /// </summary>
     public required EngineSettings Engines { get; init; }
+
+    /// <summary>
+    /// Extra NuGet package sources for the run, beyond the defaults.
+    /// </summary>
+    public IReadOnlyList<string> PackageSources { get; init; } = [];
+
+    /// <summary>
+    /// Gets the CLI the run is pinned to.
+    /// </summary>
+    public required CliSettings Cli { get; init; }
 
     /// <summary>
     /// Reads the settings for a run.

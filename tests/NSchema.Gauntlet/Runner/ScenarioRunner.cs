@@ -6,9 +6,9 @@ namespace NSchema.Gauntlet.Runner;
 /// <summary>
 /// Runs a scenario against a live database and reports what NSchema did.
 /// </summary>
-public sealed class ScenarioRunner(GauntletProject project)
+public sealed class ScenarioRunner(CliInstallation cli, GauntletProject project)
 {
-    private readonly NSchemaCli _cli = new(project.Directory);
+    private readonly NSchemaCli _cli = new(cli, project.Directory);
 
     public async Task<ScenarioOutcome> Run(EngineDatabase database, Scenario scenario, CancellationToken ct)
     {

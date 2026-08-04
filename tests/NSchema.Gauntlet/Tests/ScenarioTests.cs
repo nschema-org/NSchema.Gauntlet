@@ -15,16 +15,29 @@ public sealed class ScenarioTests(GauntletRun run)
         var scenario = run.Scenarios.Get(name);
         var engine = run.Engines.Get(engineName);
         await using var database = await engine.CreateDatabase(name, ct);
-        using var project = GauntletProject.Create(engine, database);
+        using var project = GauntletProject.Create(engine, database, run.PackageSources);
 
         // Act
-        var outcome = await new ScenarioRunner(project).Run(database, scenario, ct);
+        var outcome = await new ScenarioRunner(run.Cli, project).Run(database, scenario, ct);
 
         // Assert
         outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());
 
-        var report = outcome.Report();
+        var declared = scenario.Limitations.TryGetValue(engineName, out var limitation);
+        var report = outcome.Report(limitation);
         await Verify(report).UseTextForParameters($"{name}.{engineName}");
+
+        // A limitation must be acknowledged/declared in the manifest.
+        if (outcome.Blocked)
+        {
+            declared.ShouldBeTrue(
+                $"'{name}' blocked on {engineName} with no declared limitation. " +
+                $"If this is an engine capability gap, declare it in the scenario manifest, otherwise fix it.");
+        }
+        else
+        {
+            declared.ShouldBeFalse($"'{name}' no longer blocks on {engineName}; remove the stale limitation from the manifest.");
+        }
 
         var expectation = outcome.Blocked
             ? "the change was refused, but the database did not survive it intact"

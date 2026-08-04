@@ -15,6 +15,12 @@ public abstract class EngineDatabase : IAsyncDisposable
     /// </summary>
     public abstract Task Execute(string sql, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// The engine's own account of this database's schema, one ordered row per fact, read straight from its catalog.
+    /// Two databases holding the same schema testify identically; NSchema is nowhere in the loop.
+    /// </summary>
+    public abstract Task<IReadOnlyList<string>> Inventory(CancellationToken cancellationToken = default);
+
     /// <inheritdoc />
     public abstract ValueTask DisposeAsync();
 }
