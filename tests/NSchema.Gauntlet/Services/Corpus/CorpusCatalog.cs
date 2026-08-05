@@ -41,6 +41,16 @@ public sealed class CorpusCatalog(string root, CorpusCatalogSettings settings)
                 file => Sql.From(File.ReadAllText(file))
             );
 
+        // An expectation for an engine the corpus supplies no DDL for would never run; a dead
+        // declaration is a mistake, not a cell.
+        var undeclared = manifest.Expectations.Keys.Where(engine => !ddl.ContainsKey(engine)).ToList();
+        if (undeclared.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Corpus '{name}' declares expectations for {string.Join(", ", undeclared.Select(engine => $"'{engine}'"))}, " +
+                $"but supplies no DDL to run there. Add the DDL file or remove the expectation.");
+        }
+
         return new Model.Corpus
         {
             Name = name,
