@@ -1,0 +1,14 @@
+CREATE TABLE {schema}.docs (
+  id int NOT NULL,
+  CONSTRAINT pk_docs PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.docs_log (
+  happened int NOT NULL
+);
+
+CREATE TRIGGER docs_touch AFTER INSERT ON {schema}.docs AS $$
+BEGIN
+  INSERT INTO {schema}.docs_log (happened) VALUES (1);
+END
+$$;

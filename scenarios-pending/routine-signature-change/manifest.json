@@ -1,0 +1,9 @@
+{
+  "description": "Changes a function's argument list; a replace under different arguments would create an overload, so the routine recreates.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": { "outcome": "succeeded" },
+    "sqlserver": { "outcome": "succeeded" },
+    "sqlite": { "outcome": "bootstrapFailed", "because": "SQLite has no stored routines, so the scenario's bootstrap state cannot be expressed." }
+  }
+}

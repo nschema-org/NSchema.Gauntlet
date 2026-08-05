@@ -1,0 +1,9 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  total int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+CREATE MATERIALIZED VIEW {schema}.order_totals AS SELECT id, total FROM {schema}.orders;
+
+CREATE UNIQUE INDEX order_totals_id ON {schema}.order_totals (id);
