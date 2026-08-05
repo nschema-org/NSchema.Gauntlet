@@ -48,8 +48,6 @@ public sealed class ScenarioRunner(NSchemaClient nSchema)
                 Failure = failedStage,
                 Verification = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
             };
-
-            return Error.Failure("Setup.FailedBefore", "Error setting up before state.", metadata);
         }
 
         // Seed the scenario data if there is any.
@@ -58,6 +56,29 @@ public sealed class ScenarioRunner(NSchemaClient nSchema)
             await database.Execute(seed, ct);
         }
 
-        return Result.Success;
+        // The change under test: plan it, then attempt it.
+        var target = database.Localize(scenario.ScenarioNsql);
+        project.SetSchema(target);
+        var plan = await nSchema.Plan(project.Directory, scenario.DestructiveActions, detailedExitCode: false, ct);
+        var apply = await nSchema.Apply(project.Directory, scenario.DestructiveActions, ct);
+
+        // A refusal is an outcome, not an error: what it has to prove is that the database was left
+        // where it started, so a refused change is verified against the bootstrap state.
+        project.SetSchema(apply.Succeeded ? target : bootstrapDdl);
+        var recapture = await nSchema.Refresh(project.Directory, ct);
+        if (recapture.IsError)
+        {
+            return recapture.Errors;
+        }
+
+        return new ScenarioResult
+        {
+            Stages = [
+                new ScenarioStage(StageName.Plan, plan),
+                new ScenarioStage(StageName.Apply, apply)
+            ],
+            Failure = apply.Succeeded ? null : new ScenarioStage(StageName.Apply, apply),
+            Verification = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
+        };
     }
 }

@@ -1,0 +1,31 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: dbo
+Computing migration plan...
+Plan
+────
++ table dbo.invoices
+    + id int not null
+    + state dbo.status not null
+
++ enum dbo.status (draft, posted)
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE TABLE [dbo].[invoices] (
+    [id] int NOT NULL,
+    [state] [dbo].[status] NOT NULL,
+    CONSTRAINT [pk_invoices] PRIMARY KEY ([id])
+)
+Diagnostics                                              
+╭──────────┬─────────────┬───────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                                                   │
+├──────────┼─────────────┼───────────────────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ SQL Server (NSchema.SqlServer) does not support the 'create enum' action. │
+╰──────────┴─────────────┴───────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
