@@ -1,8 +1,17 @@
 {
   "description": "Appends a value to an enum a column already uses.",
   "destructiveActions": "Error",
-  "limitations": {
-    "sqlserver": "SQL Server has no enum type, so the scenario's before state cannot be expressed.",
-    "sqlite": "SQLite has no enum type, so the scenario's before state cannot be expressed."
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "SQL Server has no enum type, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no enum type, so the scenario's bootstrap state cannot be expressed."
+    }
   }
 }

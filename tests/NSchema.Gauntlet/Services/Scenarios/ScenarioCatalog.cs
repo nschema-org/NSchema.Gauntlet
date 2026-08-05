@@ -53,7 +53,7 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
     private sealed record ScenarioManifest(
         string Description,
         DestructiveActionPolicy DestructiveActions,
-        Dictionary<EngineName, Expectation> Expectations,
+        Dictionary<EngineName, ScenarioExpectation> Expectations,
         string BeforeFile = "before.nsql",
         string AfterFile = "after.nsql",
         string? DataFile = null

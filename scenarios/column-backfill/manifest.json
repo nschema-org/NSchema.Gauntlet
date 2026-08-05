@@ -2,7 +2,16 @@
   "description": "Adds a NOT NULL column to a table with rows, backfilled by a change script: add nullable, run the script, tighten.",
   "destructiveActions": "Error",
   "dataFile": "data.sql",
-  "limitations": {
-    "sqlite": "Tightening the backfilled column to NOT NULL alters it in place, which requires a table rebuild NSchema.Sqlite does not perform."
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "Tightening the backfilled column to NOT NULL alters it in place, which requires a table rebuild NSchema.Sqlite does not perform."
+    }
   }
 }

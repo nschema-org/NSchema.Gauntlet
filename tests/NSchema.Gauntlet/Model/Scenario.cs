@@ -38,5 +38,5 @@ public sealed class Scenario
     /// <summary>
     /// How every engine is expected to perform against this scenario.
     /// </summary>
-    public IReadOnlyDictionary<EngineName, Expectation> Expectations { get; init; } = new Dictionary<EngineName, Expectation>();
+    public IReadOnlyDictionary<EngineName, ScenarioExpectation> Expectations { get; init; } = new Dictionary<EngineName, ScenarioExpectation>();
 }

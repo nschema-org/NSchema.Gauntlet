@@ -1,4 +1,15 @@
 {
   "description": "A RUN ONCE script rides two applies; the ledger runs it exactly once, or the second insert violates the primary key.",
-  "destructiveActions": "Error"
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "succeeded"
+    }
+  }
 }
