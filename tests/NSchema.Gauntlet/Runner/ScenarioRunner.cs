@@ -9,39 +9,9 @@ namespace NSchema.Gauntlet.Runner;
 public sealed class ScenarioRunner(NSchemaClient nSchema)
 {
     /// <summary>
-    /// Runs the given scenario against the given engine and returns the result.
+    /// Runs the given scenario against the given database and returns the result.
     /// </summary>
     public async Task<ErrorOr<ScenarioResult>> Run(Scenario scenario, Database database, Project project, CancellationToken ct)
-    {
-        var setup = await Setup(scenario, project, database, ct);
-        if (setup.IsError)
-        {
-            return setup.Errors;
-        }
-
-        // The change under test: plan it, then attempt it.
-        project.SetSchema(scenario.ScenarioNsql);
-        var plan = await nSchema.Plan(project.Directory, scenario.DestructiveActions, detailedExitCode: false, ct);
-        var apply = await nSchema.Apply(project.Directory, scenario.DestructiveActions, ct);
-
-        // A refusal is an outcome, not an error: what it has to prove is that the database was left
-        // where it started, so a refused change is verified against the before state.
-        project.SetSchema(apply.Succeeded ? scenario.ScenarioNsql : scenario.BootstrapNsql);
-        var recapture = await nSchema.Refresh(project.Directory, ct);
-        if (recapture.IsError)
-        {
-            return recapture.Errors;
-        }
-
-        return new ScenarioResult
-        {
-            Stages = [new ScenarioStage("plan", plan), new ScenarioStage("apply", apply)],
-            Refusal = apply.Succeeded ? null : new ScenarioStage("apply", apply),
-            Verification = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
-        };
-    }
-
-    private async Task<ErrorOr<Success>> Setup(Scenario scenario, Project project, Database database, CancellationToken ct)
     {
         // Restore plugins.
         var restore = await nSchema.Init(project.Directory, ct);
@@ -50,38 +20,42 @@ public sealed class ScenarioRunner(NSchemaClient nSchema)
             return restore.Errors;
         }
 
-        // First refresh to bootstrap the state.
+        // First refresh to populate the state store.
         var snapshot = await nSchema.Refresh(project.Directory, ct);
         if (snapshot.IsError)
         {
             return snapshot.Errors;
         }
 
-        // Establish the before state.
-        project.SetSchema(scenario.BootstrapNsql);
-        var before = await nSchema.Apply(project.Directory, DestructiveActionPolicy.Allow, ct);
-        if (!before.Succeeded)
+        // Deploy the starting schemas.
+        var bootstrapDdl = database.Localize(scenario.BootstrapNsql);
+        project.SetSchema(bootstrapDdl);
+        var bootstrap = await nSchema.Apply(project.Directory, DestructiveActionPolicy.Allow, ct);
+        if (!bootstrap.Succeeded)
         {
-            // Apply failed. Attempt a recovery reset.
+            // Bootstrap failed, so try to reset the state and report the result.
             project.ClearSchema();
-            var reset = await nSchema.Refresh(project.Directory,  ct);
+            var reset = await nSchema.Refresh(project.Directory, ct);
             if (reset.IsError)
             {
                 return reset.Errors;
             }
 
-            var metadata = new Dictionary<string, object> {
-                ["stage"] = new ScenarioStage("before", before),
-                ["plan"] = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
+            var failedStage = new ScenarioStage(StageName.Bootstrap, bootstrap);
+            return new ScenarioResult
+            {
+                Stages = [failedStage],
+                Failure = failedStage,
+                Verification = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
             };
 
             return Error.Failure("Setup.FailedBefore", "Error setting up before state.", metadata);
         }
 
         // Seed the scenario data if there is any.
-        if (scenario.SeedSql is { } dataSql)
+        if (scenario.SeedSql is { } seed)
         {
-            await database.Execute(dataSql, ct);
+            await database.Execute(seed, ct);
         }
 
         return Result.Success;
