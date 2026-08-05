@@ -1,7 +1,16 @@
 {
   "description": "Retargets a foreign key at a different table, leaving the column in place.",
   "destructiveActions": "Allow",
-  "limitations": {
-    "sqlite": "SQLite cannot add or drop a foreign key on an existing table in place; it requires a table rebuild, which NSchema.Sqlite does not perform."
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "SQLite cannot add or drop a foreign key on an existing table in place; it requires a table rebuild, which NSchema.Sqlite does not perform."
+    }
   }
 }

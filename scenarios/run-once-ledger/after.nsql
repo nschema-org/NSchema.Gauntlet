@@ -1,0 +1,13 @@
+CREATE TABLE {schema}.currencies (
+  code varchar(3) NOT NULL,
+  CONSTRAINT pk_currencies PRIMARY KEY (code)
+);
+
+CREATE TABLE {schema}.audit (
+  id int NOT NULL,
+  CONSTRAINT pk_audit PRIMARY KEY (id)
+);
+
+SCRIPT seed_currencies RUN ONCE ON POST DEPLOYMENT AS $$
+  INSERT INTO {schema}.currencies (code) VALUES ('GBP');
+$$;

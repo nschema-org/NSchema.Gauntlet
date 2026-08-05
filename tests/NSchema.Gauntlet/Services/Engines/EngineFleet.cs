@@ -10,24 +10,24 @@ namespace NSchema.Gauntlet.Services.Engines;
 /// </summary>
 public sealed class EngineFleet : IAsyncDisposable
 {
-    private readonly Dictionary<string, Lazy<Engine>> _engines = new(StringComparer.Ordinal);
+    private readonly Dictionary<EngineName, Lazy<DatabaseEngine>> _engines = new();
 
-    public EngineFleet(EngineSettings settings)
+    public EngineFleet(FleetSettings settings, string tempDirectory)
     {
-        _engines.Add(PostgresEngine.Name, new Lazy<Engine>(() => new PostgresEngine(settings.Postgres)));
-        _engines.Add(SqlServerEngine.Name, new Lazy<Engine>(() => new SqlServerEngine(settings.SqlServer)));
-        _engines.Add(SqliteEngine.Name, new Lazy<Engine>(() => new SqliteEngine(settings.Sqlite)));
+        _engines.Add(PostgresEngine.EngineName, new Lazy<DatabaseEngine>(() => new PostgresEngine(settings.Postgres)));
+        _engines.Add(SqliteEngine.EngineName, new Lazy<DatabaseEngine>(() => new SqliteEngine(settings.Sqlite, tempDirectory)));
+        _engines.Add(SqlServerEngine.EngineName, new Lazy<DatabaseEngine>(() => new SqlServerEngine(settings.SqlServer)));
     }
 
     /// <summary>
     /// The registered engine names, in matrix order.
     /// </summary>
-    public IEnumerable<string> Names => _engines.Keys.OrderBy(name => name, StringComparer.Ordinal);
+    public IEnumerable<EngineName> Names => _engines.Keys;
 
     /// <summary>
     /// Gets the named engine, building it on first request.
     /// </summary>
-    public Engine Get(string name) => _engines[name].Value;
+    public DatabaseEngine Get(EngineName name) => _engines[name].Value;
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()

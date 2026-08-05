@@ -1,30 +1,42 @@
+using Microsoft.Data.Sqlite;
 using NSchema.Gauntlet.Model;
 
 namespace NSchema.Gauntlet.Services.Engines.Sqlite;
 
 /// <summary>
-/// SQLite, one file per case.
+/// The SQLite engine.
 /// </summary>
-/// <remarks>
-/// There is nothing to start, which is the point of the engine owning its own lifecycle: not every engine
-/// is a container.
-/// </remarks>
-public sealed class SqliteEngine(SqliteSettings settings) : Engine
+public sealed class SqliteEngine(SqliteSettings settings, string tempDirectory) : DatabaseEngine
 {
-    internal const string Name = "sqlite";
+    public static readonly EngineName EngineName = EngineName.From("sqlite");
+
+    private readonly string _directory = Path.Combine(tempDirectory, "sqlite", Path.GetRandomFileName());
+
+    /// <inheritdoc/>
+    public override EngineName Name => EngineName;
 
     /// <remarks>
     /// SQLite's primary database is always <c>main</c>; it has no other schema.
     /// </remarks>
-    public override string DefaultSchema => "main";
+    protected override string DefaultSchema => "main";
 
-    protected override Task<EngineDatabase> Provision(string caseName, CancellationToken cancellationToken)
+    protected override ValueTask<Database> Provision(string caseName, CancellationToken cancellationToken)
     {
-        var directory = Path.Combine(Path.GetTempPath(), "nschema-gauntlet-sqlite", Path.GetRandomFileName());
-        Directory.CreateDirectory(directory);
+        if (!Directory.Exists(_directory))
+        {
+            Directory.CreateDirectory(_directory);
+        }
 
-        var file = Path.Combine(directory, $"{caseName}.db");
+        var file = Path.Combine(_directory, $"{caseName}.db");
+        var builder = new SqliteConnectionStringBuilder { DataSource = file };
+        var database = new SqliteDatabase(this, settings.Plugin, builder.ConnectionString);
+        return ValueTask.FromResult<Database>(database);
+    }
 
-        return Task.FromResult<EngineDatabase>(new SqliteEngineDatabase(file, directory, settings.Plugin, Name));
+    public override ValueTask DisposeAsync()
+    {
+        SqliteConnection.ClearAllPools();
+        Directory.Delete(_directory, recursive: true);
+        return ValueTask.CompletedTask;
     }
 }

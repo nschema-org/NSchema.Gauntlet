@@ -19,18 +19,19 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
     /// <summary>
     /// The registered scenario names, in matrix order.
     /// </summary>
-    public IEnumerable<string> Names => Directory
+    public IEnumerable<ScenarioName> Names => Directory
         .EnumerateDirectories(CatalogDirectory())
         .Select(Path.GetFileName)
         .OfType<string>()
-        .OrderBy(name => name, StringComparer.Ordinal);
+        .OrderBy(name => name, StringComparer.Ordinal)
+        .Select(ScenarioName.From);
 
     /// <summary>
-    /// Reads a scenario off disk.
+    /// Reads a scenario off disk, as the given engine sees it.
     /// </summary>
-    public Scenario Get(string name)
+    public Scenario Get(ScenarioName name, EngineName engine)
     {
-        var directory = Path.Combine(CatalogDirectory(), name);
+        var directory = Path.Combine(CatalogDirectory(), name.Value);
         var manifest = JsonSerializer.Deserialize<ScenarioManifest>(
             File.ReadAllText(Path.Combine(directory, settings.Manifest)),
             _manifest) ?? throw new InvalidOperationException($"Scenario '{name}' has an empty manifest.");
@@ -39,12 +40,19 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
         {
             Name = name,
             Description = manifest.Description,
-            BeforeNsql = File.ReadAllText(Path.Combine(directory, manifest.BeforeFile)),
-            AfterNsql = File.ReadAllText(Path.Combine(directory, manifest.AfterFile)),
-            DataSql = string.IsNullOrEmpty(manifest.DataFile) ? null : File.ReadAllText(Path.Combine(directory, manifest.DataFile)),
+            BootstrapNsql = Nsql.From(Read(directory, manifest.BeforeFile, engine)),
+            ScenarioNsql = Nsql.From(Read(directory, manifest.AfterFile, engine)),
+            SeedSql = string.IsNullOrEmpty(manifest.DataFile) ? null : Sql.From(Read(directory, manifest.DataFile, engine)),
             DestructiveActions = manifest.DestructiveActions,
-            Limitations = manifest.Limitations ?? new Dictionary<string, string>(),
+            Expectations = manifest.Expectations,
         };
+    }
+
+    private static string Read(string directory, string file, EngineName engine)
+    {
+        var specific = Path.Combine(directory, Path.ChangeExtension(file, $"{engine.Value}{Path.GetExtension(file)}"));
+
+        return File.ReadAllText(File.Exists(specific) ? specific : Path.Combine(directory, file));
     }
 
     private string CatalogDirectory() => Path.Combine(root, settings.Directory);
@@ -52,9 +60,9 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
     private sealed record ScenarioManifest(
         string Description,
         DestructiveActionPolicy DestructiveActions,
+        Dictionary<EngineName, ScenarioExpectation> Expectations,
         string BeforeFile = "before.nsql",
         string AfterFile = "after.nsql",
-        string? DataFile = null,
-        Dictionary<string, string>? Limitations = null
+        string? DataFile = null
     );
 }

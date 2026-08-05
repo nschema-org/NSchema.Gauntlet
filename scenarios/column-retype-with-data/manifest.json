@@ -1,0 +1,17 @@
+{
+  "description": "Widens a column type under seeded rows; the data survives the retype. A retype is a destructive action, so the scenario allows them.",
+  "destructiveActions": "Allow",
+  "dataFile": "data.sql",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "SQLite cannot change a column in place; it requires a table rebuild, which NSchema.Sqlite does not perform."
+    }
+  }
+}

@@ -1,3 +1,4 @@
+using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Services;
 
 namespace NSchema.Gauntlet.Tests;
@@ -10,12 +11,12 @@ public static class GauntletMatrix
     /// <summary>
     /// Every scenario against every engine.
     /// </summary>
-    public static TheoryData<string, string> ScenariosAndEngines
+    public static TheoryData<ScenarioName, EngineName> ScenariosAndEngines
     {
         get
         {
             var run = new GauntletRun();
-            var matrix = new TheoryData<string, string>();
+            var matrix = new TheoryData<ScenarioName, EngineName>();
             var scenarios = run.Scenarios.Names.ToList();
             var engines = run.Engines.Names.ToList();
             foreach (var scenario in scenarios)
@@ -32,12 +33,12 @@ public static class GauntletMatrix
     /// <summary>
     /// Every corpus case against the engines it was acquired for.
     /// </summary>
-    public static TheoryData<string, string> CorpusAndEngines
+    public static TheoryData<CorpusName, EngineName> CorpusAndEngines
     {
         get
         {
             var run = new GauntletRun();
-            var matrix = new TheoryData<string, string>();
+            var matrix = new TheoryData<CorpusName, EngineName>();
 
             foreach (var corpusName in run.Corpus.Names)
             {

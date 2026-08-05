@@ -1,3 +1,4 @@
+using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Runner;
 using NSchema.Gauntlet.Services;
 
@@ -7,26 +8,46 @@ public sealed class CorpusTests(GauntletRun run)
 {
     [Theory]
     [MemberData(nameof(GauntletMatrix.CorpusAndEngines), MemberType = typeof(GauntletMatrix))]
-    public async Task Corpus(string name, string engineName)
+    public async Task Corpus(CorpusName corpusName, EngineName engineName)
     {
         // Arrange
-        var ct = TestContext.Current.CancellationToken;
-        var corpus = run.Corpus.Get(name);
+        var runner = new CorpusRunner(run.Cli, run.Project);
+        var corpus = run.Corpus.Get(corpusName);
         var engine = run.Engines.Get(engineName);
 
         // Act
-        var outcome = await new CorpusRunner(run.Cli, engine, run.PackageSources).Run(name, corpus.Ddl[engineName], ct);
+        var result = await runner.Run(corpus, engine, TestContext.Current.CancellationToken);
 
         // Assert
-        outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());
+        result.IsError.ShouldBeFalse(result.Describe());
+        var report = result.Value;
 
-        await Verify(outcome.Report()).UseTextForParameters($"{name}.{engineName}");
+        corpus.Expectations.TryGetValue(engineName, out var expectation).ShouldBeTrue(
+            $"Corpus '{corpusName}' sets no expectation for '{engineName}'. " +
+            $"Declare the expectation in the corpus manifest.");
 
-        outcome.Canonical.ShouldBeTrue($"the imported project was not canonical:{Environment.NewLine}{outcome.Format?.Describe()}");
-        outcome.RoundTrips.ShouldBeTrue($"NSchema found differences against its own description of the database:{Environment.NewLine}{outcome.Verification?.Describe()}");
-        outcome.Rebuilds.ShouldBeTrue($"the schema NSchema rendered was not the schema it described:{Environment.NewLine}{outcome.RebuildVerification?.Describe()}");
-        outcome.Faithful.ShouldNotBe(false,
-            $"the engine's own account of the rebuild differs from the source:{Environment.NewLine}{string.Join(Environment.NewLine, outcome.EngineTestimony ?? [])}");
-        outcome.TearsDown.ShouldBeTrue($"the schema would not come apart again:{Environment.NewLine}{outcome.TeardownVerification?.Describe()}");
+        switch (expectation.Outcome == CorpusOutcome.Succeeded)
+        {
+            case false when expectation.Because is null:
+                throw new Exception($"'{corpusName}' expects '{engineName}' to fail but declares no reason; say which capability gap this documents.");
+            case true when expectation.Because is not null:
+                throw new Exception($"'{corpusName}' expects '{engineName}' to succeed; remove the leftover reason from the manifest.");
+        }
+
+        var evidence = report.Outcome switch
+        {
+            CorpusOutcome.Succeeded => "succeeded",
+            CorpusOutcome.CanonicalFailed => $"the imported project is not canonical:{Environment.NewLine}{report.Format.Describe()}",
+            CorpusOutcome.RoundTripFailed => $"NSchema found differences against its own description of the database:{Environment.NewLine}{report.Verification.Describe()}",
+            CorpusOutcome.RebuildFailed => $"the schema NSchema rendered was not the schema it described:{Environment.NewLine}{report.RebuildVerification.Describe()}",
+            CorpusOutcome.FidelityFailed => $"the engine's own account of the rebuild differs from the source:{Environment.NewLine}{string.Join(Environment.NewLine, report.EngineTestimony ?? [])}",
+            _ => $"the schema would not come apart again:{Environment.NewLine}{report.TeardownVerification.Describe()}",
+        };
+        report.Outcome.ShouldBe(expectation.Outcome,
+            $"'{corpusName}' on '{engineName}' expected {expectation.Outcome} but {evidence}" +
+            $"{Environment.NewLine}If the engine's capability changed, update the manifest; otherwise fix it.");
+
+        // The verdicts held; pin the artifacts. A diff here always means a plan or a diagnostic changed.
+        await Verify(report.Render()).UseTextForParameters($"{corpusName}.{engineName}");
     }
 }

@@ -8,77 +8,85 @@ namespace NSchema.Gauntlet.Runner;
 /// somewhere else, and take it away again?
 /// </summary>
 /// <remarks>
-/// Rebuilding needs a second database, so the runner owns the databases and projects rather than being handed
-/// them: a case is one schema, not one database.
+/// Rebuilding needs a second database, so the runner owns the databases and projects rather than being
+/// handed them: a case is one schema, not one database.
 /// </remarks>
-public sealed class CorpusRunner(CliInstallation cli, Engine engine, IReadOnlyList<string> packageSources)
+public sealed class CorpusRunner(NSchemaClient nSchema, Func<Database, Project> project)
 {
-    public async Task<CorpusOutcome> Run(string name, string ddl, CancellationToken ct)
+    public async Task<ErrorOr<CorpusResult>> Run(Corpus corpus, DatabaseEngine engine, CancellationToken ct)
     {
-        await using var source = await engine.CreateDatabase($"{name}_source", ct);
-        using var sourceProject = GauntletProject.Create(engine, source, packageSources);
-        var nschema = new NSchemaCli(cli, sourceProject.Directory);
 
-        // Arrange — establish the schema with the engine's own DDL, bypassing NSchema entirely. What is being
+        var source = await engine.CreateDatabase($"{corpus.Name.Value}_source", ct);
+        var sourceProject = project(source);
+
+        // Establish the schema with the engine's own DDL, bypassing NSchema entirely. What is being
         // tested is whether NSchema can describe a database it did not create.
         try
         {
+            var ddl = corpus.Ddl[engine.Name];
             await source.Execute(ddl, ct);
         }
         catch (Exception exception)
         {
-            return CorpusOutcome.Failed(new CliResult("seed", 1, string.Empty, exception.Message));
+            return Error.Failure("seed", exception.Message);
         }
 
-        if (await nschema.Init(ct) is { Succeeded: false } restore)
+        if (await nSchema.Init(sourceProject.Directory, ct) is { IsError: true } restore)
         {
-            return CorpusOutcome.Failed(restore);
+            return restore.Errors;
         }
 
         // Describe — write the database out as a project, then read it back.
-        var import = await nschema.Import(ct);
-        if (!import.Succeeded)
+        if (await nSchema.Import(sourceProject.Directory, ct) is { IsError: true } import)
         {
-            return CorpusOutcome.Failed(import);
+            return import.Errors;
         }
 
-        var format = await nschema.Format(ct);
-        if (await nschema.Refresh(ct) is { Succeeded: false } capture)
+        var format = await nSchema.Format(sourceProject.Directory, ct);
+        if (await nSchema.Refresh(sourceProject.Directory, ct) is { IsError: true } capture)
         {
-            return CorpusOutcome.Failed(capture);
+            return capture.Errors;
         }
 
         // A schema NSchema did not create is unmanaged, so the first plan adopts it. Adoption is bookkeeping
         // rather than a difference, so it is applied and then planned again: what this claims is that nothing
         // is left once the database is NSchema's to manage.
-        var adoption = await nschema.Plan(DestructiveActionPolicy.Error, detailedExitCode: false, ct);
+        var adoption = await nSchema.Plan(sourceProject.Directory, DestructiveActionPolicy.Error, detailedExitCode: false, ct);
 
-        if (await nschema.Apply(DestructiveActionPolicy.Error, ct) is { Succeeded: false } adopt)
+        if (await nSchema.Apply(sourceProject.Directory, DestructiveActionPolicy.Error, ct) is { Succeeded: false } adopt)
         {
-            return CorpusOutcome.Failed(adopt);
+            return Error.Failure("adopt", adopt.Describe());
         }
 
-        var verification = await nschema.Plan(DestructiveActionPolicy.Error, detailedExitCode: true, ct);
+        var verification = await nSchema.Plan(sourceProject.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct);
 
         // Rebuild — the same declarations against an empty database. Nothing above ever ran a statement the
         // dialect rendered; this is what proves the SQL NSchema writes builds the schema it described.
-        await using var target = await engine.CreateDatabase($"{name}_target", ct);
-        using var targetProject = GauntletProject.Create(engine, target, packageSources);
-        targetProject.TakeSchemaFrom(sourceProject);
-        var rebuild = new NSchemaCli(cli, targetProject.Directory);
+        var target = await engine.CreateDatabase($"{corpus.Name.Value}_target", ct);
+        var targetProject = project(target);
+        targetProject.SetSchema(sourceProject.GetSchema());
 
-        if (await rebuild.Init(ct) is { Succeeded: false } targetRestore)
+        if (await nSchema.Init(targetProject.Directory, ct) is { IsError: true } targetRestore)
         {
-            return CorpusOutcome.Failed(targetRestore);
+            return targetRestore.Errors;
         }
 
-        if (await rebuild.Refresh(ct) is { Succeeded: false } targetCapture)
+        if (await nSchema.Refresh(targetProject.Directory, ct) is { IsError: true } targetCapture)
         {
-            return CorpusOutcome.Failed(targetCapture);
+            return targetCapture.Errors;
         }
 
-        var create = await rebuild.Apply(DestructiveActionPolicy.Error, ct);
-        var created = create.Succeeded ? await Settled(rebuild, ct) : create;
+        var create = await nSchema.Apply(targetProject.Directory, DestructiveActionPolicy.Error, ct);
+        var created = create;
+        if (create.Succeeded)
+        {
+            var settled = await Settled(targetProject.Directory, ct);
+            if (settled.IsError)
+            {
+                return settled.Errors;
+            }
+            created = settled.Value;
+        }
 
         // The oracle outside NSchema: both databases' own accounts of their schemas, compared. Every leg
         // above compares NSchema to NSchema, so a consistent introspection error passes them all; the
@@ -86,19 +94,27 @@ public sealed class CorpusRunner(CliInstallation cli, Engine engine, IReadOnlyLi
         IReadOnlyList<string>? testimony = null;
         if (create.Succeeded && created.Succeeded)
         {
-            testimony = Testimony.Differences(await source.Inventory(ct), await target.Inventory(ct));
+            testimony = Testimony.Differences(await source.Catalog(ct), await target.Catalog(ct));
         }
 
         // Take away — declaring nothing makes the target an empty database, which for a schema with a foreign
         // key graph is the only test of the order things are dropped in.
         targetProject.ClearSchema();
 
-        var teardown = await rebuild.Apply(DestructiveActionPolicy.Allow, ct);
-        var emptied = teardown.Succeeded ? await Settled(rebuild, ct) : teardown;
-
-        return new CorpusOutcome
+        var teardown = await nSchema.Apply(targetProject.Directory, DestructiveActionPolicy.Allow, ct);
+        var emptied = teardown;
+        if (teardown.Succeeded)
         {
-            Import = import,
+            var settled = await Settled(targetProject.Directory, ct);
+            if (settled.IsError)
+            {
+                return settled.Errors;
+            }
+            emptied = settled.Value;
+        }
+
+        return new CorpusResult
+        {
             Format = format,
             Adoption = adoption,
             Verification = verification,
@@ -111,10 +127,13 @@ public sealed class CorpusRunner(CliInstallation cli, Engine engine, IReadOnlyLi
     }
 
     // Recapture the live schema and confirm the project has nothing left to say about it.
-    private static async Task<CliResult> Settled(NSchemaCli cli, CancellationToken ct)
+    private async Task<ErrorOr<CliResult>> Settled(string projectDirectory, CancellationToken ct)
     {
-        await cli.Refresh(ct);
+        if (await nSchema.Refresh(projectDirectory, ct) is { IsError: true } recapture)
+        {
+            return recapture.Errors;
+        }
 
-        return await cli.Plan(DestructiveActionPolicy.Allow, detailedExitCode: true, ct);
+        return await nSchema.Plan(projectDirectory, DestructiveActionPolicy.Allow, detailedExitCode: true, ct);
     }
 }

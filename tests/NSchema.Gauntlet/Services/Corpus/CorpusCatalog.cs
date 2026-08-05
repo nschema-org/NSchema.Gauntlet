@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using NSchema.Gauntlet.Model;
 
 namespace NSchema.Gauntlet.Services.Corpus;
@@ -8,40 +9,58 @@ namespace NSchema.Gauntlet.Services.Corpus;
 /// </summary>
 public sealed class CorpusCatalog(string root, CorpusCatalogSettings settings)
 {
-    private static readonly JsonSerializerOptions _manifest = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions _manifest = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() },
+    };
 
     /// <summary>
     /// The registered case names, in matrix order.
     /// </summary>
-    public IEnumerable<string> Names => Directory
+    public IEnumerable<CorpusName> Names => Directory
         .EnumerateDirectories(CatalogDirectory())
         .Select(Path.GetFileName)
         .OfType<string>()
-        .OrderBy(name => name, StringComparer.Ordinal);
+        .OrderBy(name => name)
+        .Select(CorpusName.From);
 
     /// <summary>
     /// Reads a case off disk.
     /// </summary>
-    public CorpusCase Get(string name)
+    public Model.Corpus Get(CorpusName name)
     {
-        var directory = Path.Combine(CatalogDirectory(), name);
+        var directory = Path.Combine(CatalogDirectory(), name.Value);
         var manifest = JsonSerializer.Deserialize<CorpusManifest>(
             File.ReadAllText(Path.Combine(directory, settings.Manifest)),
             _manifest) ?? throw new InvalidOperationException($"Corpus case '{name}' has an empty manifest.");
 
         var ddl = Directory
             .EnumerateFiles(directory, "*.sql")
-            .ToDictionary(file => Path.GetFileNameWithoutExtension(file), File.ReadAllText, StringComparer.OrdinalIgnoreCase);
+            .ToDictionary(
+                file => EngineName.From(Path.GetFileNameWithoutExtension(file)),
+                file => Sql.From(File.ReadAllText(file))
+            );
 
-        return new CorpusCase
+        // An expectation for an engine the corpus supplies no DDL for would never run; a dead
+        // declaration is a mistake, not a cell.
+        var undeclared = manifest.Expectations.Keys.Where(engine => !ddl.ContainsKey(engine)).ToList();
+        if (undeclared.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Corpus '{name}' declares expectations for {string.Join(", ", undeclared.Select(engine => $"'{engine}'"))}, " +
+                $"but supplies no DDL to run there. Add the DDL file or remove the expectation.");
+        }
+
+        return new Model.Corpus
         {
             Name = name,
             Description = manifest.Description,
             Ddl = ddl,
+            Expectations = manifest.Expectations,
         };
     }
 
     private string CatalogDirectory() => Path.Combine(root, settings.Directory);
 
-    private sealed record CorpusManifest(string Description);
+    private sealed record CorpusManifest(string Description, Dictionary<EngineName, CorpusExpectation> Expectations);
 }

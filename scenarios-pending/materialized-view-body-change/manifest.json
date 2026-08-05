@@ -1,0 +1,9 @@
+{
+  "description": "Changes a materialized view's body; there is no in-place form, so it drops and recreates with its indexes riding along.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": { "outcome": "succeeded" },
+    "sqlserver": { "outcome": "bootstrapFailed", "because": "SQL Server has no materialized views (indexed views are a different feature), so the scenario's bootstrap state cannot be expressed." },
+    "sqlite": { "outcome": "bootstrapFailed", "because": "SQLite has no materialized views, so the scenario's bootstrap state cannot be expressed." }
+  }
+}

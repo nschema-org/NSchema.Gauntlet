@@ -3,7 +3,7 @@ namespace NSchema.Gauntlet.Services.Corpus;
 /// <summary>
 /// Where the corpus cases are read from.
 /// </summary>
-public sealed record CorpusCatalogSettings
+public sealed class CorpusCatalogSettings
 {
     /// <summary>
     /// The directory, relative to the root, where corpus cases are held.

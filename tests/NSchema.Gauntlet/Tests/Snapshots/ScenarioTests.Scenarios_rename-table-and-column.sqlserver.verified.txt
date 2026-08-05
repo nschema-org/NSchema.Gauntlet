@@ -1,0 +1,52 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: dbo
+Computing migration plan...
+Plan
+────
+~ table dbo.users → clients
+
+~ table dbo.orders
+    ~ rename column: amount → total
+
+Plan: 0 to add, 3 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+EXEC sys.sp_rename @objname = N'[dbo].[users]', @newname = N'clients', @objtype = N'OBJECT'
+
+-- [2/2]
+EXEC sys.sp_rename @objname = N'[dbo].[orders].[amount]', @newname = N'total', @objtype = N'COLUMN'
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: dbo
+Computing migration plan...
+Plan
+────
+~ table dbo.users → clients
+
+~ table dbo.orders
+    ~ rename column: amount → total
+
+Plan: 0 to add, 3 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+EXEC sys.sp_rename @objname = N'[dbo].[users]', @newname = N'clients', @objtype = N'OBJECT'
+
+-- [2/2]
+EXEC sys.sp_rename @objname = N'[dbo].[orders].[amount]', @newname = N'total', @objtype = N'COLUMN'
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 3 changed (2 statements).
+exit: 0
+

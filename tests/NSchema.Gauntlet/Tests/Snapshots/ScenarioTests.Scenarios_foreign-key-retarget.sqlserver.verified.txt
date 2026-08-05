@@ -62,5 +62,3 @@ Updating state store...
 ✔ Apply complete. 1 added, 1 changed, 1 destroyed (2 statements).
 exit: 0
 
-blocked: False
-converged: True

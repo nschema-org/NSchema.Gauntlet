@@ -1,0 +1,10 @@
+CREATE TABLE {schema}.users (
+  id int NOT NULL,
+  name varchar(100) NOT NULL,
+  email varchar(200) NOT NULL,
+  CONSTRAINT pk_users PRIMARY KEY (id)
+);
+
+SCRIPT backfill_emails RUN ON ADD COLUMN {schema}.users.email AS $$
+  UPDATE {schema}.users SET email = 'unknown@example.com';
+$$;

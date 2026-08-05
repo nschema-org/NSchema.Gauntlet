@@ -1,0 +1,9 @@
+{
+  "description": "Removes a value from an enum; no engine can do this in place, and the always-on policy refuses to plan it.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": { "outcome": "changeFailed", "because": "Postgres cannot remove a value from an enum in place; NSchema's enum-value-removal policy refuses the plan." },
+    "sqlserver": { "outcome": "bootstrapFailed", "because": "SQL Server has no enum type, so the scenario's bootstrap state cannot be expressed." },
+    "sqlite": { "outcome": "bootstrapFailed", "because": "SQLite has no enum type, so the scenario's bootstrap state cannot be expressed." }
+  }
+}

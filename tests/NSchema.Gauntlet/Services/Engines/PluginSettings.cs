@@ -5,18 +5,13 @@ namespace NSchema.Gauntlet.Services.Engines;
 /// </summary>
 public sealed class PluginSettings
 {
-    public string Package { get; init; } = string.Empty;
-
-    public string Version { get; init; } = string.Empty;
+    /// <summary>
+    /// The name of the package to install.
+    /// </summary>
+    public required string Package { get; init; }
 
     /// <summary>
-    /// The PLUGIN statement declaring this provider under the given label.
+    /// The version of the package to install.
     /// </summary>
-    public string Declaration(string label) =>
-        $"""
-         PLUGIN {label} (
-           source = '{Package}',
-           version = '{Version}'
-         );
-         """;
+    public required string Version { get; init; }
 }

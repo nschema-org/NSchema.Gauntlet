@@ -1,0 +1,52 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ table main.users → clients
+
+~ table main.orders
+    ~ rename column: amount → total
+
+Plan: 0 to add, 3 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+ALTER TABLE "main"."users" RENAME TO "clients"
+
+-- [2/2]
+ALTER TABLE "main"."orders" RENAME COLUMN "amount" TO "total"
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ table main.users → clients
+
+~ table main.orders
+    ~ rename column: amount → total
+
+Plan: 0 to add, 3 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+ALTER TABLE "main"."users" RENAME TO "clients"
+
+-- [2/2]
+ALTER TABLE "main"."orders" RENAME COLUMN "amount" TO "total"
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 3 changed (2 statements).
+exit: 0
+

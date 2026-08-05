@@ -1,17 +1,12 @@
 namespace NSchema.Gauntlet.Services.Engines.Postgres;
 
 /// <summary>
-/// The settings for the postgres image.
+/// The settings for the Postgres engine.
 /// </summary>
-public sealed class PostgresSettings
+public sealed class PostgresSettings : EngineSettings
 {
     /// <summary>
     /// The container image to host the database in.
     /// </summary>
     public required string Image { get; init; }
-
-    /// <summary>
-    ///  The plugin settings to connect to postgres.
-    /// </summary>
-    public required PluginSettings Plugin { get; init; }
 }

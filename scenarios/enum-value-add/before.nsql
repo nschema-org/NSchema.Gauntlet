@@ -1,0 +1,7 @@
+CREATE ENUM {schema}.status ('draft', 'posted');
+
+CREATE TABLE {schema}.invoices (
+  id int NOT NULL,
+  state {schema}.status NOT NULL,
+  CONSTRAINT pk_invoices PRIMARY KEY (id)
+);

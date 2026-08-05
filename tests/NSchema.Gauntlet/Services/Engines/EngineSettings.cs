@@ -1,26 +1,12 @@
-using NSchema.Gauntlet.Services.Engines.Postgres;
-using NSchema.Gauntlet.Services.Engines.Sqlite;
-using NSchema.Gauntlet.Services.Engines.SqlServer;
-
 namespace NSchema.Gauntlet.Services.Engines;
 
 /// <summary>
-/// The settings for the database engines.
+/// The base settings for all database engines.
 /// </summary>
-public sealed class EngineSettings
+public abstract class EngineSettings
 {
     /// <summary>
-    /// The settings for the postgres engine.
+    /// The plugin to use when connecting to a database of this engine.
     /// </summary>
-    public required PostgresSettings Postgres { get; init; }
-
-    /// <summary>
-    /// The settings for the SQL Server engine.
-    /// </summary>
-    public required SqlServerSettings SqlServer { get; init; }
-
-    /// <summary>
-    /// The settings for the SQLite engine.
-    /// </summary>
-    public required SqliteSettings Sqlite { get; init; }
+    public required PluginSettings Plugin { get; init; }
 }

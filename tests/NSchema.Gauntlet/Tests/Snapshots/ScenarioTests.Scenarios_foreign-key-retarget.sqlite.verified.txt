@@ -42,6 +42,3 @@ Diagnostics
 ╰──────────┴─────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 exit: 1
 
-blocked: True
-limitation: SQLite cannot add or drop a foreign key on an existing table in place; it requires a table rebuild, which NSchema.Sqlite does not perform.
-converged: True

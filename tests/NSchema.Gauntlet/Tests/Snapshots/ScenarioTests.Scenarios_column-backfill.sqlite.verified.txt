@@ -1,0 +1,54 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ table main.users
+    + email varchar(200) not null (with migration backfill_emails)
+
+Plan: 1 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+ALTER TABLE "main"."users" ADD COLUMN "email" varchar(200)
+
+-- [2/2]
+UPDATE main.users SET email = 'unknown@example.com';
+Diagnostics                                                                                  
+╭──────────┬────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                                                                                                                        │
+├──────────┼────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite cannot change a column in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+╰──────────┴────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ table main.users
+    + email varchar(200) not null (with migration backfill_emails)
+
+Plan: 1 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+ALTER TABLE "main"."users" ADD COLUMN "email" varchar(200)
+
+-- [2/2]
+UPDATE main.users SET email = 'unknown@example.com';
+Diagnostics                                                                                  
+╭──────────┬────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                                                                                                                        │
+├──────────┼────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite cannot change a column in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+╰──────────┴────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

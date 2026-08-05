@@ -3,5 +3,10 @@
   "source": "https://github.com/devrimgunduz/pagila",
   "version": "pagila-v3.1.0",
   "license": "BSD-3-Clause",
-  "acquisition": "pagila-schema.sql at tag pagila-v3.1.0, verbatim: it is already a schema-only pg_dump with no client directives. The tag matters — later releases default columns to uuidv7(), which needs Postgres 18, and the engine is pinned to 17."
+  "acquisition": "pagila-schema.sql at tag pagila-v3.1.0, verbatim: it is already a schema-only pg_dump with no client directives. The tag matters \u2014 later releases default columns to uuidv7(), which needs Postgres 18, and the engine is pinned to 17.",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    }
+  }
 }
