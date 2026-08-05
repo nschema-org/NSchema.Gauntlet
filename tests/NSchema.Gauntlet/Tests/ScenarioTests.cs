@@ -8,20 +8,21 @@ public sealed class ScenarioTests(GauntletRun run)
 {
     [Theory]
     [MemberData(nameof(GauntletMatrix.ScenariosAndEngines), MemberType = typeof(GauntletMatrix))]
-    public async Task Scenarios(string name, string engineName)
+    public async Task Scenarios(ScenarioName scenarioName, EngineName engineName)
     {
         // Arrange
-        var ct = TestContext.Current.CancellationToken;
-        var scenario = run.Scenarios.Get(name);
+        var runner = new ScenarioRunner(run.Cli);
+        var scenario = run.Scenarios.Get(scenarioName);
         var engine = run.Engines.Get(engineName);
-        await using var database = await engine.CreateDatabase(name, ct);
-        using var project = GauntletProject.Create(engine, database, run.PackageSources);
+        var database = await engine.CreateDatabase(scenario.Name.Value, TestContext.Current.CancellationToken);
+        var project = run.Project(database);
 
         // Act
-        var outcome = await new ScenarioRunner(run.Cli, project).Run(database, scenario, ct);
+        var result = await runner.Run(scenario, database, project, TestContext.Current.CancellationToken);
 
         // Assert
-        outcome.SetupFailure.ShouldBeNull(outcome.SetupFailure?.Describe());
+        result.IsError.ShouldBeFalse(result.Describe());
+        var report = result.Value;
 
         var declared = scenario.Limitations.TryGetValue(engineName, out var limitation);
         var report = outcome.Report(limitation);

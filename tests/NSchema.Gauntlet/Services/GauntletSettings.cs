@@ -7,7 +7,7 @@ using NSchema.Gauntlet.Services.Scenarios;
 namespace NSchema.Gauntlet.Services;
 
 /// <summary>
-/// What a run is pinned to: every image tag and package version, in one place.
+/// The settings that can be used for any kind of gauntlet run.
 /// </summary>
 public sealed class GauntletSettings
 {
@@ -15,6 +15,11 @@ public sealed class GauntletSettings
     /// Gets the root directory of the repository.
     /// </summary>
     public string Root { get; } = RepositoryRoot();
+
+    /// <summary>
+    /// Gets the path to the temporary directory where things can be stored for this run.
+    /// </summary>
+    public string TempDirectory { get; } = Path.Combine(Path.GetTempPath(), "nschema-gauntlet", Path.GetRandomFileName());
 
     /// <summary>
     /// Where the case directories are.
@@ -29,17 +34,17 @@ public sealed class GauntletSettings
     /// <summary>
     /// Gets the settings for the different database engines.
     /// </summary>
-    public required EngineSettings Engines { get; init; }
-
-    /// <summary>
-    /// Extra NuGet package sources for the run, beyond the defaults.
-    /// </summary>
-    public IReadOnlyList<string> PackageSources { get; init; } = [];
+    public required FleetSettings Engines { get; init; }
 
     /// <summary>
     /// Gets the CLI the run is pinned to.
     /// </summary>
     public required CliSettings Cli { get; init; }
+
+    /// <summary>
+    /// Gets the NuGet settings for this run.
+    /// </summary>
+    public required NuGetSettings NuGet { get; init; }
 
     /// <summary>
     /// Reads the settings for a run.

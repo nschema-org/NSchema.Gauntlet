@@ -3,31 +3,24 @@ using NSchema.Gauntlet.Model;
 
 namespace NSchema.Gauntlet.Services.Engines.Postgres;
 
-/// <inheritdoc />
-public sealed class PostgresEngineDatabase(string connectionString, PluginSettings plugin, string label) : EngineDatabase
+/// <summary>
+/// A single Postgres database.
+/// </summary>
+public sealed class PostgresDatabase(PostgresEngine engine, PluginSettings plugin, string connectionString) : Database(engine, plugin, connectionString)
 {
-    public override string ConfigurationSql =>
-        $"""
-         {plugin.Declaration(label)}
-
-         DATABASE {label} (
-           connection_string = '{connectionString.Replace("'", "''")}'
-         );
-         """;
-
-    public override async Task Execute(string sql, CancellationToken cancellationToken = default)
+    protected override async Task ExecuteCore(Sql sql, CancellationToken cancellationToken = default)
     {
-        await using var connection = new NpgsqlConnection(connectionString);
+        await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
         await using var command = connection.CreateCommand();
-        command.CommandText = sql;
+        command.CommandText = sql.Value;
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public override async Task<IReadOnlyList<string>> Inventory(CancellationToken cancellationToken = default)
+    public override async Task<IReadOnlyList<string>> Catalog(CancellationToken cancellationToken = default)
     {
-        await using var connection = new NpgsqlConnection(connectionString);
+        await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
         await using var command = connection.CreateCommand();
@@ -87,6 +80,4 @@ public sealed class PostgresEngineDatabase(string connectionString, PluginSettin
 
         return rows;
     }
-
-    public override ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

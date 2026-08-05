@@ -3,31 +3,22 @@ using NSchema.Gauntlet.Model;
 
 namespace NSchema.Gauntlet.Services.Engines.Sqlite;
 
-/// <inheritdoc />
-public sealed class SqliteEngineDatabase(string file, string directory, PluginSettings plugin, string label) : EngineDatabase
+/// <summary>
+/// A single Sqlite database.
+/// </summary>
+public sealed class SqliteDatabase(SqliteEngine engine, PluginSettings plugin, string connectionString) : Database(engine, plugin, connectionString)
 {
-    private string ConnectionString => $"Data Source={file}";
-
-    public override string ConfigurationSql =>
-        $"""
-         {plugin.Declaration(label)}
-
-         DATABASE {label} (
-           connection_string = '{ConnectionString.Replace("'", "''")}'
-         );
-         """;
-
-    public override async Task Execute(string sql, CancellationToken cancellationToken = default)
+    protected override async Task ExecuteCore(Sql sql, CancellationToken cancellationToken = default)
     {
         await using var connection = new SqliteConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
         await using var command = connection.CreateCommand();
-        command.CommandText = sql;
+        command.CommandText = sql.Value;
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public override async Task<IReadOnlyList<string>> Inventory(CancellationToken cancellationToken = default)
+    public override async Task<IReadOnlyList<string>> Catalog(CancellationToken cancellationToken = default)
     {
         await using var connection = new SqliteConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
@@ -64,21 +55,5 @@ public sealed class SqliteEngineDatabase(string file, string directory, PluginSe
         }
 
         return rows;
-    }
-
-    public override ValueTask DisposeAsync()
-    {
-        SqliteConnection.ClearAllPools();
-
-        try
-        {
-            Directory.Delete(directory, recursive: true);
-        }
-        catch (DirectoryNotFoundException)
-        {
-            // Already gone.
-        }
-
-        return ValueTask.CompletedTask;
     }
 }

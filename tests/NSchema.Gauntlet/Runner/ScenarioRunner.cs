@@ -4,66 +4,86 @@ using NSchema.Gauntlet.Services.Cli;
 namespace NSchema.Gauntlet.Runner;
 
 /// <summary>
-/// Runs a scenario against a live database and reports what NSchema did.
+/// Runs a scenario against a live database.
 /// </summary>
-public sealed class ScenarioRunner(CliInstallation cli, GauntletProject project)
+public sealed class ScenarioRunner(NSchemaClient nSchema)
 {
-    private readonly NSchemaCli _cli = new(cli, project.Directory);
-
-    public async Task<ScenarioOutcome> Run(EngineDatabase database, Scenario scenario, CancellationToken ct)
+    /// <summary>
+    /// Runs the given scenario against the given engine and returns the result.
+    /// </summary>
+    public async Task<ErrorOr<ScenarioResult>> Run(Scenario scenario, Database database, Project project, CancellationToken ct)
     {
-        // Arrange — resolve the declared plugins, then establish the before state.
-        var restore = await _cli.Init(ct);
-        if (!restore.Succeeded)
+        var setup = await Setup(scenario, project, database, ct);
+        if (setup.IsError)
         {
-            return ScenarioOutcome.Failed(restore);
+            return setup.Errors;
         }
 
-        // Take a first snapshot of the database.
-        var adopt = await _cli.Refresh(ct);
-        if (!adopt.Succeeded)
+        // The change under test: plan it, then attempt it.
+        project.SetSchema(scenario.ScenarioNsql);
+        var plan = await nSchema.Plan(project.Directory, scenario.DestructiveActions, detailedExitCode: false, ct);
+        var apply = await nSchema.Apply(project.Directory, scenario.DestructiveActions, ct);
+
+        // A refusal is an outcome, not an error: what it has to prove is that the database was left
+        // where it started, so a refused change is verified against the before state.
+        project.SetSchema(apply.Succeeded ? scenario.ScenarioNsql : scenario.BootstrapNsql);
+        var recapture = await nSchema.Refresh(project.Directory, ct);
+        if (recapture.IsError)
         {
-            return ScenarioOutcome.Failed(adopt);
+            return recapture.Errors;
         }
 
-        project.SetSchema(scenario.BeforeNsql ?? string.Empty);
-
-        var seed = await _cli.Apply(DestructiveActionPolicy.Allow, ct);
-        if (!seed.Succeeded)
+        return new ScenarioResult
         {
-            return ScenarioOutcome.Failed(seed);
+            Stages = [new ScenarioStage("plan", plan), new ScenarioStage("apply", apply)],
+            Refusal = apply.Succeeded ? null : new ScenarioStage("apply", apply),
+            Verification = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
+        };
+    }
+
+    private async Task<ErrorOr<Success>> Setup(Scenario scenario, Project project, Database database, CancellationToken ct)
+    {
+        // Restore plugins.
+        var restore = await nSchema.Init(project.Directory, ct);
+        if (restore.IsError)
+        {
+            return restore.Errors;
         }
 
-        if (scenario.DataSql is { } dataSql)
+        // First refresh to bootstrap the state.
+        var snapshot = await nSchema.Refresh(project.Directory, ct);
+        if (snapshot.IsError)
+        {
+            return snapshot.Errors;
+        }
+
+        // Establish the before state.
+        project.SetSchema(scenario.BootstrapNsql);
+        var before = await nSchema.Apply(project.Directory, DestructiveActionPolicy.Allow, ct);
+        if (!before.Succeeded)
+        {
+            // Apply failed. Attempt a recovery reset.
+            project.ClearSchema();
+            var reset = await nSchema.Refresh(project.Directory,  ct);
+            if (reset.IsError)
+            {
+                return reset.Errors;
+            }
+
+            var metadata = new Dictionary<string, object> {
+                ["stage"] = new ScenarioStage("before", before),
+                ["plan"] = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
+            };
+
+            return Error.Failure("Setup.FailedBefore", "Error setting up before state.", metadata);
+        }
+
+        // Seed the scenario data if there is any.
+        if (scenario.SeedSql is { } dataSql)
         {
             await database.Execute(dataSql, ct);
-
-            // The rows are invisible to a schema refresh, but the state must still match what was just applied.
-            var capture = await _cli.Refresh(ct);
-            if (!capture.Succeeded)
-            {
-                return ScenarioOutcome.Failed(capture);
-            }
         }
 
-        // Act — plan and apply the change under test.
-        project.SetSchema(scenario.AfterNsql ?? string.Empty);
-
-        var plan = await _cli.Plan(scenario.DestructiveActions, false, ct);
-        var apply = await _cli.Apply(scenario.DestructiveActions, ct);
-
-        // Assert. A refusal is an outcome, not an error: what it has to prove is that the database was left
-        // where it started, so the before state is what a blocked scenario is verified against.
-        project.SetSchema((apply.Succeeded ? scenario.AfterNsql : scenario.BeforeNsql) ?? string.Empty);
-
-        await _cli.Refresh(ct);
-        var verification = await _cli.Plan(DestructiveActionPolicy.Error, true, ct);
-
-        return new ScenarioOutcome
-        {
-            Plan = plan,
-            Apply = apply,
-            Verification = verification,
-        };
+        return Result.Success;
     }
 }

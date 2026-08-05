@@ -3,12 +3,12 @@ namespace NSchema.Gauntlet.Model;
 /// <summary>
 /// A real schema, acquired from outside, in each engine's own DDL.
 /// </summary>
-public sealed record CorpusCase
+public sealed class Corpus
 {
     /// <summary>
-    /// The case's name.
+    /// The name of the corpus.
     /// </summary>
-    public required string Name { get; init; }
+    public required CorpusName Name { get; init; }
 
     /// <summary>
     /// What the schema is, and why it is worth round-tripping.
@@ -16,8 +16,8 @@ public sealed record CorpusCase
     public required string Description { get; init; }
 
     /// <summary>
-    /// The DDL that establishes the schema, keyed by engine. A case supplies it for the engines it has;
-    /// the rest are absent from the matrix rather than failing in it.
+    /// The DDL that establishes the schema.
     /// </summary>
-    public required IReadOnlyDictionary<string, string> Ddl { get; init; }
+    /// <remarks>A corpus only supplies DDL for the engine(s) it was built for.</remarks>
+    public required IReadOnlyDictionary<EngineName, Sql> Ddl { get; init; }
 }

@@ -1,3 +1,4 @@
+using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Services.Cli;
 using NSchema.Gauntlet.Services.Corpus;
 using NSchema.Gauntlet.Services.Engines;
@@ -19,14 +20,9 @@ public sealed class GauntletRun : IAsyncLifetime
     {
         Scenarios = new ScenarioCatalog(_settings.Root, _settings.Scenarios);
         Corpus = new CorpusCatalog(_settings.Root, _settings.Corpus);
-        Engines = new EngineFleet(_settings.Engines);
-        Cli = new CliInstallation(_settings.Cli, _settings.PackageSources);
+        Engines = new EngineFleet(_settings.Engines, _settings.TempDirectory);
+        Cli = new NSchemaClient(_settings.Cli, _settings.NuGet, _settings.TempDirectory);
     }
-
-    /// <summary>
-    /// Extra package sources the run's projects and tool install draw from.
-    /// </summary>
-    public IReadOnlyList<string> PackageSources => _settings.PackageSources;
 
     /// <summary>
     /// Gets the scenarios active in the run.
@@ -46,16 +42,35 @@ public sealed class GauntletRun : IAsyncLifetime
     /// <summary>
     /// Gets the CLI the run drives.
     /// </summary>
-    public CliInstallation Cli { get; }
+    public NSchemaClient Cli { get; }
 
-    /// <inheritdoc />
-    public ValueTask InitializeAsync()
+    /// <summary>
+    /// Creates and configures a new project.
+    /// </summary>
+    public Project Project(Database database)
     {
-        // A version pinned from a local source is mutable, so no cache may vouch for it.
-        PackageCache.Clear(_settings, Cli.Directory);
-        return Cli.Install(CancellationToken.None);
+        var directory = Path.Combine(_settings.TempDirectory, "projects", Path.GetRandomFileName());
+        Directory.CreateDirectory(directory);
+        _settings.NuGet.WriteConfig(directory);
+        var project = new Project(directory);
+        project.ConnectTo(database);
+        return project;
     }
 
     /// <inheritdoc />
-    public ValueTask DisposeAsync() => Engines.DisposeAsync();
+    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await Engines.DisposeAsync();
+        try
+        {
+            Directory.Delete(_settings.TempDirectory, recursive: true);
+        }
+        catch
+        {
+            // Ignore.
+        }
+    }
 }
