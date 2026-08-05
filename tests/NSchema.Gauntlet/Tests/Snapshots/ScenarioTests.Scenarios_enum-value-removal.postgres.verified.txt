@@ -1,0 +1,38 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ enum public.status
+    ~ values: [draft, posted, archived] → [draft, posted] (removal/reorder; requires manual recreate)
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+Diagnostics                                                                              
+╭──────────┬────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source             │ Message                                                                                                                            │
+├──────────┼────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ enum-value-removal │ Enum 'public.status' removes or reorders values ([draft, posted, archived] -> [draft, posted]), but enum values can only be added. │
+╰──────────┴────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ enum public.status
+    ~ values: [draft, posted, archived] → [draft, posted] (removal/reorder; requires manual recreate)
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+Diagnostics                                                                              
+╭──────────┬────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source             │ Message                                                                                                                            │
+├──────────┼────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ enum-value-removal │ Enum 'public.status' removes or reorders values ([draft, posted, archived] -> [draft, posted]), but enum values can only be added. │
+╰──────────┴────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

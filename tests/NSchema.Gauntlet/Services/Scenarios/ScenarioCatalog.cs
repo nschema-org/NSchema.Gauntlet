@@ -27,9 +27,9 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
         .Select(ScenarioName.From);
 
     /// <summary>
-    /// Reads a scenario off disk.
+    /// Reads a scenario off disk, as the given engine sees it.
     /// </summary>
-    public Scenario Get(ScenarioName name)
+    public Scenario Get(ScenarioName name, EngineName engine)
     {
         var directory = Path.Combine(CatalogDirectory(), name.Value);
         var manifest = JsonSerializer.Deserialize<ScenarioManifest>(
@@ -40,12 +40,19 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
         {
             Name = name,
             Description = manifest.Description,
-            BootstrapNsql = Nsql.From(File.ReadAllText(Path.Combine(directory, manifest.BeforeFile))),
-            ScenarioNsql = Nsql.From(File.ReadAllText(Path.Combine(directory, manifest.AfterFile))),
-            SeedSql = string.IsNullOrEmpty(manifest.DataFile) ? null : Sql.From(File.ReadAllText(Path.Combine(directory, manifest.DataFile))),
+            BootstrapNsql = Nsql.From(Read(directory, manifest.BeforeFile, engine)),
+            ScenarioNsql = Nsql.From(Read(directory, manifest.AfterFile, engine)),
+            SeedSql = string.IsNullOrEmpty(manifest.DataFile) ? null : Sql.From(Read(directory, manifest.DataFile, engine)),
             DestructiveActions = manifest.DestructiveActions,
             Expectations = manifest.Expectations,
         };
+    }
+
+    private static string Read(string directory, string file, EngineName engine)
+    {
+        var specific = Path.Combine(directory, Path.ChangeExtension(file, $"{engine.Value}{Path.GetExtension(file)}"));
+
+        return File.ReadAllText(File.Exists(specific) ? specific : Path.Combine(directory, file));
     }
 
     private string CatalogDirectory() => Path.Combine(root, settings.Directory);

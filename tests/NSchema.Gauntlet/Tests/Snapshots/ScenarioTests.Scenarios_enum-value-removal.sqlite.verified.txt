@@ -1,0 +1,31 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
++ table main.invoices
+    + id int not null
+    + state main.status not null
+
++ enum main.status (draft, posted, archived)
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE TABLE "main"."invoices" (
+    "id" INTEGER NOT NULL,
+    "state" main.status NOT NULL,
+    CONSTRAINT "pk_invoices" PRIMARY KEY ("id")
+)
+Diagnostics                                  
+╭──────────┬─────────────┬───────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                           │
+├──────────┼─────────────┼───────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ Sqlite does not support the 'create enum' action. │
+╰──────────┴─────────────┴───────────────────────────────────────────────────╯
+exit: 1
+

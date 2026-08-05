@@ -12,7 +12,7 @@ public sealed class ScenarioTests(GauntletRun run)
     {
         // Arrange
         var runner = new ScenarioRunner(run.Cli);
-        var scenario = run.Scenarios.Get(scenarioName);
+        var scenario = run.Scenarios.Get(scenarioName, engineName);
         var engine = run.Engines.Get(engineName);
         var database = await engine.CreateDatabase(scenario.Name.Value, TestContext.Current.CancellationToken);
         var project = run.Project(database);
