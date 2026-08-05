@@ -1,0 +1,18 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
++ function main.answer()
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+Diagnostics                                   
+╭──────────┬─────────────┬──────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                              │
+├──────────┼─────────────┼──────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ Sqlite does not support the 'create routine' action. │
+╰──────────┴─────────────┴──────────────────────────────────────────────────────╯
+exit: 1
+
