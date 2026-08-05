@@ -44,7 +44,7 @@ public sealed class GauntletSettings
     /// <summary>
     /// Gets the NuGet settings for this run.
     /// </summary>
-    public required NuGetSettings NuGet { get; init; }
+    public required NuGetSettings NuGet { get; init; } = new();
 
     /// <summary>
     /// Reads the settings for a run.
