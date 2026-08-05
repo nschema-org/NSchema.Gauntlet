@@ -1,0 +1,48 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ function public.add_up
+    ~ arguments: (x integer) → (x integer, y integer) (recreate)
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+DROP FUNCTION "public"."add_up"
+
+-- [2/2]
+CREATE FUNCTION "public"."add_up"(x integer, y integer) RETURNS integer LANGUAGE sql AS $$ SELECT x + y $$
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ function public.add_up
+    ~ arguments: (x integer) → (x integer, y integer) (recreate)
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+DROP FUNCTION "public"."add_up"
+
+-- [2/2]
+CREATE FUNCTION "public"."add_up"(x integer, y integer) RETURNS integer LANGUAGE sql AS $$ SELECT x + y $$
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 changed (2 statements).
+exit: 0
+

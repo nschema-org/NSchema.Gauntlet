@@ -1,0 +1,52 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ materialized view public.order_totals
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/3]
+DROP MATERIALIZED VIEW "public"."order_totals"
+
+-- [2/3]
+CREATE MATERIALIZED VIEW "public"."order_totals" AS SELECT id, total FROM public.orders
+
+-- [3/3]
+CREATE UNIQUE INDEX "order_totals_id" ON "public"."order_totals" ("id")
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ materialized view public.order_totals
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/3]
+DROP MATERIALIZED VIEW "public"."order_totals"
+
+-- [2/3]
+CREATE MATERIALIZED VIEW "public"."order_totals" AS SELECT id, total FROM public.orders
+
+-- [3/3]
+CREATE UNIQUE INDEX "order_totals_id" ON "public"."order_totals" ("id")
+
+NSchema will execute 3 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 changed (3 statements).
+exit: 0
+

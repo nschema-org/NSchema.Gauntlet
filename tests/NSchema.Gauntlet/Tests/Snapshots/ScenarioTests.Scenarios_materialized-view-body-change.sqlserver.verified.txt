@@ -1,0 +1,31 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: dbo
+Computing migration plan...
+Plan
+────
++ table dbo.orders
+    + id int not null
+    + total int not null
+
++ materialized view dbo.order_totals
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE TABLE [dbo].[orders] (
+    [id] int NOT NULL,
+    [total] int NOT NULL,
+    CONSTRAINT [pk_orders] PRIMARY KEY ([id])
+)
+Diagnostics                                              
+╭──────────┬─────────────┬───────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                                                   │
+├──────────┼─────────────┼───────────────────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ SQL Server (NSchema.SqlServer) does not support the 'create view' action. │
+╰──────────┴─────────────┴───────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

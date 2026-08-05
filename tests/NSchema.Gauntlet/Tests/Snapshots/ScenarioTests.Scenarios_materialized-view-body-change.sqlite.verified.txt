@@ -1,0 +1,31 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
++ table main.orders
+    + id int not null
+    + total int not null
+
++ materialized view main.order_totals
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE TABLE "main"."orders" (
+    "id" INTEGER NOT NULL,
+    "total" INTEGER NOT NULL,
+    CONSTRAINT "pk_orders" PRIMARY KEY ("id")
+)
+Diagnostics                                
+╭──────────┬────────────────┬─────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                     │
+├──────────┼────────────────┼─────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite does not support materialized views. │
+╰──────────┴────────────────┴─────────────────────────────────────────────╯
+exit: 1
+
