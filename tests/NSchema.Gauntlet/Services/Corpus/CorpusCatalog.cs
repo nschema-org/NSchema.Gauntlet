@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using NSchema.Gauntlet.Model;
 
 namespace NSchema.Gauntlet.Services.Corpus;
@@ -8,7 +9,10 @@ namespace NSchema.Gauntlet.Services.Corpus;
 /// </summary>
 public sealed class CorpusCatalog(string root, CorpusCatalogSettings settings)
 {
-    private static readonly JsonSerializerOptions _manifest = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions _manifest = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() },
+    };
 
     /// <summary>
     /// The registered case names, in matrix order.
@@ -42,10 +46,11 @@ public sealed class CorpusCatalog(string root, CorpusCatalogSettings settings)
             Name = name,
             Description = manifest.Description,
             Ddl = ddl,
+            Expectations = manifest.Expectations,
         };
     }
 
     private string CatalogDirectory() => Path.Combine(root, settings.Directory);
 
-    private sealed record CorpusManifest(string Description);
+    private sealed record CorpusManifest(string Description, Dictionary<EngineName, CorpusExpectation> Expectations);
 }

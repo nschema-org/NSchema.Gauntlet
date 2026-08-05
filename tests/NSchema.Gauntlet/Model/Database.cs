@@ -16,13 +16,18 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
     /// <summary>
     /// Gets the PLUGIN and DATABASE statements a project needs to reach this database.
     /// </summary>
-    public Nsql GetConfigurationNSql()
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"PLUGIN db (source = '{plugin.Package}', version = '{plugin.Version}');");
-        sb.AppendLine($"DATABASE db (connection_string = '{ConnectionString.Replace("'", "''")}');");
-        return Nsql.From(sb.ToString());
-    }
+    public Nsql GetConfigurationNSql() => Nsql.From(
+        $"""
+         PLUGIN db (
+           source = '{plugin.Package}',
+           version = '{plugin.Version}'
+         );
+
+         DATABASE db (
+           connection_string = '{ConnectionString.Replace("'", "''")}'
+         );
+
+         """);
 
     /// <summary>
     /// Localizes NSQL for this database's engine.

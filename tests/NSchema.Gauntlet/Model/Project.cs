@@ -9,6 +9,7 @@ public sealed class Project
 
     private readonly string _schemaFile;
     private readonly string _databaseFile;
+    private readonly string _stateFile;
 
     /// <summary>
     /// Creates a new project in the given directory.
@@ -19,9 +20,14 @@ public sealed class Project
         Directory = directory;
         _databaseFile = Path.Combine(directory, "database.sql");
         _schemaFile = Path.Combine(directory, SchemaFile);
+        _stateFile = Path.Combine(directory, "state.sql");
 
-        var stateFile = Path.Combine(directory, "state.sql");
-        File.WriteAllText(stateFile, "STATE file (path = './nschema.state.json');");
+        File.WriteAllText(_stateFile, """
+            STATE file (
+              path = './nschema.state.json'
+            );
+
+            """.TrimStart());
     }
 
     /// <summary>
@@ -37,15 +43,32 @@ public sealed class Project
     /// <summary>
     /// Gets this project's DDL.
     /// </summary>
-    public Nsql GetSchema() => Nsql.From(File.ReadAllText(_schemaFile));
+    public Nsql GetSchema() => Nsql.From(string.Join("\n", Declarations()
+        .OrderBy(file => file, StringComparer.Ordinal)
+        .Select(File.ReadAllText)));
 
     /// <summary>
     /// Replaces the project's DDL.
     /// </summary>
-    public void SetSchema(Nsql nsql) => File.WriteAllText(_schemaFile, nsql.Value);
+    public void SetSchema(Nsql nsql)
+    {
+        ClearSchema();
+        File.WriteAllText(_schemaFile, nsql.Value);
+    }
 
     /// <summary>
-    /// Clear's the project's DDL.
+    /// Clears the project's DDL.
     /// </summary>
-    public void ClearSchema() => File.Delete(_schemaFile);
+    public void ClearSchema()
+    {
+        foreach (var file in Declarations().ToList())
+        {
+            File.Delete(file);
+        }
+    }
+
+    // Every .sql file the project declares, which is all of them but its own configuration.
+    private IEnumerable<string> Declarations() => System.IO.Directory
+        .EnumerateFiles(Directory, "*.sql", SearchOption.AllDirectories)
+        .Where(file => file != _databaseFile && file != _stateFile);
 }

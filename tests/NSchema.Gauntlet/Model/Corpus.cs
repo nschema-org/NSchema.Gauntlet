@@ -20,4 +20,9 @@ public sealed class Corpus
     /// </summary>
     /// <remarks>A corpus only supplies DDL for the engine(s) it was built for.</remarks>
     public required IReadOnlyDictionary<EngineName, Sql> Ddl { get; init; }
+
+    /// <summary>
+    /// How every engine is expected to perform against this corpus.
+    /// </summary>
+    public required IReadOnlyDictionary<EngineName, CorpusExpectation> Expectations { get; init; }
 }

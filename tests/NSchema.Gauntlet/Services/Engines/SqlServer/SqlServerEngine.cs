@@ -10,9 +10,12 @@ namespace NSchema.Gauntlet.Services.Engines.SqlServer;
 /// <param name="settings"></param>
 public sealed class SqlServerEngine(SqlServerSettings settings) : DatabaseEngine
 {
-    public static readonly EngineName Name = EngineName.From("sqlserver");
+    public static readonly EngineName EngineName = EngineName.From("sqlserver");
 
     private readonly MsSqlContainer _container = new MsSqlBuilder(settings.Image).Build();
+
+    /// <inheritdoc/>
+    public override EngineName Name => EngineName;
 
     /// <remarks>
     /// Every SQL Server database has a <c>dbo</c>, and it is where an unqualified object lands.

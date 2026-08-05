@@ -9,9 +9,12 @@ namespace NSchema.Gauntlet.Services.Engines.Postgres;
 /// </summary>
 public sealed class PostgresEngine(PostgresSettings settings) : DatabaseEngine
 {
-    public static readonly EngineName Name = EngineName.From("postgres");
+    public static readonly EngineName EngineName = EngineName.From("postgres");
 
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder(settings.Image).Build();
+
+    /// <inheritdoc/>
+    public override EngineName Name => EngineName;
 
     protected override string DefaultSchema => "public";
 

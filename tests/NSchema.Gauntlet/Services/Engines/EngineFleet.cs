@@ -14,9 +14,9 @@ public sealed class EngineFleet : IAsyncDisposable
 
     public EngineFleet(FleetSettings settings, string tempDirectory)
     {
-        _engines.Add(PostgresEngine.Name, new Lazy<DatabaseEngine>(() => new PostgresEngine(settings.Postgres)));
-        _engines.Add(SqliteEngine.Name, new Lazy<DatabaseEngine>(() => new SqliteEngine(settings.Sqlite, tempDirectory)));
-        _engines.Add(SqlServerEngine.Name, new Lazy<DatabaseEngine>(() => new SqlServerEngine(settings.SqlServer)));
+        _engines.Add(PostgresEngine.EngineName, new Lazy<DatabaseEngine>(() => new PostgresEngine(settings.Postgres)));
+        _engines.Add(SqliteEngine.EngineName, new Lazy<DatabaseEngine>(() => new SqliteEngine(settings.Sqlite, tempDirectory)));
+        _engines.Add(SqlServerEngine.EngineName, new Lazy<DatabaseEngine>(() => new SqlServerEngine(settings.SqlServer)));
     }
 
     /// <summary>

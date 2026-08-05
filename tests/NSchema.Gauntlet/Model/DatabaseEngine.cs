@@ -14,6 +14,11 @@ public abstract class DatabaseEngine : IAsyncDisposable
     private bool _started;
 
     /// <summary>
+    /// The name of the engine.
+    /// </summary>
+    public abstract EngineName Name { get; }
+
+    /// <summary>
     /// The schema a case's objects land in on this engine.
     /// </summary>
     protected abstract string DefaultSchema { get; }

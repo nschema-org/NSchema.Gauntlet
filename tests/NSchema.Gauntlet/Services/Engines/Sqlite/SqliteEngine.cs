@@ -8,8 +8,12 @@ namespace NSchema.Gauntlet.Services.Engines.Sqlite;
 /// </summary>
 public sealed class SqliteEngine(SqliteSettings settings, string tempDirectory) : DatabaseEngine
 {
-    public static readonly EngineName Name = EngineName.From("sqlite");
+    public static readonly EngineName EngineName = EngineName.From("sqlite");
+
     private readonly string _directory = Path.Combine(tempDirectory, "sqlite", Path.GetRandomFileName());
+
+    /// <inheritdoc/>
+    public override EngineName Name => EngineName;
 
     /// <remarks>
     /// SQLite's primary database is always <c>main</c>; it has no other schema.
