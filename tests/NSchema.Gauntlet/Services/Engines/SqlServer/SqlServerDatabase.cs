@@ -13,9 +13,42 @@ public sealed class SqlServerDatabase(SqlServerEngine engine, PluginSettings plu
         await using var connection = new SqlConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
-        await using var command = connection.CreateCommand();
-        command.CommandText = sql.Value;
-        await command.ExecuteNonQueryAsync(cancellationToken);
+        // GO is the client tools' batch separator, not T-SQL: a CREATE VIEW or CREATE PROCEDURE must be
+        // the only statement in its batch, so upstream scripts keep their separators and the harness
+        // honours them the way sqlcmd would.
+        foreach (var batch in Batches(sql.Value))
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = batch;
+            await command.ExecuteNonQueryAsync(cancellationToken);
+        }
+    }
+
+    private static IEnumerable<string> Batches(string script)
+    {
+        var batch = new List<string>();
+
+        foreach (var line in script.Split('\n'))
+        {
+            if (line.Trim().Equals("GO", StringComparison.OrdinalIgnoreCase))
+            {
+                if (batch.Any(l => !string.IsNullOrWhiteSpace(l)))
+                {
+                    yield return string.Join('\n', batch);
+                }
+
+                batch.Clear();
+            }
+            else
+            {
+                batch.Add(line);
+            }
+        }
+
+        if (batch.Any(l => !string.IsNullOrWhiteSpace(l)))
+        {
+            yield return string.Join('\n', batch);
+        }
     }
 
     public override async Task<IReadOnlyList<string>> Catalog(CancellationToken cancellationToken = default)
