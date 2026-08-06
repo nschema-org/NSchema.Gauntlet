@@ -3,7 +3,7 @@
   "source": "https://github.com/lerocha/chinook-database",
   "version": "1.4.5",
   "license": "MIT",
-  "acquisition": "Taken from ChinookDatabase/DataSources/Chinook_{Engine}.sql. Data, database creation and client directives (\\c, GO, USE) were removed: the harness creates the database and executes the DDL through a driver, and the corpus records schemas rather than rows.",
+  "acquisition": "Taken from ChinookDatabase/DataSources/Chinook_{Engine}.sql. Data, database creation and client directives (\\c, USE) were removed: the harness creates the database and executes the DDL through a driver, and the corpus records schemas rather than rows. The SQL Server script keeps its GO batch separators, which the harness splits on.",
   "expectations": {
     "postgres": {
       "outcome": "succeeded"
