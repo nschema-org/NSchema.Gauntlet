@@ -1,1 +1,0 @@
-CREATE FUNCTION {schema}.answer() RETURNS int AS BEGIN RETURN 1 END;

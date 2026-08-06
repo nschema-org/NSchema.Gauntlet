@@ -1,9 +1,0 @@
-{
-  "description": "Changes only a function's body; the definition replaces in place, no drop.",
-  "destructiveActions": "Error",
-  "expectations": {
-    "postgres": { "outcome": "succeeded" },
-    "sqlserver": { "outcome": "succeeded" },
-    "sqlite": { "outcome": "bootstrapFailed", "because": "SQLite has no stored routines, so the scenario's bootstrap state cannot be expressed." }
-  }
-}

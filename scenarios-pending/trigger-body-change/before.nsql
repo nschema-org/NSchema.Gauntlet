@@ -1,8 +1,0 @@
-CREATE TABLE {schema}.docs (
-  id int NOT NULL,
-  CONSTRAINT pk_docs PRIMARY KEY (id)
-);
-
-CREATE FUNCTION {schema}.touch() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NEW; END $$;
-
-CREATE TRIGGER docs_touch BEFORE INSERT ON {schema}.docs FOR EACH ROW EXECUTE FUNCTION {schema}.touch();

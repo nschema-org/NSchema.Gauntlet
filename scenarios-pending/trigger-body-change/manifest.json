@@ -1,9 +1,0 @@
-{
-  "description": "Changes a trigger's definition; the replacement is in place where the engine has one, decomposed where it does not.",
-  "destructiveActions": "Error",
-  "expectations": {
-    "postgres": { "outcome": "succeeded" },
-    "sqlserver": { "outcome": "succeeded" },
-    "sqlite": { "outcome": "succeeded" }
-  }
-}

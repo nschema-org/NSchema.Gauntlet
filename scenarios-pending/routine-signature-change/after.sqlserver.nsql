@@ -1,1 +1,0 @@
-CREATE FUNCTION {schema}.add_up(@x int, @y int) RETURNS int AS BEGIN RETURN @x + @y END;

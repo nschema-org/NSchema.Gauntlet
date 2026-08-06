@@ -1,1 +1,0 @@
-CREATE FUNCTION {schema}.add_up(x integer, y integer) RETURNS integer LANGUAGE sql AS $$ SELECT x + y $$;
