@@ -6,20 +6,19 @@ Computing migration plan...
 Plan
 ────
 ~ view → schema-bound view public.order_customers
-    + index ix_order_customers
 
 Plan: 0 to add, 1 to change, 0 to destroy.
 
 SQL
 ───
 -- [1/1]
-CREATE UNIQUE INDEX "ix_order_customers" ON "public"."order_customers" ("id")
+DROP VIEW "public"."order_customers"
 Diagnostics                                        
-╭──────────┬─────────────┬────────────────────────────────────────────────────────────────╮
-│ Severity │ Source      │ Message                                                        │
-├──────────┼─────────────┼────────────────────────────────────────────────────────────────┤
-│ error    │ sql-dialect │ PostgresSqlDialect does not support the 'replace view' action. │
-╰──────────┴─────────────┴────────────────────────────────────────────────────────────────╯
+╭──────────┬─────────────┬───────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                                       │
+├──────────┼─────────────┼───────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ PostgresSqlDialect does not support the 'create view' action. │
+╰──────────┴─────────────┴───────────────────────────────────────────────────────────────╯
 exit: 1
 
 === apply ===
@@ -31,19 +30,18 @@ Computing migration plan...
 Plan
 ────
 ~ view → schema-bound view public.order_customers
-    + index ix_order_customers
 
 Plan: 0 to add, 1 to change, 0 to destroy.
 
 SQL
 ───
 -- [1/1]
-CREATE UNIQUE INDEX "ix_order_customers" ON "public"."order_customers" ("id")
+DROP VIEW "public"."order_customers"
 Diagnostics                                        
-╭──────────┬─────────────┬────────────────────────────────────────────────────────────────╮
-│ Severity │ Source      │ Message                                                        │
-├──────────┼─────────────┼────────────────────────────────────────────────────────────────┤
-│ error    │ sql-dialect │ PostgresSqlDialect does not support the 'replace view' action. │
-╰──────────┴─────────────┴────────────────────────────────────────────────────────────────╯
+╭──────────┬─────────────┬───────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                                       │
+├──────────┼─────────────┼───────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ PostgresSqlDialect does not support the 'create view' action. │
+╰──────────┴─────────────┴───────────────────────────────────────────────────────────────╯
 exit: 1
 

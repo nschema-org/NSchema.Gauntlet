@@ -6,16 +6,19 @@ Computing migration plan...
 Plan
 ────
 ~ view → schema-bound view main.order_customers
-    + index ix_order_customers
 
 Plan: 0 to add, 1 to change, 0 to destroy.
-Diagnostics                                       
-╭──────────┬────────────────┬──────────────────────────────────────────────────────────╮
-│ Severity │ Source         │ Message                                                  │
-├──────────┼────────────────┼──────────────────────────────────────────────────────────┤
-│ error    │ sqlite-dialect │ Sqlite does not support schema-bound views.              │
-│ error    │ sqlite-dialect │ Sqlite cannot index a view — index 'ix_order_customers'. │
-╰──────────┴────────────────┴──────────────────────────────────────────────────────────╯
+
+SQL
+───
+-- [1/1]
+DROP VIEW "main"."order_customers"
+Diagnostics                                
+╭──────────┬────────────────┬─────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                     │
+├──────────┼────────────────┼─────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite does not support schema-bound views. │
+╰──────────┴────────────────┴─────────────────────────────────────────────╯
 exit: 1
 
 === apply ===
@@ -27,15 +30,18 @@ Computing migration plan...
 Plan
 ────
 ~ view → schema-bound view main.order_customers
-    + index ix_order_customers
 
 Plan: 0 to add, 1 to change, 0 to destroy.
-Diagnostics                                       
-╭──────────┬────────────────┬──────────────────────────────────────────────────────────╮
-│ Severity │ Source         │ Message                                                  │
-├──────────┼────────────────┼──────────────────────────────────────────────────────────┤
-│ error    │ sqlite-dialect │ Sqlite does not support schema-bound views.              │
-│ error    │ sqlite-dialect │ Sqlite cannot index a view — index 'ix_order_customers'. │
-╰──────────┴────────────────┴──────────────────────────────────────────────────────────╯
+
+SQL
+───
+-- [1/1]
+DROP VIEW "main"."order_customers"
+Diagnostics                                
+╭──────────┬────────────────┬─────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                     │
+├──────────┼────────────────┼─────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite does not support schema-bound views. │
+╰──────────┴────────────────┴─────────────────────────────────────────────╯
 exit: 1
 
