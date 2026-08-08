@@ -59,13 +59,16 @@ public sealed class SqlServerDatabase(SqlServerEngine engine, PluginSettings plu
         await using var command = connection.CreateCommand();
         // The catalog's account of everything a user schema holds. A system-generated constraint name differs
         // between two databases holding the same schema, so those testify by shape rather than by name.
+        // Indexes hang off sys.objects rather than sys.tables because a view carries them too, and an indexed
+        // view's index must be the clustered one — so the kind is testified alongside uniqueness, and a view
+        // testifies whether it is schema-bound. Losing any of that is what makes an indexed view stop being one.
         command.CommandText = """
             SELECT kind + ' | ' + entry + CASE WHEN detail = '' THEN '' ELSE ' | ' + detail END
             FROM (
                 SELECT 'table' AS kind, s.name + '.' + t.name AS entry, '' AS detail
                 FROM sys.tables t JOIN sys.schemas s ON s.schema_id = t.schema_id
               UNION ALL
-                SELECT 'view', s.name + '.' + v.name, ''
+                SELECT 'view', s.name + '.' + v.name, 'schemabound=' + CAST(OBJECTPROPERTY(v.object_id, 'IsSchemaBound') AS varchar(1))
                 FROM sys.views v JOIN sys.schemas s ON s.schema_id = v.schema_id
               UNION ALL
                 SELECT 'column', s.name + '.' + t.name + '.' + c.name,
@@ -97,9 +100,13 @@ public sealed class SqlServerDatabase(SqlServerEngine engine, PluginSettings plu
                 SELECT 'trigger', s.name + '.' + t.name + '.' + tr.name, ''
                 FROM sys.triggers tr JOIN sys.tables t ON t.object_id = tr.parent_id JOIN sys.schemas s ON s.schema_id = t.schema_id
               UNION ALL
-                SELECT 'index', s.name + '.' + t.name + '.' + i.name, CAST(i.is_unique AS varchar(1))
-                FROM sys.indexes i JOIN sys.tables t ON t.object_id = i.object_id JOIN sys.schemas s ON s.schema_id = t.schema_id
+                SELECT 'index', s.name + '.' + o.name + '.' + i.name,
+                       'unique=' + CAST(i.is_unique AS varchar(1)) + ' ' + i.type_desc COLLATE database_default
+                FROM sys.indexes i
+                JOIN sys.objects o ON o.object_id = i.object_id
+                JOIN sys.schemas s ON s.schema_id = o.schema_id
                 WHERE i.name IS NOT NULL AND i.is_primary_key = 0 AND i.is_unique_constraint = 0
+                  AND o.type IN ('U', 'V') AND o.is_ms_shipped = 0
               UNION ALL
                 SELECT 'sequence', s.name + '.' + sq.name, ''
                 FROM sys.sequences sq JOIN sys.schemas s ON s.schema_id = sq.schema_id
