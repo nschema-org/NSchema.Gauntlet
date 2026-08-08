@@ -1,0 +1,9 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  customer_id int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+CREATE VIEW {schema}.order_customers WITH SCHEMABINDING AS SELECT id, customer_id FROM {schema}.orders;
+
+CREATE UNIQUE INDEX ix_order_customers ON {schema}.order_customers (id);

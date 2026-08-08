@@ -1,0 +1,41 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ view → schema-bound view main.order_customers
+    + index ix_order_customers
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+Diagnostics                                       
+╭──────────┬────────────────┬──────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                                  │
+├──────────┼────────────────┼──────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite does not support schema-bound views.              │
+│ error    │ sqlite-dialect │ Sqlite cannot index a view — index 'ix_order_customers'. │
+╰──────────┴────────────────┴──────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: main
+Computing migration plan...
+Plan
+────
+~ view → schema-bound view main.order_customers
+    + index ix_order_customers
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+Diagnostics                                       
+╭──────────┬────────────────┬──────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Message                                                  │
+├──────────┼────────────────┼──────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ Sqlite does not support schema-bound views.              │
+│ error    │ sqlite-dialect │ Sqlite cannot index a view — index 'ix_order_customers'. │
+╰──────────┴────────────────┴──────────────────────────────────────────────────────────╯
+exit: 1
+

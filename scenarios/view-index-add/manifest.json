@@ -1,0 +1,17 @@
+{
+  "description": "Indexes a view that already exists, which also has to bind it to its schema first. A corpus only ever creates from empty, so this is the only place the order of the two is tested.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "postgres": {
+      "outcome": "changeFailed",
+      "because": "Postgres has no schema-binding clause to write and stores no rows for a plain view to index; only a materialized view can carry indexes."
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "SQLite has neither schema binding nor indexes on views: a view is re-parsed at each use and stores nothing to index."
+    }
+  }
+}

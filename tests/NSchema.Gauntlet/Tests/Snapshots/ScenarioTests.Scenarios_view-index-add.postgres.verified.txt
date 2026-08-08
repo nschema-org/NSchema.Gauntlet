@@ -1,0 +1,49 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ view → schema-bound view public.order_customers
+    + index ix_order_customers
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE UNIQUE INDEX "ix_order_customers" ON "public"."order_customers" ("id")
+Diagnostics                                        
+╭──────────┬─────────────┬────────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                                        │
+├──────────┼─────────────┼────────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ PostgresSqlDialect does not support the 'replace view' action. │
+╰──────────┴─────────────┴────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: public
+Computing migration plan...
+Plan
+────
+~ view → schema-bound view public.order_customers
+    + index ix_order_customers
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE UNIQUE INDEX "ix_order_customers" ON "public"."order_customers" ("id")
+Diagnostics                                        
+╭──────────┬─────────────┬────────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Message                                                        │
+├──────────┼─────────────┼────────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ PostgresSqlDialect does not support the 'replace view' action. │
+╰──────────┴─────────────┴────────────────────────────────────────────────────────────────╯
+exit: 1
+
