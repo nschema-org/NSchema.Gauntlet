@@ -60,7 +60,7 @@ public sealed class GauntletRun : IAsyncLifetime
     /// <inheritdoc />
     public async ValueTask InitializeAsync()
     {
-        var publisher = new PluginPublisher(_settings.TempDirectory);
+        var publisher = new PluginPublisher(Path.Combine(_settings.Root, "artifacts"));
 
         foreach (var (_, plugin) in _settings.Engines.Plugins)
         {

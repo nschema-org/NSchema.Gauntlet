@@ -20,7 +20,7 @@ namespace NSchema.Gauntlet.Services.Engines;
 /// <see cref="PluginSettings"/> for why that matters.
 /// </para>
 /// </remarks>
-public sealed class PluginPublisher(string tempDirectory)
+public sealed class PluginPublisher(string scratchRoot)
 {
     /// <summary>
     /// The assembly NSchema's loader hands to its resolver, which is what the published project has to be called.
@@ -44,7 +44,11 @@ public sealed class PluginPublisher(string tempDirectory)
             Directory.Delete(publishDirectory, recursive: true);
         }
 
-        var scratch = Path.Combine(tempDirectory, "plugin-host", package);
+        // Deliberately not the system temp directory. MSBuild stores a ProjectReference relative to the project
+        // holding it, and on macOS the temp path is reached through a symlink (/var -> /private/var), so a path
+        // relativised against /var/... resolves one level short of root from /private/var/... and the reference is
+        // not found. Somewhere under the repository has no such indirection.
+        var scratch = Path.Combine(scratchRoot, "plugin-host", package);
         Directory.CreateDirectory(scratch);
         await File.WriteAllTextAsync(Path.Combine(scratch, $"{HostAssembly}.csproj"), Host(project), cancellationToken);
 
