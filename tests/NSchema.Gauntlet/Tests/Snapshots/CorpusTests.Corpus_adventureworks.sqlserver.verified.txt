@@ -1,7 +1,7 @@
 ﻿=== first plan against the imported project ===
 Planning schema migration. No changes will be applied to the database.
 Loading project...
-Migration will be scoped to: HumanResources, Person, Production, Purchasing, Sales, dbo
+Migration will be scoped to: (all)
 Computing migration plan...
 Plan
 ────
