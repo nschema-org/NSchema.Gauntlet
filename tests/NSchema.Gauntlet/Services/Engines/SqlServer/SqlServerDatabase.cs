@@ -111,6 +111,38 @@ public sealed class SqlServerDatabase(SqlServerEngine engine, PluginSettings plu
               UNION ALL
                 SELECT 'sequence', s.name + '.' + sq.name, ''
                 FROM sys.sequences sq JOIN sys.schemas s ON s.schema_id = sq.schema_id
+              UNION ALL
+                -- How the range is cut, and which side the boundary falls on.
+                SELECT 'partition function', pf.name COLLATE database_default,
+                       pf.type_desc COLLATE database_default
+                       + CASE pf.boundary_value_on_right WHEN 1 THEN ' RIGHT' ELSE ' LEFT' END
+                       + ' fanout=' + CAST(pf.fanout AS varchar(10))
+                FROM sys.partition_functions pf
+              UNION ALL
+                -- One row per boundary, so losing or moving a single one shows.
+                SELECT 'partition boundary',
+                       pf.name COLLATE database_default + '[' + CAST(rv.boundary_id AS varchar(10)) + ']',
+                       CAST(rv.value AS nvarchar(200))
+                FROM sys.partition_range_values rv
+                JOIN sys.partition_functions pf ON pf.function_id = rv.function_id
+              UNION ALL
+                SELECT 'partition scheme', ps.name COLLATE database_default, pf.name COLLATE database_default
+                FROM sys.partition_schemes ps
+                JOIN sys.partition_functions pf ON pf.function_id = ps.function_id
+              UNION ALL
+                -- What each table and index actually sits on, and the column it is partitioned by. Every row
+                -- above can survive intact while nothing uses it, so this is the one that tells a partitioned
+                -- table from a plain one. Heaps carry no index name, hence the coalesce.
+                SELECT 'storage', s.name + '.' + o.name + '.' + COALESCE(i.name COLLATE database_default, '(heap)'),
+                       ds.type_desc COLLATE database_default + ' ' + ds.name COLLATE database_default
+                       + COALESCE(' by ' + c.name COLLATE database_default, '')
+                FROM sys.indexes i
+                JOIN sys.objects o ON o.object_id = i.object_id
+                JOIN sys.schemas s ON s.schema_id = o.schema_id
+                JOIN sys.data_spaces ds ON ds.data_space_id = i.data_space_id
+                LEFT JOIN sys.index_columns ic ON ic.object_id = i.object_id AND ic.index_id = i.index_id AND ic.partition_ordinal > 0
+                LEFT JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+                WHERE o.type IN ('U', 'V') AND o.is_ms_shipped = 0
             ) x
             ORDER BY 1
             """;
