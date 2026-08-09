@@ -83,17 +83,18 @@ public sealed class SqlServerDatabase(SqlServerEngine engine, PluginSettings plu
                 WHERE o.type IN ('FN', 'IF', 'TF', 'P', 'AF') AND o.is_ms_shipped = 0
               UNION ALL
                 SELECT 'constraint',
-                       s.name + '.' + t.name + '.' + CASE WHEN kc.is_system_named = 1 THEN '(system-named)' ELSE kc.name END,
-                       kc.type_desc COLLATE database_default
+                       s.name + '.' + t.name + '.' + kc.name,
+                       kc.type_desc COLLATE database_default + ' ' + i.type_desc COLLATE database_default
                 FROM sys.key_constraints kc JOIN sys.tables t ON t.object_id = kc.parent_object_id JOIN sys.schemas s ON s.schema_id = t.schema_id
+                JOIN sys.indexes i ON i.object_id = kc.parent_object_id AND i.index_id = kc.unique_index_id
               UNION ALL
                 SELECT 'constraint',
-                       s.name + '.' + t.name + '.' + CASE WHEN fk.is_system_named = 1 THEN '(system-named)' ELSE fk.name END,
+                       s.name + '.' + t.name + '.' + fk.name,
                        'FOREIGN_KEY'
                 FROM sys.foreign_keys fk JOIN sys.tables t ON t.object_id = fk.parent_object_id JOIN sys.schemas s ON s.schema_id = t.schema_id
               UNION ALL
                 SELECT 'constraint',
-                       s.name + '.' + t.name + '.' + CASE WHEN cc.is_system_named = 1 THEN '(system-named)' ELSE cc.name END,
+                       s.name + '.' + t.name + '.' + cc.name,
                        'CHECK'
                 FROM sys.check_constraints cc JOIN sys.tables t ON t.object_id = cc.parent_object_id JOIN sys.schemas s ON s.schema_id = t.schema_id
               UNION ALL
