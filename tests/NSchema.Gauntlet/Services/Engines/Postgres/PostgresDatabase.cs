@@ -18,95 +18,27 @@ public sealed class PostgresDatabase(PostgresEngine engine, PluginSettings plugi
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public override async Task<IReadOnlyList<string>> Catalog(CancellationToken cancellationToken = default)
+    public override async Task<IReadOnlyList<CatalogFact>> Catalog(CancellationToken cancellationToken = default)
     {
         await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
-        await using var command = connection.CreateCommand();
-        // The catalog's account of everything a user schema holds — deliberately broader than NSchema's
-        // model (all routine kinds, for one), because what NSchema cannot see is what this exists to catch.
-        command.CommandText = """
-            SELECT kind || ' | ' || identity || CASE WHEN detail = '' THEN '' ELSE ' | ' || detail END
-            FROM (
-                SELECT 'table' AS kind, n.nspname || '.' || c.relname AS identity,
-                       CASE c.relkind WHEN 'p' THEN 'partitioned' ELSE '' END AS detail
-                FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-                WHERE c.relkind IN ('r', 'p') AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                -- How a partitioned table is divided. Without it, a table partitioned by one column reads
-                -- exactly like one partitioned by another.
-                SELECT 'partition key', n.nspname || '.' || c.relname, coalesce(pg_get_partkeydef(c.oid), '')
-                FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-                WHERE c.relkind = 'p' AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                -- Which parent each partition hangs off, and for what values. A partition that comes back as
-                -- a standalone table holds the same columns and the same constraints, so this is the only row
-                -- that tells the two apart. Indexes partition too, and carry no bound, hence the concatenation
-                -- rather than a coalesce to empty — a null bound drops the space with it.
-                SELECT 'partition of', n.nspname || '.' || c.relname,
-                       pn.nspname || '.' || p.relname || coalesce(' ' || pg_get_expr(c.relpartbound, c.oid), '')
-                FROM pg_class c
-                JOIN pg_namespace n ON n.oid = c.relnamespace
-                JOIN pg_inherits i ON i.inhrelid = c.oid
-                JOIN pg_class p ON p.oid = i.inhparent
-                JOIN pg_namespace pn ON pn.oid = p.relnamespace
-                WHERE c.relispartition AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                -- Classic inheritance is the same blind spot wearing a different hat.
-                SELECT 'inherits', n.nspname || '.' || c.relname, pn.nspname || '.' || p.relname
-                FROM pg_class c
-                JOIN pg_namespace n ON n.oid = c.relnamespace
-                JOIN pg_inherits i ON i.inhrelid = c.oid
-                JOIN pg_class p ON p.oid = i.inhparent
-                JOIN pg_namespace pn ON pn.oid = p.relnamespace
-                WHERE NOT c.relispartition AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                SELECT 'view', n.nspname || '.' || c.relname, CASE c.relkind WHEN 'm' THEN 'materialized' ELSE '' END
-                FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-                WHERE c.relkind IN ('v', 'm') AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                SELECT 'column', c.table_schema || '.' || c.table_name || '.' || c.column_name,
-                       coalesce(c.data_type, '') || ' null=' || c.is_nullable || ' default=' || coalesce(c.column_default, '')
-                FROM information_schema.columns c
-                WHERE c.table_schema !~ '^pg_' AND c.table_schema <> 'information_schema'
-              UNION ALL
-                SELECT 'routine', n.nspname || '.' || p.proname || '(' || pg_get_function_identity_arguments(p.oid) || ')', p.prokind::text
-                FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-                WHERE n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                SELECT 'constraint', n.nspname || '.' || cl.relname || '.' || con.conname, con.contype::text
-                FROM pg_constraint con JOIN pg_class cl ON cl.oid = con.conrelid JOIN pg_namespace n ON n.oid = cl.relnamespace
-                WHERE n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-              UNION ALL
-                SELECT 'index', schemaname || '.' || indexname, ''
-                FROM pg_indexes
-                WHERE schemaname !~ '^pg_' AND schemaname <> 'information_schema'
-              UNION ALL
-                SELECT DISTINCT 'trigger', t.event_object_schema || '.' || t.event_object_table || '.' || t.trigger_name, ''
-                FROM information_schema.triggers t
-                WHERE t.event_object_schema !~ '^pg_' AND t.event_object_schema <> 'information_schema'
-              UNION ALL
-                SELECT 'type', n.nspname || '.' || t.typname, t.typtype::text
-                FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace
-                WHERE n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
-                  AND (t.typtype IN ('e', 'd')
-                       OR (t.typtype = 'c' AND EXISTS (SELECT 1 FROM pg_class rc WHERE rc.oid = t.typrelid AND rc.relkind = 'c')))
-              UNION ALL
-                SELECT 'sequence', sequence_schema || '.' || sequence_name, ''
-                FROM information_schema.sequences
-                WHERE sequence_schema !~ '^pg_' AND sequence_schema <> 'information_schema'
-            ) x
-            ORDER BY 1
-            """;
+        var facts = new List<CatalogFact>();
 
-        var rows = new List<string>();
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
+        foreach (var (name, sql) in PostgresCatalogs.All)
         {
-            rows.Add(reader.GetString(0));
+            await using var command = connection.CreateCommand();
+            command.CommandText = sql;
+
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var identity = reader.IsDBNull(0) ? "(null)" : reader.GetString(0);
+                var json = reader.IsDBNull(1) ? "{}" : reader.GetString(1);
+                facts.AddRange(CatalogRow.Flatten(name, identity, json));
+            }
         }
 
-        return rows;
+        return facts;
     }
 }

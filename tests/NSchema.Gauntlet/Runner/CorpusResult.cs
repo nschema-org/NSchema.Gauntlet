@@ -36,9 +36,10 @@ public sealed record CorpusResult
     public required CliResult RebuildVerification { get; init; }
 
     /// <summary>
-    /// The engines' own accounts of source and rebuild, compared; null when the rebuild did not complete.
+    /// The engines' own accounts of source and rebuild, compared and grouped by symptom; null when the
+    /// rebuild did not complete.
     /// </summary>
-    public IReadOnlyList<string>? EngineTestimony { get; init; }
+    public IReadOnlyList<CatalogDifference>? EngineTestimony { get; init; }
 
     /// <summary>
     /// Applying a project that declares nothing, which drops what was built.
@@ -114,14 +115,11 @@ public sealed record CorpusResult
         Unfinished(report, "left over after rebuilding", Rebuilds, RebuildVerification);
         Unfinished(report, "left over after tearing down", TearsDown, TeardownVerification);
 
-        if (EngineTestimony is { Count: > 0 })
+        if (EngineTestimony is { Count: > 0 } testimony)
         {
             report.AppendLine();
             report.AppendLine("=== the engine disagrees about the rebuild ===");
-            foreach (var line in EngineTestimony)
-            {
-                report.AppendLine(line);
-            }
+            report.AppendLine(Testimony.Describe(testimony));
         }
 
         return report.ToString();
