@@ -24,7 +24,11 @@ public sealed class NSchemaClient
         _settings = settings;
         _nuget = nuget;
         _directory = Path.Combine(tempDirectory, "cli");
-        _executable = Path.Combine(_directory, OperatingSystem.IsWindows() ? "nschema.exe" : "nschema");
+
+        // A configured path is used as-is; otherwise the pinned tool is installed into the run's own directory.
+        _executable = settings.Path is { Length: > 0 } path
+            ? path
+            : Path.Combine(_directory, OperatingSystem.IsWindows() ? "nschema.exe" : "nschema");
     }
 
     public Task<ErrorOr<Success>> Init(string directory, CancellationToken ct) => Require(directory, ["init"], ct);
@@ -72,7 +76,9 @@ public sealed class NSchemaClient
 
     private async ValueTask EnsureInstalled(CancellationToken ct)
     {
-        if (File.Exists(_executable))
+        // Nothing to install when the run was pointed at a build: it is already on disk, and the settings
+        // rejected a path that is not.
+        if (_settings.Path is { Length: > 0 } || File.Exists(_executable))
         {
             return;
         }
@@ -92,8 +98,8 @@ public sealed class NSchemaClient
             // Qualified: this namespace is itself called Cli, which shadows CliWrap's entry point.
             var result = await CliWrap.Cli.Wrap("dotnet")
                 .WithArguments([
-                    "tool", "install", _settings.Package,
-                    "--version", _settings.Version,
+                    "tool", "install", _settings.Package!,
+                    "--version", _settings.Version!,
                     "--tool-path", _directory,
                     .. _nuget.Sources.SelectMany(source => new[] { "--add-source", source })
                 ])

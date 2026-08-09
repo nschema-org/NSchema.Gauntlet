@@ -18,10 +18,7 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
     /// </summary>
     public Nsql GetConfigurationNSql() => Nsql.From(
         $"""
-         PLUGIN db (
-           source = '{plugin.Package}',
-           version = '{plugin.Version}'
-         );
+         {plugin.Declaration("db")}
 
          DATABASE db (
            connection_string = '{ConnectionString.Replace("'", "''")}'
