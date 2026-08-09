@@ -1,0 +1,146 @@
+﻿=== first plan against the imported project ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: HumanResources, Person, Production, Purchasing, Sales, dbo
+Computing migration plan...
+Plan
+────
+Adopting 128 existing objects into management:
+    = dbo.AccountNumber
+    = dbo.AWBuildVersion
+    = dbo.DatabaseLog
+    = dbo.ErrorLog
+    = dbo.Flag
+    = dbo.Name
+    = dbo.NameStyle
+    = dbo.OrderNumber
+    = dbo.Phone
+    = dbo.ufnGetAccountingEndDate
+    = dbo.ufnGetAccountingStartDate
+    = dbo.ufnGetContactInformation
+    = dbo.ufnGetDocumentStatusText
+    = dbo.ufnGetProductDealerPrice
+    = dbo.ufnGetProductListPrice
+    = dbo.ufnGetProductStandardCost
+    = dbo.ufnGetPurchaseOrderStatusText
+    = dbo.ufnGetSalesOrderStatusText
+    = dbo.ufnGetStock
+    = dbo.ufnLeadingZeros
+    = dbo.uspGetBillOfMaterials
+    = dbo.uspGetEmployeeManagers
+    = dbo.uspGetManagerEmployees
+    = dbo.uspGetWhereUsedProductID
+    = dbo.uspLogError
+    = dbo.uspPrintError
+    = HumanResources
+    = HumanResources.Department
+    = HumanResources.Employee
+    = HumanResources.EmployeeDepartmentHistory
+    = HumanResources.EmployeePayHistory
+    = HumanResources.HRResumeSchemaCollection
+    = HumanResources.JobCandidate
+    = HumanResources.Shift
+    = HumanResources.uspUpdateEmployeeHireInfo
+    = HumanResources.uspUpdateEmployeeLogin
+    = HumanResources.uspUpdateEmployeePersonalInfo
+    = HumanResources.vEmployee
+    = HumanResources.vEmployeeDepartment
+    = HumanResources.vEmployeeDepartmentHistory
+    = HumanResources.vJobCandidate
+    = HumanResources.vJobCandidateEducation
+    = HumanResources.vJobCandidateEmployment
+    = Person
+    = Person.AdditionalContactInfoSchemaCollection
+    = Person.Address
+    = Person.AddressType
+    = Person.BusinessEntity
+    = Person.BusinessEntityAddress
+    = Person.BusinessEntityContact
+    = Person.ContactType
+    = Person.CountryRegion
+    = Person.EmailAddress
+    = Person.IndividualSurveySchemaCollection
+    = Person.Password
+    = Person.Person
+    = Person.PersonPhone
+    = Person.PhoneNumberType
+    = Person.StateProvince
+    = Person.vAdditionalContactInfo
+    = Person.vStateProvinceCountryRegion
+    = Production
+    = Production.BillOfMaterials
+    = Production.Culture
+    = Production.Document
+    = Production.Illustration
+    = Production.Location
+    = Production.ManuInstructionsSchemaCollection
+    = Production.Product
+    = Production.ProductCategory
+    = Production.ProductCostHistory
+    = Production.ProductDescription
+    = Production.ProductDescriptionSchemaCollection
+    = Production.ProductDocument
+    = Production.ProductInventory
+    = Production.ProductListPriceHistory
+    = Production.ProductModel
+    = Production.ProductModelIllustration
+    = Production.ProductModelProductDescriptionCulture
+    = Production.ProductPhoto
+    = Production.ProductProductPhoto
+    = Production.ProductReview
+    = Production.ProductSubcategory
+    = Production.ScrapReason
+    = Production.TransactionHistory
+    = Production.TransactionHistoryArchive
+    = Production.UnitMeasure
+    = Production.vProductAndDescription
+    = Production.vProductModelCatalogDescription
+    = Production.vProductModelInstructions
+    = Production.WorkOrder
+    = Production.WorkOrderRouting
+    = Purchasing
+    = Purchasing.ProductVendor
+    = Purchasing.PurchaseOrderDetail
+    = Purchasing.PurchaseOrderHeader
+    = Purchasing.ShipMethod
+    = Purchasing.Vendor
+    = Purchasing.vVendorWithAddresses
+    = Purchasing.vVendorWithContacts
+    = Sales
+    = Sales.CountryRegionCurrency
+    = Sales.CreditCard
+    = Sales.Currency
+    = Sales.CurrencyRate
+    = Sales.Customer
+    = Sales.PersonCreditCard
+    = Sales.SalesOrderDetail
+    = Sales.SalesOrderHeader
+    = Sales.SalesOrderHeaderSalesReason
+    = Sales.SalesPerson
+    = Sales.SalesPersonQuotaHistory
+    = Sales.SalesReason
+    = Sales.SalesTaxRate
+    = Sales.SalesTerritory
+    = Sales.SalesTerritoryHistory
+    = Sales.ShoppingCartItem
+    = Sales.SpecialOffer
+    = Sales.SpecialOfferProduct
+    = Sales.Store
+    = Sales.StoreSurveySchemaCollection
+    = Sales.vIndividualCustomer
+    = Sales.vPersonDemographics
+    = Sales.vSalesPerson
+    = Sales.vSalesPersonSalesByFiscalYears
+    = Sales.vStoreWithAddresses
+    = Sales.vStoreWithContacts
+    = Sales.vStoreWithDemographics
+
+Plan: 0 to add, 0 to change, 0 to destroy, 128 to adopt.
+
+                                                                                         Diagnostics                                                                                          
+╭──────────┬──────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source   │ Message                                                                                                                                                              │
+├──────────┼──────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ adoption │ Applying this plan will bring 128 existing objects under management: dbo.AccountNumber, dbo.AWBuildVersion, dbo.DatabaseLog, dbo.ErrorLog, dbo.Flag, and 123 others. │
+│          │          │                                                                                                                                                                      │
+╰──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
