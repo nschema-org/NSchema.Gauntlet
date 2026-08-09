@@ -1,0 +1,12 @@
+{
+  "description": "AdventureWorks: the SQL Server breadth corpus - five schemas, alias types, XML schema collections and typed xml columns, computed columns, indexed views, filtered and XML indexes, triggers, routines of every kind, and five hundred extended properties.",
+  "source": "https://github.com/microsoft/sql-server-samples",
+  "version": "b47eadc85277f72843647223cde53aa1b85ffcb8 (AdventureWorks 2025 updates, 2025-11-14)",
+  "license": "MIT",
+  "acquisition": "samples/databases/adventure-works/oltp-install-script/instawdb.sql at the pinned commit. Removed: the SQLCMD machinery, database drop/create/alter and USE statements (the harness creates the database and executes the DDL through a driver, splitting on GO); the Load Data section of BULK INSERTs (the corpus records schemas rather than rows); the full-text catalog and indexes and the stored procedure uspSearchCandidateResumes that queries them (the pinned mssql image ships without full-text search, and a CONTAINS or FREETEXT predicate does not bind without the index); the database-scoped DDL trigger ddlDatabaseTriggerLog and the extended property describing it (database administration scaffolding that would log NSchema's own DDL into a user table mid-run); and the trailing QUERY_STORE setting. Everything else, including all 538 extended properties, is upstream text unmodified.",
+  "expectations": {
+    "sqlserver": {
+      "outcome": "succeeded"
+    }
+  }
+}

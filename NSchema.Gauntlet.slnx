@@ -3,6 +3,7 @@
     <File Path=".editorconfig" />
     <File Path="Directory.Packages.props" />
     <File Path=".github\workflows\cicd.yml" />
+    <File Path="DESIGN.md" />
   </Folder>
   <Folder Name="/gauntlet/">
     <Project Path="tests/NSchema.Gauntlet/NSchema.Gauntlet.csproj" />
