@@ -212,7 +212,11 @@ public static class SqlServerCatalogs
              JOIN sys.schemas s ON s.schema_id = t.schema_id
              WHERE t.is_ms_shipped = 0 AND {UserSchemas}
              """,
-            [.. ObjectKeys, "unique_index_id"]),
+            // is_system_named is excluded: where the source let SQL Server name a constraint, NSchema reproduces
+            // that name explicitly, so the flag flips while the name matches. Naming something the engine would
+            // otherwise invent is the opposite of a fidelity loss — the same judgement that says a generated name
+            // is not worth carrying into a project file.
+            [.. ObjectKeys, "unique_index_id", "is_system_named"]),
 
         // filter_definition lives here: a filtered index and an unfiltered one were previously identical.
         new("sys.indexes",
@@ -303,10 +307,14 @@ public static class SqlServerCatalogs
              """,
             "xml_collection_id", "schema_id", "principal_id", "create_date", "modify_date"),
 
+        // The value is trimmed rather than compared verbatim. NSchema carries a description through NSQL as a doc
+        // comment, and the lexer trims those — deliberately, because the writer and the formatter would fight over
+        // trailing whitespace otherwise, and the corpus asserts that formatting is a no-op. So a description that
+        // arrives with trailing spaces cannot survive a round trip, and should not: it is normalisation, not loss.
         new("sys.extended_properties",
             $"""
              SELECT s.name + '.' + o.name + COALESCE('.' + c.name, '') + ' :: ' + ep.name,
-                    (SELECT CONVERT(nvarchar(max), ep.value) AS [value] {Json}), NULL
+                    (SELECT LTRIM(RTRIM(CONVERT(nvarchar(max), ep.value))) AS [value] {Json}), NULL
              FROM sys.extended_properties ep
              JOIN sys.objects o ON o.object_id = ep.major_id
              JOIN sys.schemas s ON s.schema_id = o.schema_id
