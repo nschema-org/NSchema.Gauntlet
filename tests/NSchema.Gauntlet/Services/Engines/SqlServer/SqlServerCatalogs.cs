@@ -48,6 +48,41 @@ public static class SqlServerCatalogs
 
     private static string Hex(int digits) => string.Concat(Enumerable.Repeat("[0-9A-F]", digits));
 
+    // Collapses every run of whitespace to one space. NSchema rebuilds the CREATE statement around a body it has
+    // preserved token for token, so the stored definition differs only in line breaks and indentation — verified
+    // on AdventureWorks, where source and rebuild are character-identical once whitespace is collapsed. Comparing
+    // layout would mean fifty permanent findings about nothing, while comparing the tokens still catches a clause
+    // going missing, which is how NOT FOR REPLICATION was found.
+    //
+    // The markers are control characters rather than the usual '<>' / '><' pair, which would destroy a real '<>'
+    // operator: 'a <> b' collapses to 'a b' under that idiom.
+    private static string Collapsed(string expression) =>
+        $"""
+         LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(
+             REPLACE(REPLACE(REPLACE({expression}, CHAR(13), ' '), CHAR(10), ' '), CHAR(9), ' '),
+             ' ', CHAR(1) + CHAR(2)), CHAR(2) + CHAR(1), ''), CHAR(1) + CHAR(2), ' ')))
+         """;
+
+    // A routine's stored definition is two things joined: a header NSchema generates, and a body it preserves
+    // token for token. Only the header differs — NSchema parenthesises a parameter list where the author may not
+    // have, and both spellings are valid T-SQL — so the header is compared with its parentheses flattened to
+    // whitespace and the body verbatim.
+    //
+    // Parentheses become a space rather than nothing, or removing one would close a gap the other side has:
+    // 'name (@a' and 'name(@a' must land on the same text, and only a space does that once whitespace collapses.
+    // Flattening cannot hide a change — every character except the brackets survives, so nvarchar(50) against
+    // nvarchar(5) still differs — and grouping means nothing in a parameter list. The body keeps its parentheses,
+    // where grouping decides what the routine does.
+    // A trailing statement terminator separates statements, and after the last one there is nothing to separate.
+    // NSchema's parser consumes it, so a body that was written with one comes back without. Dropping a single
+    // trailing semicolon cannot hide a change: every other character, including any terminator between two
+    // statements, survives.
+    private static string Unterminated(string collapsed) =>
+        $"CASE WHEN RIGHT({collapsed}, 1) = ';' THEN RTRIM(LEFT({collapsed}, LEN({collapsed}) - 1)) ELSE {collapsed} END";
+
+    private static string HeaderFlattened(string collapsed, string position) =>
+        Collapsed($"REPLACE(REPLACE(LEFT({collapsed}, {position} - 1), '(', ' '), ')', ' ')");
+
     // The fixed database roles each own a schema, and none of them is anybody's schema.
     private const string UserSchemas =
         """
@@ -257,10 +292,18 @@ public static class SqlServerCatalogs
 
         new("sys.sql_modules",
             $"""
-             SELECT s.name + '.' + o.name, (SELECT m.* {Json}), NULL
+             SELECT s.name + '.' + o.name, (SELECT m.* {Json}),
+                    (SELECT canonical.definition AS [definition] {Json})
              FROM sys.sql_modules m
              JOIN sys.objects o ON o.object_id = m.object_id
              JOIN sys.schemas s ON s.schema_id = o.schema_id
+             CROSS APPLY (SELECT {Collapsed("m.definition")} AS collapsed) AS raw
+             CROSS APPLY (SELECT {Unterminated("raw.collapsed")} AS collapsed) AS flat
+             CROSS APPLY (SELECT CHARINDEX(' AS ', flat.collapsed) AS split) AS boundary
+             CROSS APPLY (SELECT CASE WHEN boundary.split = 0 THEN flat.collapsed
+                                      ELSE {HeaderFlattened("flat.collapsed", "boundary.split")}
+                                           + SUBSTRING(flat.collapsed, boundary.split, LEN(flat.collapsed))
+                                 END AS definition) AS canonical
              WHERE o.is_ms_shipped = 0 AND {UserSchemas}
              """,
             "object_id"),

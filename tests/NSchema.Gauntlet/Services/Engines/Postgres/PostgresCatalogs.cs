@@ -83,6 +83,10 @@ public static class PostgresCatalogs
              SELECT n.nspname || '.' || c.relname || '.' || a.attname,
                     (to_jsonb(a)
                        - 'attrelid' - 'atttypid' - 'attcollation' - 'attmissingval'
+                       -- attndims records the dimensions an array column was declared with, and Postgres neither
+                       -- enforces them nor lets them mean anything: text[] and text[][] are the same type, and a
+                       -- value of any dimensionality fits either. Nothing behaves differently, so nothing is lost.
+                       - 'attndims'
                      || jsonb_build_object(
                           'attrelid', n.nspname || '.' || c.relname,
                           'atttypid', a.atttypid::regtype::text,
