@@ -72,3 +72,22 @@ Plan: 0 to add, 0 to change, 0 to destroy, 56 to adopt.
 │ info     │ adoption │ Applying this plan will bring 56 existing objects under management: public._group_concat, public.actor, public.actor_actor_id_seq, public.actor_info, public.address, and 51 others. │
 │          │          │                                                                                                                                                                                      │
 ╰──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+=== the engine disagrees about the rebuild ===
+missing from the rebuild: partition key | public.payment | RANGE (payment_date)
+missing from the rebuild: partition of | public.payment_p2022_01 | public.payment FOR VALUES FROM ('2022-01-01 00:00:00+00') TO ('2022-02-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_01_pkey | public.payment_pkey
+missing from the rebuild: partition of | public.payment_p2022_02 | public.payment FOR VALUES FROM ('2022-02-01 00:00:00+00') TO ('2022-03-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_02_pkey | public.payment_pkey
+missing from the rebuild: partition of | public.payment_p2022_03 | public.payment FOR VALUES FROM ('2022-03-01 00:00:00+00') TO ('2022-04-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_03_pkey | public.payment_pkey
+missing from the rebuild: partition of | public.payment_p2022_04 | public.payment FOR VALUES FROM ('2022-04-01 00:00:00+00') TO ('2022-05-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_04_pkey | public.payment_pkey
+missing from the rebuild: partition of | public.payment_p2022_05 | public.payment FOR VALUES FROM ('2022-05-01 00:00:00+00') TO ('2022-06-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_05_pkey | public.payment_pkey
+missing from the rebuild: partition of | public.payment_p2022_06 | public.payment FOR VALUES FROM ('2022-06-01 00:00:00+00') TO ('2022-07-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_06_pkey | public.payment_pkey
+missing from the rebuild: partition of | public.payment_p2022_07 | public.payment FOR VALUES FROM ('2022-07-01 00:00:00+00') TO ('2022-08-01 00:00:00+00')
+missing from the rebuild: partition of | public.payment_p2022_07_pkey | public.payment_pkey
+missing from the rebuild: table | public.payment | partitioned
+only in the rebuild: table | public.payment

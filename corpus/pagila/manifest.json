@@ -6,7 +6,8 @@
   "acquisition": "pagila-schema.sql at tag pagila-v3.1.0, verbatim: it is already a schema-only pg_dump with no client directives. The tag matters \u2014 later releases default columns to uuidv7(), which needs Postgres 18, and the engine is pinned to 17.",
   "expectations": {
     "postgres": {
-      "outcome": "succeeded"
+      "outcome": "fidelityFailed",
+      "because": "NSchema.Postgres does not model table partitioning. The payment table is imported as a plain table and its seven monthly partitions as unrelated standalone tables, losing PARTITION BY RANGE, every ATTACH PARTITION and every bound."
     }
   }
 }

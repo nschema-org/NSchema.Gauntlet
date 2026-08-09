@@ -29,9 +29,38 @@ public sealed class PostgresDatabase(PostgresEngine engine, PluginSettings plugi
         command.CommandText = """
             SELECT kind || ' | ' || identity || CASE WHEN detail = '' THEN '' ELSE ' | ' || detail END
             FROM (
-                SELECT 'table' AS kind, n.nspname || '.' || c.relname AS identity, '' AS detail
+                SELECT 'table' AS kind, n.nspname || '.' || c.relname AS identity,
+                       CASE c.relkind WHEN 'p' THEN 'partitioned' ELSE '' END AS detail
                 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
                 WHERE c.relkind IN ('r', 'p') AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
+              UNION ALL
+                -- How a partitioned table is divided. Without it, a table partitioned by one column reads
+                -- exactly like one partitioned by another.
+                SELECT 'partition key', n.nspname || '.' || c.relname, coalesce(pg_get_partkeydef(c.oid), '')
+                FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+                WHERE c.relkind = 'p' AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
+              UNION ALL
+                -- Which parent each partition hangs off, and for what values. A partition that comes back as
+                -- a standalone table holds the same columns and the same constraints, so this is the only row
+                -- that tells the two apart. Indexes partition too, and carry no bound, hence the concatenation
+                -- rather than a coalesce to empty — a null bound drops the space with it.
+                SELECT 'partition of', n.nspname || '.' || c.relname,
+                       pn.nspname || '.' || p.relname || coalesce(' ' || pg_get_expr(c.relpartbound, c.oid), '')
+                FROM pg_class c
+                JOIN pg_namespace n ON n.oid = c.relnamespace
+                JOIN pg_inherits i ON i.inhrelid = c.oid
+                JOIN pg_class p ON p.oid = i.inhparent
+                JOIN pg_namespace pn ON pn.oid = p.relnamespace
+                WHERE c.relispartition AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
+              UNION ALL
+                -- Classic inheritance is the same blind spot wearing a different hat.
+                SELECT 'inherits', n.nspname || '.' || c.relname, pn.nspname || '.' || p.relname
+                FROM pg_class c
+                JOIN pg_namespace n ON n.oid = c.relnamespace
+                JOIN pg_inherits i ON i.inhrelid = c.oid
+                JOIN pg_class p ON p.oid = i.inhparent
+                JOIN pg_namespace pn ON pn.oid = p.relnamespace
+                WHERE NOT c.relispartition AND n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
               UNION ALL
                 SELECT 'view', n.nspname || '.' || c.relname, CASE c.relkind WHEN 'm' THEN 'materialized' ELSE '' END
                 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
