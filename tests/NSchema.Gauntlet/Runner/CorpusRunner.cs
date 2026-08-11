@@ -52,7 +52,12 @@ public sealed class CorpusRunner(NSchemaClient nSchema, Func<Database, Project> 
         // A schema NSchema did not create is unmanaged, so the first plan adopts it. Adoption is bookkeeping
         // rather than a difference, so it is applied and then planned again: what this claims is that nothing
         // is left once the database is NSchema's to manage.
-        var adoption = await observer.Plan(source, sourceProject.Directory, DestructiveActionPolicy.Error, detailedExitCode: false, ct);
+        var adopting = await observer.Plan(source, sourceProject.Directory, DestructiveActionPolicy.Error, detailedExitCode: false, ct);
+        var adoption = adopting.Result;
+
+        // One case's coverage is everything it exercised, across the schema it adopts, the one it rebuilds
+        // and the one it takes away again.
+        var actions = new SortedSet<string>(adopting.Actions, StringComparer.Ordinal);
 
         if (await nSchema.Apply(sourceProject.Directory, DestructiveActionPolicy.Error, ct) is { Succeeded: false } adopt)
         {
@@ -79,7 +84,7 @@ public sealed class CorpusRunner(NSchemaClient nSchema, Func<Database, Project> 
 
         // Applied without a plan of its own, and this is the widest set of actions the run performs, so it is
         // planned once for the record before being applied.
-        await observer.Observe(target, targetProject.Directory, DestructiveActionPolicy.Error, ct);
+        actions.UnionWith(await observer.Observe(target, targetProject.Directory, DestructiveActionPolicy.Error, ct));
         var create = await nSchema.Apply(targetProject.Directory, DestructiveActionPolicy.Error, ct);
         var created = create;
         if (create.Succeeded)
@@ -105,7 +110,7 @@ public sealed class CorpusRunner(NSchemaClient nSchema, Func<Database, Project> 
         // key graph is the only test of the order things are dropped in.
         targetProject.ClearSchema();
 
-        await observer.Observe(target, targetProject.Directory, DestructiveActionPolicy.Allow, ct);
+        actions.UnionWith(await observer.Observe(target, targetProject.Directory, DestructiveActionPolicy.Allow, ct));
         var teardown = await nSchema.Apply(targetProject.Directory, DestructiveActionPolicy.Allow, ct);
         var emptied = teardown;
         if (teardown.Succeeded)
@@ -122,6 +127,7 @@ public sealed class CorpusRunner(NSchemaClient nSchema, Func<Database, Project> 
         {
             Format = format,
             Adoption = adoption,
+            Actions = actions,
             Verification = verification,
             Rebuild = create,
             RebuildVerification = created,

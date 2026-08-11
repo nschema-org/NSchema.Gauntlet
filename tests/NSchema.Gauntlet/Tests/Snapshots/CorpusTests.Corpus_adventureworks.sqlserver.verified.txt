@@ -1,4 +1,24 @@
-﻿=== first plan against the imported project ===
+﻿=== actions ===
+CreateDomain
+CreateIndex
+CreateRoutine
+CreateSchema
+CreateTable
+CreateTrigger
+CreateView
+CreateXmlSchemaCollection
+DropDomain
+DropRoutine
+DropSchema
+DropTable
+DropTrigger
+DropView
+DropXmlSchemaCollection
+SetColumnComment
+SetSchemaComment
+SetTableComment
+
+=== first plan against the imported project ===
 Planning schema migration. No changes will be applied to the database.
 Loading project...
 Migration will be scoped to: (all)

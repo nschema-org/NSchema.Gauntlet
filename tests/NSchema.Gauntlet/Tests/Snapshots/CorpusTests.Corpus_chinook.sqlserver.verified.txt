@@ -1,4 +1,9 @@
-﻿=== first plan against the imported project ===
+﻿=== actions ===
+CreateIndex
+CreateTable
+DropTable
+
+=== first plan against the imported project ===
 Planning schema migration. No changes will be applied to the database.
 Loading project...
 Migration will be scoped to: (all)

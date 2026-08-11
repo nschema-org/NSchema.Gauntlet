@@ -11,7 +11,7 @@ public sealed class PlanObserver(NSchemaClient cli, ActionLedger ledger)
     /// <summary>
     /// Plans against <paramref name="database"/> and returns that plan, recording what it performs.
     /// </summary>
-    public async Task<CliResult> Plan(
+    public async Task<ObservedPlan> Plan(
         Database database,
         string projectDirectory,
         DestructiveActionPolicy destructiveActions,
@@ -19,14 +19,13 @@ public sealed class PlanObserver(NSchemaClient cli, ActionLedger ledger)
         CancellationToken ct)
     {
         var result = await cli.Plan(projectDirectory, destructiveActions, detailedExitCode, ct);
-        await Observe(database, projectDirectory, destructiveActions, ct);
-        return result;
+        return new ObservedPlan(result, await Observe(database, projectDirectory, destructiveActions, ct));
     }
 
     /// <summary>
     /// Records what a plan would perform, without the run needing the plan itself.
     /// </summary>
-    public async Task Observe(
+    public async Task<IReadOnlyCollection<string>> Observe(
         Database database,
         string projectDirectory,
         DestructiveActionPolicy destructiveActions,
@@ -39,7 +38,10 @@ public sealed class PlanObserver(NSchemaClient cli, ActionLedger ledger)
         try
         {
             await cli.Plan(projectDirectory, destructiveActions, detailedExitCode: false, planFile, ct);
-            ledger.Record(database.Engine, PlanActions.Read(planFile));
+
+            var actions = PlanActions.Read(planFile);
+            ledger.Record(database.Engine, actions);
+            return actions;
         }
         finally
         {

@@ -25,6 +25,17 @@ public sealed record ScenarioResult
     public required CliResult Verification { get; init; }
 
     /// <summary>
+    /// The migration actions this case exercised, as the plan named them.
+    /// </summary>
+    /// <remarks>
+    /// Pinned per case rather than as one matrix at the end of the run. A total can only be asserted by a run
+    /// that executed everything, so filtering the suite would fail it; and the aggregate says a number changed
+    /// without saying which case stopped covering what. Here a regression lands in the diff of the case that
+    /// caused it.
+    /// </remarks>
+    public IReadOnlyCollection<string> Actions { get; init; } = [];
+
+    /// <summary>
     /// What the run amounted to, derived from where the refusal sits — so the result cannot disagree
     /// with its own evidence.
     /// </summary>
@@ -54,6 +65,16 @@ public sealed record ScenarioResult
     public string Render()
     {
         var report = new StringBuilder();
+
+        if (Actions.Count > 0)
+        {
+            report.AppendLine("=== actions ===");
+            foreach (var action in Actions.Order(StringComparer.Ordinal))
+            {
+                report.AppendLine(action);
+            }
+            report.AppendLine();
+        }
 
         foreach (var stage in Stages)
         {

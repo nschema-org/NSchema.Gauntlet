@@ -1,4 +1,9 @@
-﻿=== plan ===
+﻿=== actions ===
+AddColumn
+AlterColumn
+ExecuteScript
+
+=== plan ===
 Planning schema migration. No changes will be applied to the database.
 Loading project...
 Migration will be scoped to: (all)
