@@ -10,14 +10,14 @@ Plan
     + foreign key fk_orders_owner
 
 Plan: 1 to add, 1 to change, 1 to destroy.
-Diagnostics                                                                                                
-╭──────────┬─────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                                                                                                                                               │
-├──────────┼─────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ error    │ sqlite-dialect      │ Sqlite cannot drop a foreign key in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                     │
-│ error    │ sqlite-dialect      │ Sqlite cannot add a foreign key to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
-│ info     │ destructive-actions │ This plan contains destructive actions: DropForeignKey.                                                                                                               │
-╰──────────┴─────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                                                                          Diagnostics                                                                                                          
+╭──────────┬─────────────────────┬────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                                                                                                                               │
+├──────────┼─────────────────────┼────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ requires-recreate  │ Sqlite cannot drop a foreign key in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                     │
+│ error    │ sqlite-dialect      │ requires-recreate  │ Sqlite cannot add a foreign key to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropForeignKey.                                                                                                               │
+╰──────────┴─────────────────────┴────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 exit: 1
 
 === apply ===
@@ -33,13 +33,13 @@ Plan
     + foreign key fk_orders_owner
 
 Plan: 1 to add, 1 to change, 1 to destroy.
-Diagnostics                                                                                                
-╭──────────┬─────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                                                                                                                                               │
-├──────────┼─────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ error    │ sqlite-dialect      │ Sqlite cannot drop a foreign key in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                     │
-│ error    │ sqlite-dialect      │ Sqlite cannot add a foreign key to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
-│ info     │ destructive-actions │ This plan contains destructive actions: DropForeignKey.                                                                                                               │
-╰──────────┴─────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                                                                          Diagnostics                                                                                                          
+╭──────────┬─────────────────────┬────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                                                                                                                               │
+├──────────┼─────────────────────┼────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ requires-recreate  │ Sqlite cannot drop a foreign key in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                     │
+│ error    │ sqlite-dialect      │ requires-recreate  │ Sqlite cannot add a foreign key to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropForeignKey.                                                                                                               │
+╰──────────┴─────────────────────┴────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 exit: 1
 

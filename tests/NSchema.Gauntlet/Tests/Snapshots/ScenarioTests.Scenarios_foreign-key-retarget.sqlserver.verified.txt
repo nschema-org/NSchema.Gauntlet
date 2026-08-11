@@ -19,12 +19,12 @@ ALTER TABLE [dbo].[orders] DROP CONSTRAINT [fk_orders_owner]
 -- [2/2]
 ALTER TABLE [dbo].[orders] ADD CONSTRAINT [fk_orders_owner] FOREIGN KEY ([owner_id]) REFERENCES [dbo].[accounts] ([id])
 
-                                        Diagnostics                                         
-╭──────────┬─────────────────────┬─────────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                                 │
-├──────────┼─────────────────────┼─────────────────────────────────────────────────────────┤
-│ info     │ destructive-actions │ This plan contains destructive actions: DropForeignKey. │
-╰──────────┴─────────────────────┴─────────────────────────────────────────────────────────╯
+                                                   Diagnostics                                                   
+╭──────────┬─────────────────────┬────────────────────┬─────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                 │
+├──────────┼─────────────────────┼────────────────────┼─────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropForeignKey. │
+╰──────────┴─────────────────────┴────────────────────┴─────────────────────────────────────────────────────────╯
 exit: 0
 
 === apply ===
@@ -49,12 +49,12 @@ ALTER TABLE [dbo].[orders] DROP CONSTRAINT [fk_orders_owner]
 -- [2/2]
 ALTER TABLE [dbo].[orders] ADD CONSTRAINT [fk_orders_owner] FOREIGN KEY ([owner_id]) REFERENCES [dbo].[accounts] ([id])
 
-                                        Diagnostics                                         
-╭──────────┬─────────────────────┬─────────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                                 │
-├──────────┼─────────────────────┼─────────────────────────────────────────────────────────┤
-│ info     │ destructive-actions │ This plan contains destructive actions: DropForeignKey. │
-╰──────────┴─────────────────────┴─────────────────────────────────────────────────────────╯
+                                                   Diagnostics                                                   
+╭──────────┬─────────────────────┬────────────────────┬─────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                 │
+├──────────┼─────────────────────┼────────────────────┼─────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropForeignKey. │
+╰──────────┴─────────────────────┴────────────────────┴─────────────────────────────────────────────────────────╯
 
 NSchema will execute 2 statement(s) against the database.
 Auto-approve is enabled; skipping confirmation.

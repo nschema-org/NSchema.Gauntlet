@@ -9,13 +9,13 @@ Plan
     ~ total type: int → bigint
 
 Plan: 0 to add, 2 to change, 0 to destroy.
-Diagnostics                                                                                    
-╭──────────┬─────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                                                                                                                        │
-├──────────┼─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ error    │ sqlite-dialect      │ Sqlite cannot change a column in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
-│ info     │ destructive-actions │ This plan contains destructive actions: AlterColumn.                                                                                           │
-╰──────────┴─────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                                                              Diagnostics                                                                                               
+╭──────────┬─────────────────────┬────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                                                                                                        │
+├──────────┼─────────────────────┼────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ requires-recreate  │ Sqlite cannot change a column in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn.                                                                                           │
+╰──────────┴─────────────────────┴────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 exit: 1
 
 === apply ===
@@ -30,12 +30,12 @@ Plan
     ~ total type: int → bigint
 
 Plan: 0 to add, 2 to change, 0 to destroy.
-Diagnostics                                                                                    
-╭──────────┬─────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                                                                                                                        │
-├──────────┼─────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ error    │ sqlite-dialect      │ Sqlite cannot change a column in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
-│ info     │ destructive-actions │ This plan contains destructive actions: AlterColumn.                                                                                           │
-╰──────────┴─────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                                                              Diagnostics                                                                                               
+╭──────────┬─────────────────────┬────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                                                                                                        │
+├──────────┼─────────────────────┼────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ requires-recreate  │ Sqlite cannot change a column in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead. │
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn.                                                                                           │
+╰──────────┴─────────────────────┴────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 exit: 1
 

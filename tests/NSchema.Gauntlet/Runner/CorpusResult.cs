@@ -103,9 +103,11 @@ public sealed record CorpusResult
         var report = new StringBuilder();
 
         report.AppendLine("=== first plan against the imported project ===");
-        report.AppendLine(Adoption.StandardOutput.Trim());
+        report.AppendLine(Adoption.StandardOutput.TrimEnd());
 
-        if (Adoption.StandardError.Trim() is { Length: > 0 } diagnostics)
+        // TrimEnd, not Trim: the diagnostics table's title is centred by padding it on the left, and
+        // trimming the front of the capture would flatten that padding into a flush-left header.
+        if (Adoption.StandardError.TrimEnd() is { Length: > 0 } diagnostics)
         {
             report.AppendLine(diagnostics);
         }
@@ -135,7 +137,7 @@ public sealed record CorpusResult
 
         report.AppendLine();
         report.AppendLine($"=== {stage} ===");
-        report.AppendLine(result.StandardOutput.Trim());
-        report.AppendLine(result.StandardError.Trim());
+        report.AppendLine(result.StandardOutput.TrimEnd());
+        report.AppendLine(result.StandardError.TrimEnd());
     }
 }
