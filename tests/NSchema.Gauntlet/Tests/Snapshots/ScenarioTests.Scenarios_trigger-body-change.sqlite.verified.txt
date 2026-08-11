@@ -20,12 +20,12 @@ DROP TRIGGER "main"."docs_touch"
 CREATE TRIGGER "main"."docs_touch" AFTER INSERT ON "docs" BEGIN
   INSERT INTO docs_log (happened) VALUES (2);
 END
-Diagnostics                              
-╭──────────┬─────────────┬───────────────────────────────────────────╮
-│ Severity │ Source      │ Message                                   │
-├──────────┼─────────────┼───────────────────────────────────────────┤
-│ warning  │ schema-lint │ Table 'main.docs_log' has no primary key. │
-╰──────────┴─────────────┴───────────────────────────────────────────╯
+                                        Diagnostics                                         
+╭──────────┬─────────────┬─────────────────────┬───────────────────────────────────────────╮
+│ Severity │ Source      │ Code                │ Message                                   │
+├──────────┼─────────────┼─────────────────────┼───────────────────────────────────────────┤
+│ warning  │ schema-lint │ missing-primary-key │ Table 'main.docs_log' has no primary key. │
+╰──────────┴─────────────┴─────────────────────┴───────────────────────────────────────────╯
 exit: 0
 
 === apply ===
@@ -57,11 +57,11 @@ Auto-approve is enabled; skipping confirmation.
 Applying the migration plan...
 Updating state store...
 ✔ Apply complete. 1 added, 1 changed, 1 destroyed (2 statements).
-Diagnostics                              
-╭──────────┬─────────────┬───────────────────────────────────────────╮
-│ Severity │ Source      │ Message                                   │
-├──────────┼─────────────┼───────────────────────────────────────────┤
-│ warning  │ schema-lint │ Table 'main.docs_log' has no primary key. │
-╰──────────┴─────────────┴───────────────────────────────────────────╯
+                                        Diagnostics                                         
+╭──────────┬─────────────┬─────────────────────┬───────────────────────────────────────────╮
+│ Severity │ Source      │ Code                │ Message                                   │
+├──────────┼─────────────┼─────────────────────┼───────────────────────────────────────────┤
+│ warning  │ schema-lint │ missing-primary-key │ Table 'main.docs_log' has no primary key. │
+╰──────────┴─────────────┴─────────────────────┴───────────────────────────────────────────╯
 exit: 0
 

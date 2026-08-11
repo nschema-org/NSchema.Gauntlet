@@ -36,9 +36,10 @@ public sealed record CorpusResult
     public required CliResult RebuildVerification { get; init; }
 
     /// <summary>
-    /// The engines' own accounts of source and rebuild, compared; null when the rebuild did not complete.
+    /// The engines' own accounts of source and rebuild, compared and grouped by symptom; null when the
+    /// rebuild did not complete.
     /// </summary>
-    public IReadOnlyList<string>? EngineTestimony { get; init; }
+    public IReadOnlyList<CatalogDifference>? EngineTestimony { get; init; }
 
     /// <summary>
     /// Applying a project that declares nothing, which drops what was built.
@@ -102,9 +103,11 @@ public sealed record CorpusResult
         var report = new StringBuilder();
 
         report.AppendLine("=== first plan against the imported project ===");
-        report.AppendLine(Adoption.StandardOutput.Trim());
+        report.AppendLine(Adoption.StandardOutput.TrimEnd());
 
-        if (Adoption.StandardError.Trim() is { Length: > 0 } diagnostics)
+        // TrimEnd, not Trim: the diagnostics table's title is centred by padding it on the left, and
+        // trimming the front of the capture would flatten that padding into a flush-left header.
+        if (Adoption.StandardError.TrimEnd() is { Length: > 0 } diagnostics)
         {
             report.AppendLine(diagnostics);
         }
@@ -114,14 +117,11 @@ public sealed record CorpusResult
         Unfinished(report, "left over after rebuilding", Rebuilds, RebuildVerification);
         Unfinished(report, "left over after tearing down", TearsDown, TeardownVerification);
 
-        if (EngineTestimony is { Count: > 0 })
+        if (EngineTestimony is { Count: > 0 } testimony)
         {
             report.AppendLine();
             report.AppendLine("=== the engine disagrees about the rebuild ===");
-            foreach (var line in EngineTestimony)
-            {
-                report.AppendLine(line);
-            }
+            report.AppendLine(Testimony.Describe(testimony));
         }
 
         return report.ToString();
@@ -137,7 +137,7 @@ public sealed record CorpusResult
 
         report.AppendLine();
         report.AppendLine($"=== {stage} ===");
-        report.AppendLine(result.StandardOutput.Trim());
-        report.AppendLine(result.StandardError.Trim());
+        report.AppendLine(result.StandardOutput.TrimEnd());
+        report.AppendLine(result.StandardError.TrimEnd());
     }
 }

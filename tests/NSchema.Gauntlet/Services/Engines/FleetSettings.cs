@@ -1,3 +1,4 @@
+using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Services.Engines.Postgres;
 using NSchema.Gauntlet.Services.Engines.Sqlite;
 using NSchema.Gauntlet.Services.Engines.SqlServer;
@@ -23,4 +24,14 @@ public sealed class FleetSettings
     /// The SQL Server settings.
     /// </summary>
     public required SqlServerSettings SqlServer { get; init; }
+
+    /// <summary>
+    /// Every engine's plugin, with the engine it belongs to.
+    /// </summary>
+    public IEnumerable<(EngineName Engine, PluginSettings Plugin)> Plugins =>
+    [
+        (PostgresEngine.EngineName, Postgres.Plugin),
+        (SqliteEngine.EngineName, Sqlite.Plugin),
+        (SqlServerEngine.EngineName, SqlServer.Plugin),
+    ];
 }

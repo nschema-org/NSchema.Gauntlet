@@ -58,9 +58,11 @@ public sealed record ScenarioResult
         foreach (var stage in Stages)
         {
             report.AppendLine($"=== {stage.Name.ToString().ToLowerInvariant()} ===");
-            report.AppendLine(stage.Result.StandardOutput.Trim());
+            report.AppendLine(stage.Result.StandardOutput.TrimEnd());
 
-            if (stage.Result.StandardError.Trim() is { Length: > 0 } diagnostics)
+            // TrimEnd, not Trim: the diagnostics table's title is centred by padding it on the left, and
+            // trimming the front of the capture would flatten that padding into a flush-left header.
+            if (stage.Result.StandardError.TrimEnd() is { Length: > 0 } diagnostics)
             {
                 report.AppendLine(diagnostics);
             }

@@ -22,11 +22,11 @@ CREATE TABLE "main"."orders" (
     "total" INTEGER NOT NULL,
     CONSTRAINT "pk_orders" PRIMARY KEY ("id")
 )
-Diagnostics                                
-╭──────────┬────────────────┬─────────────────────────────────────────────╮
-│ Severity │ Source         │ Message                                     │
-├──────────┼────────────────┼─────────────────────────────────────────────┤
-│ error    │ sqlite-dialect │ Sqlite does not support materialized views. │
-╰──────────┴────────────────┴─────────────────────────────────────────────╯
+                                       Diagnostics                                       
+╭──────────┬────────────────┬─────────────┬─────────────────────────────────────────────╮
+│ Severity │ Source         │ Code        │ Message                                     │
+├──────────┼────────────────┼─────────────┼─────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support materialized views. │
+╰──────────┴────────────────┴─────────────┴─────────────────────────────────────────────╯
 exit: 1
 

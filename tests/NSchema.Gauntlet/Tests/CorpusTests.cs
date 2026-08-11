@@ -40,7 +40,7 @@ public sealed class CorpusTests(GauntletRun run)
             CorpusOutcome.CanonicalFailed => $"the imported project is not canonical:{Environment.NewLine}{report.Format.Describe()}",
             CorpusOutcome.RoundTripFailed => $"NSchema found differences against its own description of the database:{Environment.NewLine}{report.Verification.Describe()}",
             CorpusOutcome.RebuildFailed => $"the schema NSchema rendered was not the schema it described:{Environment.NewLine}{report.RebuildVerification.Describe()}",
-            CorpusOutcome.FidelityFailed => $"the engine's own account of the rebuild differs from the source:{Environment.NewLine}{string.Join(Environment.NewLine, report.EngineTestimony ?? [])}",
+            CorpusOutcome.FidelityFailed => $"the engine's own account of the rebuild differs from the source:{Environment.NewLine}{Testimony.Describe(report.EngineTestimony ?? [])}",
             _ => $"the schema would not come apart again:{Environment.NewLine}{report.TeardownVerification.Describe()}",
         };
         report.Outcome.ShouldBe(expectation.Outcome,

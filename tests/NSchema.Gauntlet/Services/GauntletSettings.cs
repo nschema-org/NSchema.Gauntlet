@@ -54,7 +54,23 @@ public sealed class GauntletSettings
         .AddJsonFile("appsettings.json", optional: false)
         .AddJsonFile("appsettings.local.json", optional: true)
         .Build()
-        .Get<GauntletSettings>() ?? throw new InvalidOperationException("appsettings.json is empty.");
+        .Get<GauntletSettings>() is { } settings
+            ? settings.Validated()
+            : throw new InvalidOperationException("appsettings.json is empty.");
+
+    // Checked while reading rather than when a case needs them: a typo in a local override should cost a second,
+    // not the time it takes to start SQL Server and restore a corpus before failing.
+    private GauntletSettings Validated()
+    {
+        Cli.Validate();
+
+        foreach (var (engine, plugin) in Engines.Plugins)
+        {
+            plugin.Validate(engine);
+        }
+
+        return this;
+    }
 
     private static string RepositoryRoot()
     {

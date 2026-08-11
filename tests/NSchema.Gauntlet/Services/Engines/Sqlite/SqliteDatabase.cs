@@ -18,42 +18,55 @@ public sealed class SqliteDatabase(SqliteEngine engine, PluginSettings plugin, s
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public override async Task<IReadOnlyList<string>> Catalog(CancellationToken cancellationToken = default)
+    public override async Task<IReadOnlyList<CatalogFact>> Catalog(CancellationToken cancellationToken = default)
     {
         await using var connection = new SqliteConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
         await using var command = connection.CreateCommand();
-        // The catalog's account of the schema. Sqlite ignores a declared type's spelling — semantics are its
-        // documented affinity rules, plus the one exception that the exact word INTEGER makes a primary key
-        // the rowid alias — so columns testify in those terms, not in letters Sqlite never reads.
+        // Sqlite ignores a declared type's spelling — semantics are its documented affinity rules,
+        // plus the one exception that the exact word INTEGER makes a primary key the rowid alias.
+        //
+        // Sqlite has no system catalogs to dump the way Postgres and SQL Server do: sqlite_master holds the
+        // original DDL text and everything else comes from pragmas. So this is still a chosen projection,
+        // and still carries the blind spot that implies — partial and expression indexes, WITHOUT ROWID,
+        // STRICT and generated columns are all invisible here.
         command.CommandText = """
-            SELECT type || ' | ' || name
+            WITH columns AS (
+                SELECT m.name AS "table", p.name AS "column", p.type AS declared,
+                       p."notnull" AS not_null, p.dflt_value AS default_value, p.pk AS pk
+                FROM sqlite_master m JOIN pragma_table_info(m.name) p
+                WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%'
+            )
+            SELECT 'sqlite_master', name, 'type', type
             FROM sqlite_master
             WHERE type IN ('table', 'view', 'trigger', 'index') AND name NOT LIKE 'sqlite_%'
             UNION ALL
-            SELECT 'column | ' || m.name || '.' || p.name || ' | ' ||
+            SELECT 'column', "table" || '.' || "column", 'affinity',
                    CASE
-                       WHEN upper(coalesce(p.type, '')) = 'INTEGER' THEN 'INTEGER'
-                       WHEN instr(upper(p.type), 'INT') > 0 THEN 'int-affinity'
-                       WHEN instr(upper(p.type), 'CHAR') > 0 OR instr(upper(p.type), 'CLOB') > 0 OR instr(upper(p.type), 'TEXT') > 0 THEN 'text-affinity'
-                       WHEN p.type IS NULL OR p.type = '' OR instr(upper(p.type), 'BLOB') > 0 THEN 'blob-affinity'
-                       WHEN instr(upper(p.type), 'REAL') > 0 OR instr(upper(p.type), 'FLOA') > 0 OR instr(upper(p.type), 'DOUB') > 0 THEN 'real-affinity'
+                       WHEN upper(coalesce(declared, '')) = 'INTEGER' THEN 'INTEGER'
+                       WHEN instr(upper(declared), 'INT') > 0 THEN 'int-affinity'
+                       WHEN instr(upper(declared), 'CHAR') > 0 OR instr(upper(declared), 'CLOB') > 0 OR instr(upper(declared), 'TEXT') > 0 THEN 'text-affinity'
+                       WHEN declared IS NULL OR declared = '' OR instr(upper(declared), 'BLOB') > 0 THEN 'blob-affinity'
+                       WHEN instr(upper(declared), 'REAL') > 0 OR instr(upper(declared), 'FLOA') > 0 OR instr(upper(declared), 'DOUB') > 0 THEN 'real-affinity'
                        ELSE 'numeric-affinity'
                    END
-                   || ' notnull=' || p."notnull" || ' default=' || coalesce(p.dflt_value, '')
-            FROM sqlite_master m JOIN pragma_table_info(m.name) p
-            WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%'
-            ORDER BY 1
+            FROM columns
+            UNION ALL
+            SELECT 'column', "table" || '.' || "column", 'notnull', CAST(not_null AS TEXT) FROM columns
+            UNION ALL
+            SELECT 'column', "table" || '.' || "column", 'default', coalesce(default_value, '') FROM columns
+            UNION ALL
+            SELECT 'column', "table" || '.' || "column", 'pk', CAST(pk AS TEXT) FROM columns
             """;
 
-        var rows = new List<string>();
+        var facts = new List<CatalogFact>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
-            rows.Add(reader.GetString(0));
+            facts.Add(new CatalogFact(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
         }
 
-        return rows;
+        return facts;
     }
 }

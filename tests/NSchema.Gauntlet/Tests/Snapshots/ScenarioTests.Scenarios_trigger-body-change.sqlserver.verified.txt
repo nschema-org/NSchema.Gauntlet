@@ -17,12 +17,12 @@ SQL
 CREATE OR ALTER TRIGGER [dbo].[docs_touch] ON [dbo].[docs] AFTER INSERT AS BEGIN
   INSERT INTO dbo.docs_log (happened) VALUES (2);
 END
-Diagnostics                             
-╭──────────┬─────────────┬──────────────────────────────────────────╮
-│ Severity │ Source      │ Message                                  │
-├──────────┼─────────────┼──────────────────────────────────────────┤
-│ warning  │ schema-lint │ Table 'dbo.docs_log' has no primary key. │
-╰──────────┴─────────────┴──────────────────────────────────────────╯
+                                        Diagnostics                                        
+╭──────────┬─────────────┬─────────────────────┬──────────────────────────────────────────╮
+│ Severity │ Source      │ Code                │ Message                                  │
+├──────────┼─────────────┼─────────────────────┼──────────────────────────────────────────┤
+│ warning  │ schema-lint │ missing-primary-key │ Table 'dbo.docs_log' has no primary key. │
+╰──────────┴─────────────┴─────────────────────┴──────────────────────────────────────────╯
 exit: 0
 
 === apply ===
@@ -51,11 +51,11 @@ Auto-approve is enabled; skipping confirmation.
 Applying the migration plan...
 Updating state store...
 ✔ Apply complete. 1 added, 1 changed, 1 destroyed (1 statement).
-Diagnostics                             
-╭──────────┬─────────────┬──────────────────────────────────────────╮
-│ Severity │ Source      │ Message                                  │
-├──────────┼─────────────┼──────────────────────────────────────────┤
-│ warning  │ schema-lint │ Table 'dbo.docs_log' has no primary key. │
-╰──────────┴─────────────┴──────────────────────────────────────────╯
+                                        Diagnostics                                        
+╭──────────┬─────────────┬─────────────────────┬──────────────────────────────────────────╮
+│ Severity │ Source      │ Code                │ Message                                  │
+├──────────┼─────────────┼─────────────────────┼──────────────────────────────────────────┤
+│ warning  │ schema-lint │ missing-primary-key │ Table 'dbo.docs_log' has no primary key. │
+╰──────────┴─────────────┴─────────────────────┴──────────────────────────────────────────╯
 exit: 0
 

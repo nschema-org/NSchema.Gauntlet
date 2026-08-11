@@ -15,12 +15,12 @@ SQL
 -- [1/1]
 ALTER TABLE [dbo].[orders] ALTER COLUMN [total] bigint NOT NULL
 
-                                       Diagnostics                                       
-╭──────────┬─────────────────────┬──────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                              │
-├──────────┼─────────────────────┼──────────────────────────────────────────────────────┤
-│ info     │ destructive-actions │ This plan contains destructive actions: AlterColumn. │
-╰──────────┴─────────────────────┴──────────────────────────────────────────────────────╯
+                                                 Diagnostics                                                  
+╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                              │
+├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn. │
+╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────╯
 exit: 0
 
 === apply ===
@@ -41,12 +41,12 @@ SQL
 -- [1/1]
 ALTER TABLE [dbo].[orders] ALTER COLUMN [total] bigint NOT NULL
 
-                                       Diagnostics                                       
-╭──────────┬─────────────────────┬──────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Message                                              │
-├──────────┼─────────────────────┼──────────────────────────────────────────────────────┤
-│ info     │ destructive-actions │ This plan contains destructive actions: AlterColumn. │
-╰──────────┴─────────────────────┴──────────────────────────────────────────────────────╯
+                                                 Diagnostics                                                  
+╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                              │
+├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn. │
+╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────╯
 
 NSchema will execute 1 statement(s) against the database.
 Auto-approve is enabled; skipping confirmation.

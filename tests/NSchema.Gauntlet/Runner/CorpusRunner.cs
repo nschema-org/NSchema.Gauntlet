@@ -91,7 +91,7 @@ public sealed class CorpusRunner(NSchemaClient nSchema, Func<Database, Project> 
         // The oracle outside NSchema: both databases' own accounts of their schemas, compared. Every leg
         // above compares NSchema to NSchema, so a consistent introspection error passes them all; the
         // engine's catalog is the one witness NSchema cannot influence.
-        IReadOnlyList<string>? testimony = null;
+        IReadOnlyList<CatalogDifference>? testimony = null;
         if (create.Succeeded && created.Succeeded)
         {
             testimony = Testimony.Differences(await source.Catalog(ct), await target.Catalog(ct));

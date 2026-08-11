@@ -65,10 +65,93 @@ Adopting 56 existing objects into management:
 
 Plan: 0 to add, 0 to change, 0 to destroy, 56 to adopt.
 
-                                                                                                 Diagnostics                                                                                                  
-╭──────────┬──────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ Severity │ Source   │ Message                                                                                                                                                                              │
-├──────────┼──────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ info     │ adoption │ Applying this plan will bring 56 existing objects under management: public._group_concat, public.actor, public.actor_actor_id_seq, public.actor_info, public.address, and 51 others. │
-│          │          │                                                                                                                                                                                      │
-╰──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                                                                          Diagnostics                                                                                                           
+╭──────────┬──────────┬─────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source   │ Code            │ Message                                                                                                                                                                              │
+├──────────┼──────────┼─────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ adoption │ objects-adopted │ Applying this plan will bring 56 existing objects under management: public._group_concat, public.actor, public.actor_actor_id_seq, public.actor_info, public.address, and 51 others. │
+│          │          │                 │                                                                                                                                                                                      │
+╰──────────┴──────────┴─────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+=== the engine disagrees about the rebuild ===
+17 finding(s) across 171 disagreeing fact(s).
+
+pg_attribute.attinhcount — changed, on 42 object(s)
+    public.payment_p2022_01.amount: 1 -> 0
+    public.payment_p2022_01.customer_id: 1 -> 0
+    public.payment_p2022_01.payment_date: 1 -> 0
+    ... and 39 more
+
+pg_attribute.attislocal — changed, on 42 object(s)
+    public.payment_p2022_01.amount: false -> true
+    public.payment_p2022_01.customer_id: false -> true
+    public.payment_p2022_01.payment_date: false -> true
+    ... and 39 more
+
+pg_class.relam — changed, on 1 object(s)
+    public.payment: NULL -> heap
+
+pg_class.relhassubclass — changed, on 2 object(s)
+    public.payment: true -> false
+    public.payment_pkey: true -> false
+
+pg_class.relispartition — changed, on 14 object(s)
+    public.payment_p2022_01: true -> false
+    public.payment_p2022_01_pkey: true -> false
+    public.payment_p2022_02: true -> false
+    ... and 11 more
+
+pg_class.relkind — changed, on 2 object(s)
+    public.payment: p -> r
+    public.payment_pkey: I -> i
+
+pg_constraint.coninhcount — changed, on 7 object(s)
+    public.payment_p2022_01.payment_p2022_01_pkey: 1 -> 0
+    public.payment_p2022_02.payment_p2022_02_pkey: 1 -> 0
+    public.payment_p2022_03.payment_p2022_03_pkey: 1 -> 0
+    ... and 4 more
+
+pg_constraint.conislocal — changed, on 7 object(s)
+    public.payment_p2022_01.payment_p2022_01_pkey: false -> true
+    public.payment_p2022_02.payment_p2022_02_pkey: false -> true
+    public.payment_p2022_03.payment_p2022_03_pkey: false -> true
+    ... and 4 more
+
+pg_constraint.connoinherit — changed, on 7 object(s)
+    public.payment_p2022_01.payment_p2022_01_pkey: false -> true
+    public.payment_p2022_02.payment_p2022_02_pkey: false -> true
+    public.payment_p2022_03.payment_p2022_03_pkey: false -> true
+    ... and 4 more
+
+pg_index.definition — changed, on 1 object(s)
+    public.payment_pkey: CREATE UNIQUE INDEX payment_pkey ON ONLY public.payment USING btree (payment_date, payment_id) -> CREATE UNIQUE INDEX payment_pkey ON public.payment USING btree (payment_date, payment_id)
+
+pg_inherits.bound — missing from the rebuild, on 14 object(s)
+    public.payment_p2022_01: FOR VALUES FROM ('2022-01-01 00:00:00+00') TO ('2022-02-01 00:00:00+00')
+    public.payment_p2022_01_pkey: NULL
+    public.payment_p2022_02: FOR VALUES FROM ('2022-02-01 00:00:00+00') TO ('2022-03-01 00:00:00+00')
+    ... and 11 more
+
+pg_inherits.parent — missing from the rebuild, on 14 object(s)
+    public.payment_p2022_01: payment
+    public.payment_p2022_01_pkey: payment_pkey
+    public.payment_p2022_02: payment
+    ... and 11 more
+
+pg_inherits.seqno — missing from the rebuild, on 14 object(s)
+    public.payment_p2022_01: 1
+    public.payment_p2022_01_pkey: 1
+    public.payment_p2022_02: 1
+    ... and 11 more
+
+pg_partitioned_table.key — missing from the rebuild, on 1 object(s)
+    public.payment: RANGE (payment_date)
+
+pg_partitioned_table.partattrs — missing from the rebuild, on 1 object(s)
+    public.payment: [6]
+
+pg_partitioned_table.partnatts — missing from the rebuild, on 1 object(s)
+    public.payment: 1
+
+pg_partitioned_table.partstrat — missing from the rebuild, on 1 object(s)
+    public.payment: r

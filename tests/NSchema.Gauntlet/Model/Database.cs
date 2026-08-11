@@ -18,10 +18,7 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
     /// </summary>
     public Nsql GetConfigurationNSql() => Nsql.From(
         $"""
-         PLUGIN db (
-           source = '{plugin.Package}',
-           version = '{plugin.Version}'
-         );
+         {plugin.Declaration("db")}
 
          DATABASE db (
            connection_string = '{ConnectionString.Replace("'", "''")}'
@@ -52,5 +49,5 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
     /// The engine's own account of this database's schema, one ordered row per fact, read straight from its catalog.
     /// Two databases holding the same schema testify identically; NSchema is nowhere in the loop.
     /// </summary>
-    public abstract Task<IReadOnlyList<string>> Catalog(CancellationToken cancellationToken = default);
+    public abstract Task<IReadOnlyList<CatalogFact>> Catalog(CancellationToken cancellationToken = default);
 }
