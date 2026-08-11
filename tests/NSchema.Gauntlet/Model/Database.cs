@@ -27,6 +27,24 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
          """);
 
     /// <summary>
+    /// The <c>.editorconfig</c> a project needs alongside that configuration, or <see langword="null"/> when it
+    /// needs none.
+    /// </summary>
+    /// <remarks>
+    /// A plugin loaded from a path is reported on every run, and that report lands inside the captured plan.
+    /// This override lets us hide it so snapshots stay consistent.
+    /// </remarks>
+    public string? GetEditorConfig() => plugin.Assembly is null
+        ? null
+        : """
+          root = true
+
+          [*]
+          nschema_diagnostic.plugin-from-path.severity = none
+
+          """.TrimStart();
+
+    /// <summary>
     /// Localizes NSQL for this database's engine.
     /// </summary>
     public Nsql Localize(Nsql nsql) => engine.Localize(nsql);

@@ -31,6 +31,15 @@ public sealed class NSchemaClient
             : Path.Combine(_directory, OperatingSystem.IsWindows() ? "nschema.exe" : "nschema");
     }
 
+    /// <summary>
+    /// The directory holding the CLI this run drives, and the engine assembly beneath it, once it is there.
+    /// </summary>
+    public async Task<string> ResolveDirectory(CancellationToken ct)
+    {
+        await EnsureInstalled(ct);
+        return Path.GetDirectoryName(_executable)!;
+    }
+
     public Task<ErrorOr<Success>> Init(string directory, CancellationToken ct) => Require(directory, ["init"], ct);
     public Task<ErrorOr<Success>> Refresh(string directory, CancellationToken ct) => Require(directory, ["refresh"], ct);
     public Task<ErrorOr<Success>> Import(string directory, CancellationToken ct) => Require(directory, ["import", "--force"], ct);

@@ -211,16 +211,22 @@ say about planner performance that fixtures cannot.
 - **Unreleased builds are the one exception, and they are named rather than detected.** A pinned version can
   only be installed once it is on nuget.org, so pinning alone means the gauntlet can never see a build before
   it ships — it cannot gate a release, and it cannot tell you whether the fix you just wrote works. So `cli`
-  takes a `path` to a built executable, and a provider takes a `project`, which the run builds into NSchema's
-  plugin cache under the declared coordinate before anything reads it. Both live only in the gitignored
+  takes a `path` to a built executable, and a provider takes a `project`, which the run builds before anything
+  reads it and then declares with NSchema's `PLUGIN ( path = ... )`. Both live only in the gitignored
   `appsettings.local.json` or in a release pipeline's own configuration; the committed file stays pinned, so
   what CI runs from a Gauntlet PR is still what the commit says. The CLI is still driven as a process — this
   changes where the binary comes from and nothing about how a run uses it.
 
-  A provider is built *into the cache* rather than declared with NSchema's `PLUGIN ( path = ... )`, which
-  would be the more direct route. A path is reported on every run, and that report lands inside the captured
-  plan, so every snapshot would differ for a reason that has nothing to do with the schema under test. Worth
-  revisiting once findings can be configured, at which point the path form is simply better.
+  The path form was blocked until findings could be configured: loading a plugin this way is reported on every
+  run, and that report lands inside the captured plan, so every snapshot would have differed by an absolute path
+  belonging to whoever built the provider. The generated project now carries an `.editorconfig` silencing that
+  one finding, so nothing machine-specific reaches a snapshot. Only that finding is silenced, and only for a run
+  configured this way — a run on pinned packages writes no `.editorconfig`, so nothing here can hide a finding
+  from the engine under test.
+
+  Nothing else builds the provider, so the run must: it consumes whatever sits at the end of the path, and an
+  unbuilt provider would silently be an old one. The build output is loaded where it lands rather than copied
+  into the shared plugin cache, which also means a run cannot be served what a previous one left there.
 - **Each case gets a container and a generated project.** The `config.sql` pointing at the container is
   generated per run, never checked in. State is file state in the run's temporary directory.
 
