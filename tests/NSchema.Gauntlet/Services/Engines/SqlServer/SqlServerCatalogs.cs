@@ -63,16 +63,29 @@ public static class SqlServerCatalogs
              ' ', CHAR(1) + CHAR(2)), CHAR(2) + CHAR(1), ''), CHAR(1) + CHAR(2), ' ')))
          """;
 
-    // A routine's stored definition is two things joined: a header NSchema generates, and a body it preserves
-    // token for token. Only the header differs — NSchema parenthesises a parameter list where the author may not
-    // have, and both spellings are valid T-SQL — so the header is compared with its parentheses flattened to
-    // whitespace and the body verbatim.
+    // A module's stored definition is compared through four steps, in the order the query applies them: drop the
+    // comment block written above CREATE, collapse whitespace, drop a trailing terminator, then flatten the
+    // header's parentheses. Each is bounded so it cannot hide a change, and each is documented on its helper.
+
+    /// <summary>A line with its surrounding whitespace, including a carriage return, removed.</summary>
+    private static string Trimmed(string line) => $"LTRIM(RTRIM(REPLACE({line}, CHAR(13), ' ')))";
+
+    // SQL Server stores a module's whole batch text, so a comment block written above CREATE is kept as part of
+    // the definition. NSchema's model begins at CREATE, and the text before it is SQL Server's concept alone:
+    // Postgres stores a routine body as a string literal, where there is no text before CREATE to keep.
     //
-    // Parentheses become a space rather than nothing, or removing one would close a gap the other side has:
-    // 'name (@a' and 'name(@a' must land on the same text, and only a space does that once whitespace collapses.
-    // Flattening cannot hide a change — every character except the brackets survives, so nvarchar(50) against
-    // nvarchar(5) still differs — and grouping means nothing in a parameter list. The body keeps its parentheses,
-    // where grouping decides what the routine does.
+    // Only the run before the first line that is neither blank nor a line comment goes; every later line,
+    // comments included, is compared. Being line-based it leaves a leading /* */ block alone, which
+    // under-normalises: the oracle reports a difference it could have explained rather than hiding one it could
+    // not. It splits the raw text because collapsing whitespace first would destroy the line structure a --
+    // comment ends on.
+    private static string OpeningLine(string definition) =>
+        $"""
+         SELECT ISNULL(MIN(l.ordinal), 1) AS first
+         FROM STRING_SPLIT({definition}, CHAR(10), 1) AS l
+         WHERE {Trimmed("l.value")} <> '' AND LEFT({Trimmed("l.value")}, 2) <> '--'
+         """;
+
     // A trailing statement terminator separates statements, and after the last one there is nothing to separate.
     // NSchema's parser consumes it, so a body that was written with one comes back without. Dropping a single
     // trailing semicolon cannot hide a change: every other character, including any terminator between two
@@ -80,6 +93,16 @@ public static class SqlServerCatalogs
     private static string Unterminated(string collapsed) =>
         $"CASE WHEN RIGHT({collapsed}, 1) = ';' THEN RTRIM(LEFT({collapsed}, LEN({collapsed}) - 1)) ELSE {collapsed} END";
 
+    // What is left is two things joined: a header NSchema generates, and a body it preserves token for token.
+    // Only the header differs — NSchema parenthesises a parameter list where the author may not have, and both
+    // spellings are valid T-SQL — so the header is compared with its parentheses flattened to whitespace and the
+    // body verbatim.
+    //
+    // Parentheses become a space rather than nothing, or removing one would close a gap the other side has:
+    // 'name (@a' and 'name(@a' must land on the same text, and only a space does that once whitespace collapses.
+    // Flattening cannot hide a change — every character except the brackets survives, so nvarchar(50) against
+    // nvarchar(5) still differs — and grouping means nothing in a parameter list. The body keeps its parentheses,
+    // where grouping decides what the routine does.
     private static string HeaderFlattened(string collapsed, string position) =>
         Collapsed($"REPLACE(REPLACE(LEFT({collapsed}, {position} - 1), '(', ' '), ')', ' ')");
 
@@ -297,10 +320,15 @@ public static class SqlServerCatalogs
              FROM sys.sql_modules m
              JOIN sys.objects o ON o.object_id = m.object_id
              JOIN sys.schemas s ON s.schema_id = o.schema_id
-             CROSS APPLY (SELECT {Collapsed("m.definition")} AS collapsed) AS raw
+             CROSS APPLY ({OpeningLine("m.definition")}) AS opening
+             CROSS APPLY (SELECT STRING_AGG(l.value, CHAR(10)) WITHIN GROUP (ORDER BY l.ordinal) AS body
+                          FROM STRING_SPLIT(m.definition, CHAR(10), 1) AS l
+                          WHERE l.ordinal >= opening.first) AS stripped
+             CROSS APPLY (SELECT {Collapsed("stripped.body")} AS collapsed) AS raw
              CROSS APPLY (SELECT {Unterminated("raw.collapsed")} AS collapsed) AS flat
              CROSS APPLY (SELECT CHARINDEX(' AS ', flat.collapsed) AS split) AS boundary
              CROSS APPLY (SELECT CASE WHEN boundary.split = 0 THEN flat.collapsed
+                                      WHEN o.type = 'TR' THEN SUBSTRING(flat.collapsed, boundary.split, LEN(flat.collapsed))
                                       ELSE {HeaderFlattened("flat.collapsed", "boundary.split")}
                                            + SUBSTRING(flat.collapsed, boundary.split, LEN(flat.collapsed))
                                  END AS definition) AS canonical
@@ -317,6 +345,21 @@ public static class SqlServerCatalogs
              WHERE tr.is_ms_shipped = 0 AND {UserSchemas}
              """,
             "object_id", "parent_id", "create_date", "modify_date"),
+
+        // The events a trigger fires on, read directly rather than through the text of its header. A trigger's
+        // header is regenerated rather than preserved, and the order events appear in is not recoverable — the
+        // catalog records the set, not the sequence the author wrote — so sys.sql_modules compares a trigger's
+        // body alone and the event set is checked here, where dropping one is visible as a missing fact.
+        new("sys.trigger_events",
+            $"""
+             SELECT s.name + '.' + t.name + '.' + tr.name, (SELECT te.* {Json}), NULL
+             FROM sys.trigger_events te
+             JOIN sys.triggers tr ON tr.object_id = te.object_id
+             JOIN sys.objects t ON t.object_id = tr.parent_id
+             JOIN sys.schemas s ON s.schema_id = t.schema_id
+             WHERE tr.is_ms_shipped = 0 AND {UserSchemas}
+             """,
+            "object_id"),
 
         new("sys.sequences",
             $"""

@@ -7,7 +7,7 @@
   "expectations": {
     "postgres": {
       "outcome": "fidelityFailed",
-      "because": "NSchema.Postgres does not model table partitioning. The payment table is imported as a plain table and its seven monthly partitions as unrelated standalone tables, losing PARTITION BY RANGE, every ATTACH PARTITION and every bound."
+      "because": "One gap. Partitioning is not modelled: the payment table is imported as a plain table and its seven monthly partitions as unrelated standalone tables, losing PARTITION BY RANGE, every ATTACH PARTITION and every bound. Import now says so rather than passing over it, so the gap is reported even though it is not yet closed. Nearly all of the testimony is this one gap refracted through pg_class, pg_inherits, pg_attribute and pg_constraint, which all carry the inheritance bookkeeping Postgres maintains for an attached partition."
     }
   }
 }
