@@ -8,6 +8,9 @@ namespace NSchema.Gauntlet.Services.Engines.Sqlite;
 /// </summary>
 public sealed class SqliteDatabase(SqliteEngine engine, PluginSettings plugin, string connectionString) : Database(engine, plugin, connectionString)
 {
+    /// <summary>The suffix marking a selection that replaces another column's value.</summary>
+    private const string Override = "__as";
+
     protected override async Task ExecuteCore(Sql sql, CancellationToken cancellationToken = default)
     {
         await using var connection = new SqliteConnection(ConnectionString);
@@ -18,55 +21,68 @@ public sealed class SqliteDatabase(SqliteEngine engine, PluginSettings plugin, s
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Sqlite's own account of this database, one fact per column of every pragma it will answer.
+    /// </summary>
+    /// <remarks>
+    /// The columns are enumerated from the reader rather than named by the query, so a pragma that gains one in a
+    /// later Sqlite is compared without this file changing. See <see cref="SqliteCatalogs"/> for what is read and
+    /// what is deliberately left out.
+    /// </remarks>
     public override async Task<IReadOnlyList<CatalogFact>> Catalog(CancellationToken cancellationToken = default)
     {
         await using var connection = new SqliteConnection(ConnectionString);
         await connection.OpenAsync(cancellationToken);
 
-        await using var command = connection.CreateCommand();
-        // Sqlite ignores a declared type's spelling — semantics are its documented affinity rules,
-        // plus the one exception that the exact word INTEGER makes a primary key the rowid alias.
-        //
-        // Sqlite has no system catalogs to dump the way Postgres and SQL Server do: sqlite_master holds the
-        // original DDL text and everything else comes from pragmas. So this is still a chosen projection,
-        // and still carries the blind spot that implies — partial and expression indexes, WITHOUT ROWID,
-        // STRICT and generated columns are all invisible here.
-        command.CommandText = """
-            WITH columns AS (
-                SELECT m.name AS "table", p.name AS "column", p.type AS declared,
-                       p."notnull" AS not_null, p.dflt_value AS default_value, p.pk AS pk
-                FROM sqlite_master m JOIN pragma_table_info(m.name) p
-                WHERE m.type = 'table' AND m.name NOT LIKE 'sqlite_%'
-            )
-            SELECT 'sqlite_master', name, 'type', type
-            FROM sqlite_master
-            WHERE type IN ('table', 'view', 'trigger', 'index') AND name NOT LIKE 'sqlite_%'
-            UNION ALL
-            SELECT 'column', "table" || '.' || "column", 'affinity',
-                   CASE
-                       WHEN upper(coalesce(declared, '')) = 'INTEGER' THEN 'INTEGER'
-                       WHEN instr(upper(declared), 'INT') > 0 THEN 'int-affinity'
-                       WHEN instr(upper(declared), 'CHAR') > 0 OR instr(upper(declared), 'CLOB') > 0 OR instr(upper(declared), 'TEXT') > 0 THEN 'text-affinity'
-                       WHEN declared IS NULL OR declared = '' OR instr(upper(declared), 'BLOB') > 0 THEN 'blob-affinity'
-                       WHEN instr(upper(declared), 'REAL') > 0 OR instr(upper(declared), 'FLOA') > 0 OR instr(upper(declared), 'DOUB') > 0 THEN 'real-affinity'
-                       ELSE 'numeric-affinity'
-                   END
-            FROM columns
-            UNION ALL
-            SELECT 'column', "table" || '.' || "column", 'notnull', CAST(not_null AS TEXT) FROM columns
-            UNION ALL
-            SELECT 'column', "table" || '.' || "column", 'default', coalesce(default_value, '') FROM columns
-            UNION ALL
-            SELECT 'column', "table" || '.' || "column", 'pk', CAST(pk AS TEXT) FROM columns
-            """;
-
         var facts = new List<CatalogFact>();
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
+
+
+        foreach (var catalog in SqliteCatalogs.All)
         {
-            facts.Add(new CatalogFact(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+            var exclude = catalog.Exclude.ToHashSet(StringComparer.Ordinal);
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = catalog.Sql;
+
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var identity = string.Join('.', catalog.Identity.Select(column => Value(reader, reader.GetOrdinal(column))));
+
+                // A '<column>__as' selection replaces that column's value, which is how a value is normalised
+                // without the query having to name every column it is not normalising.
+                var overrides = new Dictionary<string, string>(StringComparer.Ordinal);
+                for (var column = 0; column < reader.FieldCount; column++)
+                {
+                    if (reader.GetName(column).EndsWith(Override, StringComparison.Ordinal))
+                    {
+                        overrides[reader.GetName(column)[..^Override.Length]] = Value(reader, column);
+                    }
+                }
+
+                for (var column = 0; column < reader.FieldCount; column++)
+                {
+                    var name = reader.GetName(column);
+
+                    // The identity is what a fact is about, so repeating it as an attribute of itself says nothing.
+                    if (exclude.Contains(name)
+                        || name.EndsWith(Override, StringComparison.Ordinal)
+                        || catalog.Identity.Contains(name, StringComparer.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    var value = overrides.TryGetValue(name, out var replacement) ? replacement : Value(reader, column);
+                    facts.Add(new CatalogFact(catalog.Name, identity, name, value));
+                }
+            }
         }
 
         return facts;
     }
+
+    // Null is a value a column can hold rather than an absence, so it is spelled out: a default going from
+    // something to nothing has to read as a change, not as an attribute that stopped existing.
+    private static string Value(System.Data.Common.DbDataReader reader, int column) =>
+        reader.IsDBNull(column) ? "NULL" : reader.GetValue(column).ToString() ?? string.Empty;
 }
