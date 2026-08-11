@@ -38,7 +38,15 @@ public sealed class Project
     /// <summary>
     /// Connects the project to the given database.
     /// </summary>
-    public void ConnectTo(Database database) => File.WriteAllText(_databaseFile, database.GetConfigurationNSql().Value);
+    public void ConnectTo(Database database)
+    {
+        File.WriteAllText(_databaseFile, database.GetConfigurationNSql().Value);
+
+        if (database.GetEditorConfig() is { } editorConfig)
+        {
+            File.WriteAllText(Path.Combine(Directory, ".editorconfig"), editorConfig);
+        }
+    }
 
     /// <summary>
     /// Gets this project's DDL.

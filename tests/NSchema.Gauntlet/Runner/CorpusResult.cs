@@ -21,6 +21,15 @@ public sealed record CorpusResult
     public required CliResult Adoption { get; init; }
 
     /// <summary>
+    /// The migration actions this case exercised: adopting the schema, rebuilding it, and taking it away.
+    /// </summary>
+    /// <remarks>
+    /// Pinned per case rather than as one matrix at the end of the run, so a coverage regression lands in the diff
+    /// of the case that caused it and a filtered run does not fail for having run less.
+    /// </remarks>
+    public IReadOnlyCollection<string> Actions { get; init; } = [];
+
+    /// <summary>
     /// A second plan, once the adoption has been applied.
     /// </summary>
     public required CliResult Verification { get; init; }
@@ -101,6 +110,16 @@ public sealed record CorpusResult
     public string Render()
     {
         var report = new StringBuilder();
+
+        if (Actions.Count > 0)
+        {
+            report.AppendLine("=== actions ===");
+            foreach (var action in Actions.Order(StringComparer.Ordinal))
+            {
+                report.AppendLine(action);
+            }
+            report.AppendLine();
+        }
 
         report.AppendLine("=== first plan against the imported project ===");
         report.AppendLine(Adoption.StandardOutput.TrimEnd());

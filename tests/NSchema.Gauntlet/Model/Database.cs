@@ -14,6 +14,11 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
     protected string ConnectionString { get; } = connectionString;
 
     /// <summary>
+    /// The engine this database runs on, which is the axis a coverage report is grouped by.
+    /// </summary>
+    public EngineName Engine => engine.Name;
+
+    /// <summary>
     /// Gets the PLUGIN and DATABASE statements a project needs to reach this database.
     /// </summary>
     public Nsql GetConfigurationNSql() => Nsql.From(
@@ -25,6 +30,24 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
          );
 
          """);
+
+    /// <summary>
+    /// The <c>.editorconfig</c> a project needs alongside that configuration, or <see langword="null"/> when it
+    /// needs none.
+    /// </summary>
+    /// <remarks>
+    /// A plugin loaded from a path is reported on every run, and that report lands inside the captured plan.
+    /// This override lets us hide it so snapshots stay consistent.
+    /// </remarks>
+    public string? GetEditorConfig() => plugin.Assembly is null
+        ? null
+        : """
+          root = true
+
+          [*]
+          nschema_diagnostic.plugin-from-path.severity = none
+
+          """.TrimStart();
 
     /// <summary>
     /// Localizes NSQL for this database's engine.

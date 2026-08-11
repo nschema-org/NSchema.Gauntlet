@@ -31,12 +31,27 @@ public sealed class NSchemaClient
             : Path.Combine(_directory, OperatingSystem.IsWindows() ? "nschema.exe" : "nschema");
     }
 
+    /// <summary>
+    /// The directory holding the CLI this run drives, and the engine assembly beneath it, once it is there.
+    /// </summary>
+    public async Task<string> ResolveDirectory(CancellationToken ct)
+    {
+        await EnsureInstalled(ct);
+        return Path.GetDirectoryName(_executable)!;
+    }
+
     public Task<ErrorOr<Success>> Init(string directory, CancellationToken ct) => Require(directory, ["init"], ct);
     public Task<ErrorOr<Success>> Refresh(string directory, CancellationToken ct) => Require(directory, ["refresh"], ct);
     public Task<ErrorOr<Success>> Import(string directory, CancellationToken ct) => Require(directory, ["import", "--force"], ct);
     public Task<CliResult> Format(string directory, CancellationToken ct) => Run(directory, ["format", "--check"], ct);
 
-    public Task<CliResult> Plan(string dir, DestructiveActionPolicy destructiveActions, bool detailedExitCode, CancellationToken ct)
+    public Task<CliResult> Plan(string dir, DestructiveActionPolicy destructiveActions, bool detailedExitCode, CancellationToken ct) =>
+        Plan(dir, destructiveActions, detailedExitCode, planFile: null, ct);
+
+    /// <summary>
+    /// Plans, and with <paramref name="planFile"/> also writes the plan in the form NSchema saves it.
+    /// </summary>
+    public Task<CliResult> Plan(string dir, DestructiveActionPolicy destructiveActions, bool detailedExitCode, string? planFile, CancellationToken ct)
     {
         List<string> args = ["plan", "--destructive-actions", destructiveActions.ToString()];
 
@@ -44,6 +59,12 @@ public sealed class NSchemaClient
         {
             args.Add("--detailed-exitcode");
         }
+
+        if (planFile is { Length: > 0 })
+        {
+            args.AddRange(["--out", planFile]);
+        }
+
         return Run(dir, args, ct);
     }
 

@@ -1,12 +1,13 @@
 using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Services.Cli;
+using NSchema.Gauntlet.Services.Coverage;
 
 namespace NSchema.Gauntlet.Runner;
 
 /// <summary>
 /// Runs a scenario against a live database.
 /// </summary>
-public sealed class ScenarioRunner(NSchemaClient nSchema)
+public sealed class ScenarioRunner(NSchemaClient nSchema, PlanObserver observer)
 {
     /// <summary>
     /// Runs the given scenario against the given database and returns the result.
@@ -59,7 +60,8 @@ public sealed class ScenarioRunner(NSchemaClient nSchema)
         // The change under test: plan it, then attempt it.
         var target = database.Localize(scenario.ScenarioNsql);
         project.SetSchema(target);
-        var plan = await nSchema.Plan(project.Directory, scenario.DestructiveActions, detailedExitCode: false, ct);
+        var observed = await observer.Plan(database, project.Directory, scenario.DestructiveActions, detailedExitCode: false, ct);
+        var plan = observed.Result;
         var apply = await nSchema.Apply(project.Directory, scenario.DestructiveActions, ct);
 
         // A refusal is an outcome, not an error: what it has to prove is that the database was left
@@ -78,6 +80,7 @@ public sealed class ScenarioRunner(NSchemaClient nSchema)
                 new ScenarioStage(StageName.Apply, apply)
             ],
             Failure = apply.Succeeded ? null : new ScenarioStage(StageName.Apply, apply),
+            Actions = observed.Actions,
             Verification = await nSchema.Plan(project.Directory, DestructiveActionPolicy.Error, detailedExitCode: true, ct),
         };
     }
