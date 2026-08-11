@@ -11,7 +11,7 @@ public sealed class CorpusTests(GauntletRun run)
     public async Task Corpus(CorpusName corpusName, EngineName engineName)
     {
         // Arrange
-        var runner = new CorpusRunner(run.Cli, run.Project);
+        var runner = new CorpusRunner(run.Cli, run.Project, run.Observer);
         var corpus = run.Corpus.Get(corpusName);
         var engine = run.Engines.Get(engineName);
 

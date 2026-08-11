@@ -14,6 +14,11 @@ public abstract class Database(DatabaseEngine engine, PluginSettings plugin, str
     protected string ConnectionString { get; } = connectionString;
 
     /// <summary>
+    /// The engine this database runs on, which is the axis a coverage report is grouped by.
+    /// </summary>
+    public EngineName Engine => engine.Name;
+
+    /// <summary>
     /// Gets the PLUGIN and DATABASE statements a project needs to reach this database.
     /// </summary>
     public Nsql GetConfigurationNSql() => Nsql.From(

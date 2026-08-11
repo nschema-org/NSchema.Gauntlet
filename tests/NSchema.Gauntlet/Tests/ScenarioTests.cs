@@ -11,7 +11,7 @@ public sealed class ScenarioTests(GauntletRun run)
     public async Task Scenarios(ScenarioName scenarioName, EngineName engineName)
     {
         // Arrange
-        var runner = new ScenarioRunner(run.Cli);
+        var runner = new ScenarioRunner(run.Cli, run.Observer);
         var scenario = run.Scenarios.Get(scenarioName, engineName);
         var engine = run.Engines.Get(engineName);
         var database = await engine.CreateDatabase(scenario.Name.Value, TestContext.Current.CancellationToken);

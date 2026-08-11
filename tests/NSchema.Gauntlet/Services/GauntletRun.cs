@@ -1,6 +1,7 @@
 using NSchema.Gauntlet.Model;
 using NSchema.Gauntlet.Services.Cli;
 using NSchema.Gauntlet.Services.Corpus;
+using NSchema.Gauntlet.Services.Coverage;
 using NSchema.Gauntlet.Services.Engines;
 using NSchema.Gauntlet.Services.Scenarios;
 
@@ -22,6 +23,7 @@ public sealed class GauntletRun : IAsyncLifetime
         Corpus = new CorpusCatalog(_settings.Root, _settings.Corpus);
         Engines = new EngineFleet(_settings.Engines, _settings.TempDirectory);
         Cli = new NSchemaClient(_settings.Cli, _settings.NuGet, _settings.TempDirectory);
+        Observer = new PlanObserver(Cli, Coverage);
     }
 
     /// <summary>
@@ -43,6 +45,16 @@ public sealed class GauntletRun : IAsyncLifetime
     /// Gets the CLI the run drives.
     /// </summary>
     public NSchemaClient Cli { get; }
+
+    /// <summary>
+    /// Gets which actions the run has exercised, accumulated across every case.
+    /// </summary>
+    public ActionLedger Coverage { get; } = new();
+
+    /// <summary>
+    /// Gets the planner that records what it plans.
+    /// </summary>
+    public PlanObserver Observer { get; }
 
     /// <summary>
     /// Creates and configures a new project.
@@ -71,9 +83,36 @@ public sealed class GauntletRun : IAsyncLifetime
         }
     }
 
+    // Written rather than asserted. Coverage is a measurement of the suite, not a claim about the engine: a
+    // filtered run legitimately exercises less, so failing on a number would fail for running fewer tests. The
+    // report is an artifact to read, and it says how much of the suite it saw.
+    private async ValueTask WriteCoverage()
+    {
+        if (Coverage.IsEmpty)
+        {
+            return;
+        }
+
+        try
+        {
+            var surface = ActionSurface.Read(await Cli.ResolveDirectory(CancellationToken.None));
+            var report = Coverage.Describe(surface, [.. Engines.Names]);
+
+            var directory = Path.Combine(_settings.Root, "artifacts");
+            Directory.CreateDirectory(directory);
+            await File.WriteAllTextAsync(Path.Combine(directory, "coverage.md"), report);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            // A run that finished has already said what it had to say; failing its teardown over the bookkeeping
+            // would replace a result with a report about not writing a report.
+        }
+    }
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
+        await WriteCoverage();
         await Engines.DisposeAsync();
         try
         {
