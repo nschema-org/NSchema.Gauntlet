@@ -1,0 +1,9 @@
+{
+  "description": "Widens a plain view's body, which is replaced in place rather than dropped and recreated.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": { "outcome": "succeeded" },
+    "sqlserver": { "outcome": "succeeded" },
+    "sqlite": { "outcome": "succeeded" }
+  }
+}

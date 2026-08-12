@@ -1,0 +1,16 @@
+{
+  "description": "Renames a view, which is a rename rather than a drop and a create.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "Sqlite has no ALTER VIEW RENAME; a view is renamed by dropping and recreating it, which NSchema.Sqlite declines to do silently."
+    }
+  }
+}

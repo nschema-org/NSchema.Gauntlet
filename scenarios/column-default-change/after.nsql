@@ -1,0 +1,5 @@
+CREATE TABLE {schema}.settings (
+  id int NOT NULL,
+  retries int NOT NULL DEFAULT 5,
+  CONSTRAINT pk_settings PRIMARY KEY (id)
+);

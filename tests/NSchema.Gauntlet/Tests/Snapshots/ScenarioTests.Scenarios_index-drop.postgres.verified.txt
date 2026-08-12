@@ -1,0 +1,46 @@
+﻿=== actions ===
+DropIndex
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.events
+    - index ix_events_kind
+
+Plan: 0 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/1]
+DROP INDEX "public"."ix_events_kind"
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.events
+    - index ix_events_kind
+
+Plan: 0 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/1]
+DROP INDEX "public"."ix_events_kind"
+
+NSchema will execute 1 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 changed, 1 destroyed (1 statement).
+exit: 0
+

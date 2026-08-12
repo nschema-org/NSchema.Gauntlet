@@ -1,0 +1,24 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+No changes detected.
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+No changes detected.
+
+✔ No changes. The database already matches the desired schema.
+Updating state store...
+exit: 0
+

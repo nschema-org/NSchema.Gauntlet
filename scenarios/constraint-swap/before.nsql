@@ -1,0 +1,8 @@
+CREATE TABLE {schema}.accounts (
+  id int NOT NULL,
+  code varchar(20) NOT NULL,
+  balance int NOT NULL,
+  CONSTRAINT pk_accounts PRIMARY KEY (id),
+  CONSTRAINT uq_accounts_code UNIQUE (code),
+  CONSTRAINT ck_accounts_balance CHECK (balance >= 0)
+);

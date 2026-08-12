@@ -1,0 +1,37 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ view main.order_list → order_index
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+                                                     Diagnostics                                                     
+╭──────────┬────────────────┬─────────────┬─────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Code        │ Message                                                                 │
+├──────────┼────────────────┼─────────────┼─────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support renaming a view (drop and recreate it instead). │
+╰──────────┴────────────────┴─────────────┴─────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ view main.order_list → order_index
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+                                                     Diagnostics                                                     
+╭──────────┬────────────────┬─────────────┬─────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Code        │ Message                                                                 │
+├──────────┼────────────────┼─────────────┼─────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support renaming a view (drop and recreate it instead). │
+╰──────────┴────────────────┴─────────────┴─────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

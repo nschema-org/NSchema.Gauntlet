@@ -1,0 +1,6 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+CREATE VIEW {schema}.order_list AS SELECT id FROM {schema}.orders;

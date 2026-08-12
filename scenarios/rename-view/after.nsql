@@ -1,0 +1,8 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+CREATE VIEW {schema}.order_index AS SELECT id FROM {schema}.orders;
+
+RENAME VIEW {schema}.order_list TO order_index;

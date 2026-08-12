@@ -1,0 +1,15 @@
+{
+  "description": "Documents a table, a column and a view. Sqlite records no comment anywhere, so a project declaring one there cannot be realised and is reported rather than applied; its variant declares the same schema undocumented.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "succeeded"
+    }
+  }
+}
