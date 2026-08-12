@@ -1,0 +1,86 @@
+﻿=== actions ===
+CreateExtension
+DropExtension
+SetExtensionComment
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ extension citext comment: "data type for case-insensitive character strings" → "Case-insensitive text, for names people type inconsistently."
+
+- extension hstore
+
++ extension pg_trgm ("Trigram matching, for searching text that is nearly right.")
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/4]
+CREATE EXTENSION IF NOT EXISTS "pg_trgm"
+
+-- [2/4]
+COMMENT ON EXTENSION "citext" IS $comment$Case-insensitive text, for names people type inconsistently.$comment$
+
+-- [3/4]
+COMMENT ON EXTENSION "pg_trgm" IS $comment$Trigram matching, for searching text that is nearly right.$comment$
+
+-- [4/4]
+DROP EXTENSION "hstore"
+
+                                                  Diagnostics                                                   
+╭──────────┬─────────────────────┬────────────────────┬────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                │
+├──────────┼─────────────────────┼────────────────────┼────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropExtension. │
+╰──────────┴─────────────────────┴────────────────────┴────────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ extension citext comment: "data type for case-insensitive character strings" → "Case-insensitive text, for names people type inconsistently."
+
+- extension hstore
+
++ extension pg_trgm ("Trigram matching, for searching text that is nearly right.")
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/4]
+CREATE EXTENSION IF NOT EXISTS "pg_trgm"
+
+-- [2/4]
+COMMENT ON EXTENSION "citext" IS $comment$Case-insensitive text, for names people type inconsistently.$comment$
+
+-- [3/4]
+COMMENT ON EXTENSION "pg_trgm" IS $comment$Trigram matching, for searching text that is nearly right.$comment$
+
+-- [4/4]
+DROP EXTENSION "hstore"
+
+                                                  Diagnostics                                                   
+╭──────────┬─────────────────────┬────────────────────┬────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                │
+├──────────┼─────────────────────┼────────────────────┼────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropExtension. │
+╰──────────┴─────────────────────┴────────────────────┴────────────────────────────────────────────────────────╯
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 added, 1 changed, 1 destroyed (4 statements).
+exit: 0
+

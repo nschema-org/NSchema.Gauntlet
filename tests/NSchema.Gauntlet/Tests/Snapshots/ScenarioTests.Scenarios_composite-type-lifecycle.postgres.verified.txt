@@ -1,0 +1,69 @@
+﻿=== actions ===
+CreateCompositeType
+DropCompositeType
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ type public.coords (lat int, lon int)
+
+- type public.phone
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+SQL
+───
+-- [1/2]
+CREATE TYPE "public"."coords" AS ("lat" integer, "lon" integer)
+
+-- [2/2]
+DROP TYPE "public"."phone"
+
+                                                    Diagnostics                                                     
+╭──────────┬─────────────────────┬────────────────────┬────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                    │
+├──────────┼─────────────────────┼────────────────────┼────────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropCompositeType. │
+╰──────────┴─────────────────────┴────────────────────┴────────────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ type public.coords (lat int, lon int)
+
+- type public.phone
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+SQL
+───
+-- [1/2]
+CREATE TYPE "public"."coords" AS ("lat" integer, "lon" integer)
+
+-- [2/2]
+DROP TYPE "public"."phone"
+
+                                                    Diagnostics                                                     
+╭──────────┬─────────────────────┬────────────────────┬────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                    │
+├──────────┼─────────────────────┼────────────────────┼────────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropCompositeType. │
+╰──────────┴─────────────────────┴────────────────────┴────────────────────────────────────────────────────────────╯
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 added, 1 destroyed (2 statements).
+exit: 0
+

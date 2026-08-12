@@ -1,0 +1,17 @@
+{
+  "description": "Moves USAGE on a schema from one role to another, which is a revoke and a grant against a container rather than a table.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "NSchema.SqlServer does not implement the grant schema usage action, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has neither schemas nor a privilege system, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

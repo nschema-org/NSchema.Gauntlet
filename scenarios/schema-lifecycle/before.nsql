@@ -1,0 +1,8 @@
+CREATE SCHEMA reporting;
+
+CREATE SCHEMA staging;
+
+CREATE TABLE {schema}.facts (
+  id int NOT NULL,
+  CONSTRAINT pk_facts PRIMARY KEY (id)
+);

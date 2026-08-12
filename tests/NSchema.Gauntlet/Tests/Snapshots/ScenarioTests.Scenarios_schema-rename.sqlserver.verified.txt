@@ -1,0 +1,37 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ schema billing → invoicing
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+                                                                                       Diagnostics                                                                                        
+╭──────────┬───────────────────┬───────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source            │ Code              │ Message                                                                                                                             │
+├──────────┼───────────────────┼───────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlserver-dialect │ requires-recreate │ SQL Server cannot rename schema billing: there is no ALTER SCHEMA … RENAME. Create the new schema and transfer its objects instead. │
+╰──────────┴───────────────────┴───────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ schema billing → invoicing
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+                                                                                       Diagnostics                                                                                        
+╭──────────┬───────────────────┬───────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source            │ Code              │ Message                                                                                                                             │
+├──────────┼───────────────────┼───────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlserver-dialect │ requires-recreate │ SQL Server cannot rename schema billing: there is no ALTER SCHEMA … RENAME. Create the new schema and transfer its objects instead. │
+╰──────────┴───────────────────┴───────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

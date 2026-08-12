@@ -1,0 +1,16 @@
+{
+  "description": "Renames the schema-scoped types via directives, two of them while columns are typed by them. The policy is Allow rather than Error because renaming a type a column uses also re-states that column's type, which counts as a destructive AlterColumn even though the rename already carried it. SQL Server sees only the two types it has.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has none of these types, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

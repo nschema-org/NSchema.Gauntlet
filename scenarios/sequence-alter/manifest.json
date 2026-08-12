@@ -1,0 +1,16 @@
+{
+  "description": "Puts a sequence through all three of the things that can happen to one in the same change: an option altered in place, one sequence added, another taken away. A sequence holds a position, so altering it must not reset it.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no sequence, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

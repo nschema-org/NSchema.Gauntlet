@@ -1,0 +1,16 @@
+{
+  "description": "Takes a privilege away from one role and gives another role a privilege it did not have, on the same table. The roles are made by a run-once pre-deployment script, because a grant in the before-state needs its grantee to exist before the bootstrap that declares it.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no roles and no privilege system, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

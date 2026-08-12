@@ -1,0 +1,30 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ schema warehouse
+    + grant usage to warehouse_loader
+
+
++ script create_warehouse_roles (on pre deployment)
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE ROLE warehouse_reader;
+  CREATE ROLE warehouse_loader;
+                                          Diagnostics                                           
+╭──────────┬────────────────┬─────────────┬────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Code        │ Message                                            │
+├──────────┼────────────────┼─────────────┼────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support schemas other than 'main'. │
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support grants.                    │
+╰──────────┴────────────────┴─────────────┴────────────────────────────────────────────────────╯
+exit: 1
+

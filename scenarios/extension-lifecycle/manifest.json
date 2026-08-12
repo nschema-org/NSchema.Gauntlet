@@ -1,0 +1,17 @@
+{
+  "description": "Installs one extension, documents it and another, and removes a third. Extensions are database-global rather than schema-scoped, so this is the only object kind whose lifecycle happens outside a schema entirely. Every extension left standing carries a comment, because an undocumented one is read back with the description the extension ships and never settles.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "SQL Server has no extension mechanism, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no extension mechanism NSchema can declare, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

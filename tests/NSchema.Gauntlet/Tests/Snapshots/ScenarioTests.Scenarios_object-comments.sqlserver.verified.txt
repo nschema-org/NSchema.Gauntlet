@@ -1,0 +1,87 @@
+﻿=== actions ===
+SetConstraintComment
+SetIndexComment
+SetRoutineComment
+SetTriggerComment
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.docs
+    ~ check constraint ck_docs_title comment: <none> → "A document has to be called something."
+    ~ index ix_docs_title comment: <none> → "Documents by title."
+    ~ trigger docs_touch comment: <none> → "Runs after every insert."
+
+~ function dbo.bump comment: <none> → "Adds one to what it is given."
+
+Plan: 0 to add, 5 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Documents by title.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'docs', @level2type = N'INDEX', @level2name = N'ix_docs_title'
+
+-- [2/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Runs after every insert.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'docs', @level2type = N'TRIGGER', @level2name = N'docs_touch'
+
+-- [3/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'A document has to be called something.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'docs', @level2type = N'CONSTRAINT', @level2name = N'ck_docs_title'
+
+-- [4/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Adds one to what it is given.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'FUNCTION', @level1name = N'bump'
+                                        Diagnostics                                        
+╭──────────┬─────────────┬─────────────────────┬──────────────────────────────────────────╮
+│ Severity │ Source      │ Code                │ Message                                  │
+├──────────┼─────────────┼─────────────────────┼──────────────────────────────────────────┤
+│ warning  │ schema-lint │ missing-primary-key │ Table 'dbo.docs_log' has no primary key. │
+╰──────────┴─────────────┴─────────────────────┴──────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.docs
+    ~ check constraint ck_docs_title comment: <none> → "A document has to be called something."
+    ~ index ix_docs_title comment: <none> → "Documents by title."
+    ~ trigger docs_touch comment: <none> → "Runs after every insert."
+
+~ function dbo.bump comment: <none> → "Adds one to what it is given."
+
+Plan: 0 to add, 5 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Documents by title.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'docs', @level2type = N'INDEX', @level2name = N'ix_docs_title'
+
+-- [2/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Runs after every insert.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'docs', @level2type = N'TRIGGER', @level2name = N'docs_touch'
+
+-- [3/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'A document has to be called something.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TABLE', @level1name = N'docs', @level2type = N'CONSTRAINT', @level2name = N'ck_docs_title'
+
+-- [4/4]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Adds one to what it is given.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'FUNCTION', @level1name = N'bump'
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 5 changed (4 statements).
+                                        Diagnostics                                        
+╭──────────┬─────────────┬─────────────────────┬──────────────────────────────────────────╮
+│ Severity │ Source      │ Code                │ Message                                  │
+├──────────┼─────────────┼─────────────────────┼──────────────────────────────────────────┤
+│ warning  │ schema-lint │ missing-primary-key │ Table 'dbo.docs_log' has no primary key. │
+╰──────────┴─────────────┴─────────────────────┴──────────────────────────────────────────╯
+exit: 0
+

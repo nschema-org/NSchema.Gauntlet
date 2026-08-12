@@ -1,0 +1,9 @@
+CREATE TYPE {schema}.address AS (street varchar(100), zip int);
+
+CREATE TYPE {schema}.coords AS (lat int, lon int);
+
+CREATE TABLE {schema}.offices (
+  id int NOT NULL,
+  location {schema}.address NULL,
+  CONSTRAINT pk_offices PRIMARY KEY (id)
+);

@@ -1,0 +1,12 @@
+CREATE DOMAIN {schema}.reference_code AS varchar(10);
+
+CREATE SEQUENCE {schema}.ticket_number (START 100);
+
+CREATE TABLE {schema}.invoices (
+  id int NOT NULL,
+  reference {schema}.reference_code NOT NULL,
+  CONSTRAINT pk_invoices PRIMARY KEY (id)
+);
+
+RENAME DOMAIN {schema}.code TO reference_code;
+RENAME SEQUENCE {schema}.ticket_no TO ticket_number;

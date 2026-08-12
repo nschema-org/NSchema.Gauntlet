@@ -1,0 +1,95 @@
+﻿=== actions ===
+CreateTrigger
+CreateView
+DropTrigger
+DropView
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.docs
+    - trigger docs_touch
+    + trigger docs_stamp
+
++ view dbo.doc_names
+
+- view dbo.doc_titles
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+
+SQL
+───
+-- [1/4]
+DROP VIEW [dbo].[doc_titles]
+
+-- [2/4]
+DROP TRIGGER [dbo].[docs_touch]
+
+-- [3/4]
+CREATE TRIGGER [dbo].[docs_stamp] ON [dbo].[docs] AFTER INSERT AS BEGIN
+  INSERT INTO dbo.docs_log (happened) VALUES (1);
+END
+
+-- [4/4]
+CREATE VIEW [dbo].[doc_names] AS SELECT title FROM dbo.docs
+                                                Diagnostics                                                 
+╭──────────┬─────────────────────┬─────────────────────┬───────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                │ Message                                           │
+├──────────┼─────────────────────┼─────────────────────┼───────────────────────────────────────────────────┤
+│ warning  │ schema-lint         │ missing-primary-key │ Table 'dbo.docs_log' has no primary key.          │
+│ info     │ destructive-actions │ destructive-change  │ This plan contains destructive actions: DropView. │
+╰──────────┴─────────────────────┴─────────────────────┴───────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.docs
+    - trigger docs_touch
+    + trigger docs_stamp
+
++ view dbo.doc_names
+
+- view dbo.doc_titles
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+
+SQL
+───
+-- [1/4]
+DROP VIEW [dbo].[doc_titles]
+
+-- [2/4]
+DROP TRIGGER [dbo].[docs_touch]
+
+-- [3/4]
+CREATE TRIGGER [dbo].[docs_stamp] ON [dbo].[docs] AFTER INSERT AS BEGIN
+  INSERT INTO dbo.docs_log (happened) VALUES (1);
+END
+
+-- [4/4]
+CREATE VIEW [dbo].[doc_names] AS SELECT title FROM dbo.docs
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 2 added, 1 changed, 2 destroyed (4 statements).
+                                                Diagnostics                                                 
+╭──────────┬─────────────────────┬─────────────────────┬───────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                │ Message                                           │
+├──────────┼─────────────────────┼─────────────────────┼───────────────────────────────────────────────────┤
+│ warning  │ schema-lint         │ missing-primary-key │ Table 'dbo.docs_log' has no primary key.          │
+│ info     │ destructive-actions │ destructive-change  │ This plan contains destructive actions: DropView. │
+╰──────────┴─────────────────────┴─────────────────────┴───────────────────────────────────────────────────╯
+exit: 0
+

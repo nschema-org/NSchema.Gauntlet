@@ -1,0 +1,11 @@
+SCRIPT create_ledger_roles RUN ONCE ON PRE DEPLOYMENT AS $$
+  CREATE USER ledger_reader WITHOUT LOGIN;
+  CREATE USER ledger_writer WITHOUT LOGIN;
+$$;
+
+CREATE TABLE {schema}.ledger (
+  id int NOT NULL,
+  CONSTRAINT pk_ledger PRIMARY KEY (id)
+);
+
+GRANT SELECT, INSERT ON {schema}.ledger TO ledger_writer;

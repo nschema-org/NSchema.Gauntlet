@@ -1,0 +1,17 @@
+{
+  "description": "Swaps a domain's check, tightens it to NOT NULL and gives it a default, all while a column is typed by it. None of the three has an excuse to recreate the domain, so all three have to alter it in place.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "SQL Server's alias types carry no check constraint, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no domain type, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

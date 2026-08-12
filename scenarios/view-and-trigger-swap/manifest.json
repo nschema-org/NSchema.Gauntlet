@@ -1,0 +1,15 @@
+{
+  "description": "Replaces a view and a trigger with differently-named ones, so both are created and dropped in a single change. Neither is renameable, and a corpus only ever creates them from empty — this is the only place either is dropped from a database that keeps running.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "succeeded"
+    }
+  }
+}

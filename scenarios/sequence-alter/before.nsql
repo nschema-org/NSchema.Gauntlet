@@ -1,0 +1,3 @@
+CREATE SEQUENCE {schema}.ticket_no (START 100, INCREMENT 1);
+
+CREATE SEQUENCE {schema}.batch_no (START 1);

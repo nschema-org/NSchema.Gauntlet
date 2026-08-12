@@ -1,0 +1,1 @@
+CREATE DOMAIN {schema}.code AS varchar(20);

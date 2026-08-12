@@ -1,0 +1,10 @@
+--- Case-insensitive text, for names people type inconsistently.
+CREATE EXTENSION citext;
+
+--- Trigram matching, for searching text that is nearly right.
+CREATE EXTENSION pg_trgm;
+
+CREATE TABLE {schema}.notes (
+  id int NOT NULL,
+  CONSTRAINT pk_notes PRIMARY KEY (id)
+);

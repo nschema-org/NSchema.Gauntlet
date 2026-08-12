@@ -1,0 +1,7 @@
+CREATE DOMAIN {schema}.score AS int CONSTRAINT score_positive CHECK (VALUE >= 0);
+
+CREATE TABLE {schema}.reviews (
+  id int NOT NULL,
+  rating {schema}.score NOT NULL,
+  CONSTRAINT pk_reviews PRIMARY KEY (id)
+);

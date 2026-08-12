@@ -1,0 +1,16 @@
+{
+  "description": "Widens a domain's base type, which is the one domain change with no in-place form: the domain is dropped and recreated. Nothing is typed by it here, because a domain a column uses cannot be dropped at all and NSchema plans the drop anyway rather than reporting it.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no domain type, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

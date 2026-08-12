@@ -1,0 +1,21 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table main.orders
+    + id int not null identity
+    + total int not null
+
+Plan: 3 to add, 0 to change, 0 to destroy.
+                                                                                      Diagnostics                                                                                      
+╭──────────┬────────────────┬─────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Code        │ Message                                                                                                                                   │
+├──────────┼────────────────┼─────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support identity columns (column 'id'). Model an auto-incrementing key as an INTEGER primary key (a rowid alias) instead. │
+╰──────────┴────────────────┴─────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

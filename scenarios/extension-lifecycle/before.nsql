@@ -1,0 +1,8 @@
+CREATE EXTENSION citext;
+
+CREATE EXTENSION hstore;
+
+CREATE TABLE {schema}.notes (
+  id int NOT NULL,
+  CONSTRAINT pk_notes PRIMARY KEY (id)
+);

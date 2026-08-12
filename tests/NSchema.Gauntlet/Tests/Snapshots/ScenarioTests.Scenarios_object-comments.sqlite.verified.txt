@@ -1,0 +1,41 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table main.docs
+    + id int not null
+    + title varchar(100) not null
+
+    + check constraint ck_docs_title
+    + index ix_docs_title
+    + trigger docs_touch
+
++ function main.touch()
+
+Plan: 7 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+CREATE TABLE "main"."docs" (
+    "id" INTEGER NOT NULL,
+    "title" varchar(100) NOT NULL,
+    CONSTRAINT "pk_docs" PRIMARY KEY ("id"),
+    CONSTRAINT "ck_docs_title" CHECK (title <> '')
+)
+
+-- [2/2]
+CREATE INDEX "main"."ix_docs_title" ON "docs" ("title")
+                                                                                                     Diagnostics                                                                                                     
+╭──────────┬────────────────┬────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source         │ Code               │ Message                                                                                                                                                          │
+├──────────┼────────────────┼────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect    │ unsupported-action │ Sqlite does not support the 'create routine' action.                                                                                                             │
+│ error    │ sqlite-dialect │ unsupported        │ Sqlite triggers run an inline body, but trigger 'docs_touch' has none (it calls a function). Sqlite has no stored functions; declare it with an AS $$ … $$ body. │
+╰──────────┴────────────────┴────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

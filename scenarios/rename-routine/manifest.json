@@ -1,0 +1,16 @@
+{
+  "description": "Renames a function, body and signature untouched. A routine carries no data, so the rename has to be visible in the plan as a rename rather than as a drop and a create that happens to land the same definition.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no routine, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

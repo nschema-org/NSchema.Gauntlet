@@ -1,0 +1,82 @@
+﻿=== actions ===
+AlterSequence
+CreateSequence
+DropSequence
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+- sequence dbo.batch_no
+
++ sequence dbo.invoice_no (start=500)
+
+~ sequence dbo.ticket_no
+    ~ options: start=100 → start=100, step=5
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/3]
+CREATE SEQUENCE [dbo].[invoice_no] START WITH 500 NO MINVALUE NO MAXVALUE NO CACHE NO CYCLE
+
+-- [2/3]
+ALTER SEQUENCE [dbo].[ticket_no] INCREMENT BY 5
+
+-- [3/3]
+DROP SEQUENCE [dbo].[batch_no]
+
+                                                  Diagnostics                                                  
+╭──────────┬─────────────────────┬────────────────────┬───────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                               │
+├──────────┼─────────────────────┼────────────────────┼───────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropSequence. │
+╰──────────┴─────────────────────┴────────────────────┴───────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+- sequence dbo.batch_no
+
++ sequence dbo.invoice_no (start=500)
+
+~ sequence dbo.ticket_no
+    ~ options: start=100 → start=100, step=5
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/3]
+CREATE SEQUENCE [dbo].[invoice_no] START WITH 500 NO MINVALUE NO MAXVALUE NO CACHE NO CYCLE
+
+-- [2/3]
+ALTER SEQUENCE [dbo].[ticket_no] INCREMENT BY 5
+
+-- [3/3]
+DROP SEQUENCE [dbo].[batch_no]
+
+                                                  Diagnostics                                                  
+╭──────────┬─────────────────────┬────────────────────┬───────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                               │
+├──────────┼─────────────────────┼────────────────────┼───────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropSequence. │
+╰──────────┴─────────────────────┴────────────────────┴───────────────────────────────────────────────────────╯
+
+NSchema will execute 3 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 added, 1 changed, 1 destroyed (3 statements).
+exit: 0
+
