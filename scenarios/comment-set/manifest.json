@@ -1,5 +1,5 @@
 {
-  "description": "Documents a table, a column and a view. Sqlite stores no comments, so it declares the same schema without them: there, a comment is skipped rather than refused, and a skipped change reappears on every later plan.",
+  "description": "Documents a table, a column and a view. Sqlite records no comment anywhere, so a project declaring one there cannot be realised and is reported rather than applied; its variant declares the same schema undocumented.",
   "destructiveActions": "Error",
   "expectations": {
     "postgres": {
