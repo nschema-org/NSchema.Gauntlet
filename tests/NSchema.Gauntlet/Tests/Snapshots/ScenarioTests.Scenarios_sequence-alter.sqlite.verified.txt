@@ -1,0 +1,22 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ sequence main.batch_no (start=1)
+
++ sequence main.ticket_no (start=100, step=1)
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+                                              Diagnostics                                              
+╭──────────┬─────────────┬────────────────────┬───────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Code               │ Message                                               │
+├──────────┼─────────────┼────────────────────┼───────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ unsupported-action │ Sqlite does not support the 'create sequence' action. │
+│ error    │ sql-dialect │ unsupported-action │ Sqlite does not support the 'create sequence' action. │
+╰──────────┴─────────────┴────────────────────┴───────────────────────────────────────────────────────╯
+exit: 1
+

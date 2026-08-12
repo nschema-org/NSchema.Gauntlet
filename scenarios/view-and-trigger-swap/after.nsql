@@ -1,0 +1,11 @@
+CREATE TABLE {schema}.docs (
+  id int NOT NULL,
+  title varchar(100) NOT NULL,
+  CONSTRAINT pk_docs PRIMARY KEY (id)
+);
+
+CREATE VIEW {schema}.doc_names AS SELECT title FROM {schema}.docs;
+
+CREATE FUNCTION {schema}.touch() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NEW; END $$;
+
+CREATE TRIGGER docs_stamp BEFORE INSERT ON {schema}.docs FOR EACH ROW EXECUTE FUNCTION {schema}.touch();

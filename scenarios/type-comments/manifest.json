@@ -1,0 +1,16 @@
+{
+  "description": "Documents the schema-scoped types — an enum, a domain, a sequence and a composite type — none of which is a table or hangs off one. A comment on a type in use must not disturb the columns using it. SQL Server sees only the two types it has.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has none of these types, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

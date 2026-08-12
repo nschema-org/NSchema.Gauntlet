@@ -1,0 +1,39 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.orders
+    ~ id identity: start=1, step=1 → start=1, step=10
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+                                                                                                       Diagnostics                                                                                                        
+╭──────────┬───────────────────┬───────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source            │ Code              │ Message                                                                                                                                                             │
+├──────────┼───────────────────┼───────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlserver-dialect │ requires-recreate │ SQL Server cannot change the seed or increment of identity column dbo.orders.id in place; this requires rebuilding the table. Recreate the column or table instead. │
+╰──────────┴───────────────────┴───────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.orders
+    ~ id identity: start=1, step=1 → start=1, step=10
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+                                                                                                       Diagnostics                                                                                                        
+╭──────────┬───────────────────┬───────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source            │ Code              │ Message                                                                                                                                                             │
+├──────────┼───────────────────┼───────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlserver-dialect │ requires-recreate │ SQL Server cannot change the seed or increment of identity column dbo.orders.id in place; this requires rebuilding the table. Recreate the column or table instead. │
+╰──────────┴───────────────────┴───────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

@@ -1,0 +1,55 @@
+﻿=== actions ===
+SetDomainComment
+SetSequenceComment
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ domain dbo.code comment: <none> → "A short human-facing reference."
+
+~ sequence dbo.ticket_no comment: <none> → "Hands out ticket numbers."
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Hands out ticket numbers.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'SEQUENCE', @level1name = N'ticket_no'
+
+-- [2/2]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'A short human-facing reference.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TYPE', @level1name = N'code'
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ domain dbo.code comment: <none> → "A short human-facing reference."
+
+~ sequence dbo.ticket_no comment: <none> → "Hands out ticket numbers."
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'Hands out ticket numbers.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'SEQUENCE', @level1name = N'ticket_no'
+
+-- [2/2]
+EXEC sys.sp_addextendedproperty @name = N'MS_Description', @value = N'A short human-facing reference.', @level0type = N'SCHEMA', @level0name = N'dbo', @level1type = N'TYPE', @level1name = N'code'
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 2 changed (2 statements).
+exit: 0
+

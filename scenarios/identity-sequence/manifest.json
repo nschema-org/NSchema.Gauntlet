@@ -1,0 +1,17 @@
+{
+  "description": "Changes the step of the sequence behind an identity column, reaching the sequence an identity hides rather than the column that owns it. The minimum has to be declared on Postgres and left undeclared on SQL Server: one reads it back from its own default and the other does not, so no single declaration settles on both.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "changeFailed",
+      "because": "SQL Server cannot change an identity's seed or increment in place; the column has to be rebuilt, which NSchema.SqlServer does not perform."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite's rowid alias takes no seed, step or minimum, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

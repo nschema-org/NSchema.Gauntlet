@@ -1,0 +1,17 @@
+{
+  "description": "Renames an exclusion constraint over a range column, which has no in-place form: the old one is dropped and an identical one added under the new name.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "SQL Server has no exclusion constraint, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no exclusion constraint, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

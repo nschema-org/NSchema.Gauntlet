@@ -1,0 +1,32 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table dbo.reviews
+    + id int not null
+    + rating dbo.score not null
+
++ domain dbo.score int
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE TABLE [dbo].[reviews] (
+    [id] int NOT NULL,
+    [rating] [dbo].[score] NOT NULL,
+    CONSTRAINT [pk_reviews] PRIMARY KEY ([id])
+)
+                                                                               Diagnostics                                                                                
+╭──────────┬───────────────────┬─────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source            │ Code        │ Message                                                                                                                   │
+├──────────┼───────────────────┼─────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlserver-dialect │ unsupported │ SQL Server alias types cannot carry check constraints (domain score); declare the checks on the tables that use the type. │
+╰──────────┴───────────────────┴─────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

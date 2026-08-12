@@ -1,0 +1,9 @@
+CREATE TYPE {schema}.address AS (street varchar(100), zip int);
+
+CREATE TYPE {schema}.phone AS (country_code int, number varchar(20));
+
+CREATE TABLE {schema}.offices (
+  id int NOT NULL,
+  location {schema}.address NULL,
+  CONSTRAINT pk_offices PRIMARY KEY (id)
+);

@@ -1,0 +1,8 @@
+SCRIPT create_warehouse_roles RUN ONCE ON PRE DEPLOYMENT AS $$
+  CREATE USER warehouse_reader WITHOUT LOGIN;
+  CREATE USER warehouse_loader WITHOUT LOGIN;
+$$;
+
+CREATE SCHEMA warehouse;
+
+GRANT USAGE ON SCHEMA warehouse TO warehouse_reader;

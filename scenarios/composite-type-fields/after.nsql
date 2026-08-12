@@ -1,0 +1,9 @@
+CREATE TYPE {schema}.address AS (street varchar(200), postcode varchar(10));
+
+CREATE TYPE {schema}.phone AS (country_code int, number varchar(20));
+
+CREATE TABLE {schema}.offices (
+  id int NOT NULL,
+  contact {schema}.phone NULL,
+  CONSTRAINT pk_offices PRIMARY KEY (id)
+);

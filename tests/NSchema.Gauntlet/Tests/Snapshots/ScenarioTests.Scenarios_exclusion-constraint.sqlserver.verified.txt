@@ -1,0 +1,23 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table dbo.bookings
+    + id int not null
+    + during tstzrange not null
+    + exclusion constraint ex_bookings_overlap
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+                                                                          Diagnostics                                                                          
+╭──────────┬─────────────┬────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Code               │ Message                                                                                                       │
+├──────────┼─────────────┼────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ diff        │ unresolved-type    │ 'dbo.bookings.during' depends on 'tstzrange', which this plan does not create and the database does not have. │
+│ error    │ sql-dialect │ unsupported-action │ SQL Server (NSchema.SqlServer) does not support the 'create table' action.                                    │
+╰──────────┴─────────────┴────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

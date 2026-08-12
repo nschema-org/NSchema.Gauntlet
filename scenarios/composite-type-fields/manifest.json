@@ -1,0 +1,17 @@
+{
+  "description": "Reworks a composite type's fields — one widened, one dropped, one added — while a second type stays in use by a table. Fields match by name, so renaming one is indistinguishable from dropping it and adding another. The type under change is deliberately unused: altering one a column is typed by is refused by Postgres and NSchema does not yet say so.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "SQL Server has no composite type, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no composite type, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

@@ -1,0 +1,37 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table main.ledger
+    + id int not null
+
+    + grant SELECT, INSERT to ledger_writer
+
+
++ script create_ledger_roles (on pre deployment)
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+CREATE ROLE ledger_reader;
+  CREATE ROLE ledger_writer;
+
+-- [2/2]
+CREATE TABLE "main"."ledger" (
+    "id" INTEGER NOT NULL,
+    CONSTRAINT "pk_ledger" PRIMARY KEY ("id")
+)
+                                 Diagnostics                                 
+╭──────────┬────────────────┬─────────────┬─────────────────────────────────╮
+│ Severity │ Source         │ Code        │ Message                         │
+├──────────┼────────────────┼─────────────┼─────────────────────────────────┤
+│ error    │ sqlite-dialect │ unsupported │ Sqlite does not support grants. │
+╰──────────┴────────────────┴─────────────┴─────────────────────────────────╯
+exit: 1
+

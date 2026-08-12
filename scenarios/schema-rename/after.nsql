@@ -1,0 +1,8 @@
+CREATE SCHEMA invoicing;
+
+CREATE TABLE {schema}.facts (
+  id int NOT NULL,
+  CONSTRAINT pk_facts PRIMARY KEY (id)
+);
+
+RENAME SCHEMA billing TO invoicing;

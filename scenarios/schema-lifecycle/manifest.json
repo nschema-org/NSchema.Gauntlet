@@ -1,0 +1,16 @@
+{
+  "description": "Adds a schema, documents one that already exists and takes an empty one away, all in the same change. A corpus only ever creates schemas from empty, so this is the only place one is dropped from a database that keeps running.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no schema other than main, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

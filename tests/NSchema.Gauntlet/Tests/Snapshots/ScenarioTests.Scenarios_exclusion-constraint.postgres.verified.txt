@@ -1,0 +1,69 @@
+﻿=== actions ===
+AddExclusionConstraint
+DropExclusionConstraint
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.bookings
+    - exclusion constraint ex_bookings_overlap
+    + exclusion constraint ex_bookings_slot
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/2]
+ALTER TABLE "public"."bookings" DROP CONSTRAINT "ex_bookings_overlap"
+
+-- [2/2]
+ALTER TABLE "public"."bookings" ADD CONSTRAINT "ex_bookings_slot" EXCLUDE USING gist ("during" WITH &&)
+
+                                                       Diagnostics                                                        
+╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                          │
+├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropExclusionConstraint. │
+╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.bookings
+    - exclusion constraint ex_bookings_overlap
+    + exclusion constraint ex_bookings_slot
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/2]
+ALTER TABLE "public"."bookings" DROP CONSTRAINT "ex_bookings_overlap"
+
+-- [2/2]
+ALTER TABLE "public"."bookings" ADD CONSTRAINT "ex_bookings_slot" EXCLUDE USING gist ("during" WITH &&)
+
+                                                       Diagnostics                                                        
+╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                                          │
+├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropExclusionConstraint. │
+╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────────────────╯
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 added, 1 changed, 1 destroyed (2 statements).
+exit: 0
+

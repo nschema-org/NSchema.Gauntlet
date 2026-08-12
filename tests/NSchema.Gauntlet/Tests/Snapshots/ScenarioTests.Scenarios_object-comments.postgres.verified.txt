@@ -1,0 +1,75 @@
+﻿=== actions ===
+SetConstraintComment
+SetIndexComment
+SetRoutineComment
+SetTriggerComment
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.docs
+    ~ check constraint ck_docs_title comment: <none> → "A document has to be called something."
+    ~ index ix_docs_title comment: <none> → "Documents by title."
+    ~ trigger docs_touch comment: <none> → "Runs before every insert."
+
+~ function public.touch comment: <none> → "Leaves a row as it found it."
+
+Plan: 0 to add, 5 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+COMMENT ON INDEX "public"."ix_docs_title" IS $comment$Documents by title.$comment$
+
+-- [2/4]
+COMMENT ON TRIGGER "docs_touch" ON "public"."docs" IS $comment$Runs before every insert.$comment$
+
+-- [3/4]
+COMMENT ON CONSTRAINT "ck_docs_title" ON "public"."docs" IS $comment$A document has to be called something.$comment$
+
+-- [4/4]
+COMMENT ON FUNCTION "public"."touch" IS $comment$Leaves a row as it found it.$comment$
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.docs
+    ~ check constraint ck_docs_title comment: <none> → "A document has to be called something."
+    ~ index ix_docs_title comment: <none> → "Documents by title."
+    ~ trigger docs_touch comment: <none> → "Runs before every insert."
+
+~ function public.touch comment: <none> → "Leaves a row as it found it."
+
+Plan: 0 to add, 5 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+COMMENT ON INDEX "public"."ix_docs_title" IS $comment$Documents by title.$comment$
+
+-- [2/4]
+COMMENT ON TRIGGER "docs_touch" ON "public"."docs" IS $comment$Runs before every insert.$comment$
+
+-- [3/4]
+COMMENT ON CONSTRAINT "ck_docs_title" ON "public"."docs" IS $comment$A document has to be called something.$comment$
+
+-- [4/4]
+COMMENT ON FUNCTION "public"."touch" IS $comment$Leaves a row as it found it.$comment$
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 5 changed (4 statements).
+exit: 0
+

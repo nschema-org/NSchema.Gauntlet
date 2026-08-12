@@ -1,0 +1,16 @@
+{
+  "description": "Documents the objects that hang off a table rather than the table itself: a check constraint, an index, a routine and a trigger. Each is a comment change alone, so none of them may recreate the object it describes.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no routine, so the scenario's bootstrap state cannot be expressed; it records no comment anywhere either."
+    }
+  }
+}

@@ -164,16 +164,36 @@ documentation of what each engine cannot do, written by the tool rather than by 
 
 ## Coverage
 
-Scenarios test what someone thought to write. The space of what *could* be tested is enumerable from the
-model: `SchemaObjectKind` × `MemberKind` × `ChangeKind`.
+Scenarios test what someone thought to write. The space of what *could* be tested is the **engine × action**
+cross product: every migration action NSchema can emit, against every engine the run drives.
 
-Coverage is read off the plan each scenario produces — the diff nodes it emits are what it covers. No
-tagging, nothing to keep in sync. The run then reports the cross product minus what was observed, which is
-the list of scenarios not yet written.
+The axis is actions rather than the diff grammar because the diff is engine-neutral — validating it belongs in
+Core's own tests. What varies per engine, and so what this exists to test, is which actions an engine reaches
+and what SQL each one renders.
 
-The cross product is the floor, not the ceiling: it covers the diff grammar, and says nothing about the
-variety inside a node — a column add is "covered" long before a column typed by an extension type has ever
-been seen. Content variety is what the corpus is for, which is why its breadth matters more than its count.
+Both halves are read from the pinned build, which is the whole point:
+
+- **The denominator comes from the `NSchema.Core.dll` the run drives** — every concrete `MigrationAction`, read
+  through a `MetadataLoadContext` so nothing loads or runs engine code. It cannot come from a plan, which only
+  ever contains what happened, nor from the shape of a plan's JSON, where actions that behave polymorphically
+  never name themselves. A list kept here would be a second copy of the truth, silently correct until someone
+  adds an action.
+- **The numerator is read off the plans a run writes.** Every plan is saved as JSON alongside the text one, and
+  the actions it names are recorded against the engine that produced it. No tagging, nothing to keep in sync.
+
+An action in the numerator but absent from the denominator means the two were read from different builds, which
+the report says out loud rather than quietly dropping.
+
+Three things the report does not claim:
+
+- **A blank cell is "not exercised", not "not supported".** Telling those apart means asking the dialect what it
+  refuses, and a plan that never reaches an action says nothing either way.
+- **Setup is not coverage.** A scenario's bootstrap is applied without a plan of its own, so the objects a
+  before-state creates are not credited — nothing asserts them. An action a scenario wants counted belongs in
+  its after-state.
+- **The cross product is the floor, not the ceiling.** It says nothing about the variety inside an action — a
+  column add is "covered" long before a column typed by an extension type has ever been seen. Content variety is
+  what the corpus is for, which is why its breadth matters more than its count.
 
 Asserted, not described — the same discipline as the architecture rules.
 

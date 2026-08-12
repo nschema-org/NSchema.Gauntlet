@@ -1,0 +1,5 @@
+CREATE TABLE {schema}.tickets (
+  id int NOT NULL,
+  code varchar(20) NOT NULL,
+  CONSTRAINT pk_tickets PRIMARY KEY (id)
+);

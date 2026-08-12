@@ -1,0 +1,77 @@
+﻿=== actions ===
+SetCompositeTypeComment
+SetDomainComment
+SetEnumComment
+SetSequenceComment
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ enum public.status comment: <none> → "Where an invoice has got to."
+
+~ domain public.code comment: <none> → "A short human-facing reference."
+
+~ type public.address comment: <none> → "Somewhere post can be sent."
+
+~ sequence public.ticket_no comment: <none> → "Hands out ticket numbers."
+
+Plan: 0 to add, 4 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+COMMENT ON TYPE "public"."status" IS $comment$Where an invoice has got to.$comment$
+
+-- [2/4]
+COMMENT ON SEQUENCE "public"."ticket_no" IS $comment$Hands out ticket numbers.$comment$
+
+-- [3/4]
+COMMENT ON DOMAIN "public"."code" IS $comment$A short human-facing reference.$comment$
+
+-- [4/4]
+COMMENT ON TYPE "public"."address" IS $comment$Somewhere post can be sent.$comment$
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ enum public.status comment: <none> → "Where an invoice has got to."
+
+~ domain public.code comment: <none> → "A short human-facing reference."
+
+~ type public.address comment: <none> → "Somewhere post can be sent."
+
+~ sequence public.ticket_no comment: <none> → "Hands out ticket numbers."
+
+Plan: 0 to add, 4 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+COMMENT ON TYPE "public"."status" IS $comment$Where an invoice has got to.$comment$
+
+-- [2/4]
+COMMENT ON SEQUENCE "public"."ticket_no" IS $comment$Hands out ticket numbers.$comment$
+
+-- [3/4]
+COMMENT ON DOMAIN "public"."code" IS $comment$A short human-facing reference.$comment$
+
+-- [4/4]
+COMMENT ON TYPE "public"."address" IS $comment$Somewhere post can be sent.$comment$
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 4 changed (4 statements).
+exit: 0
+

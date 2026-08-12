@@ -1,0 +1,18 @@
+--- Where an invoice has got to.
+CREATE ENUM {schema}.status ('draft', 'posted');
+
+--- A short human-facing reference.
+CREATE DOMAIN {schema}.code AS varchar(10);
+
+--- Hands out ticket numbers.
+CREATE SEQUENCE {schema}.ticket_no (START 100);
+
+--- Somewhere post can be sent.
+CREATE TYPE {schema}.address AS (street varchar(100), zip int);
+
+CREATE TABLE {schema}.invoices (
+  id int NOT NULL,
+  state {schema}.status NOT NULL,
+  reference {schema}.code NOT NULL,
+  CONSTRAINT pk_invoices PRIMARY KEY (id)
+);

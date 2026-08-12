@@ -1,0 +1,17 @@
+{
+  "description": "Renames a schema via a directive. A schema is the one container a rename cannot move an object between, so it is the only rename with nowhere to hide: either the engine has one or the objects inside have to move.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "changeFailed",
+      "because": "SQL Server has no schema rename; moving a schema's contents is a transfer of every object, which NSchema.SqlServer does not perform."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no schema other than main, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

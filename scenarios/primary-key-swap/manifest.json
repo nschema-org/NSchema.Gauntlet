@@ -1,0 +1,16 @@
+{
+  "description": "Widens a primary key to a second column. No engine alters a key in place, so this is a drop and an add against a table that keeps its rows.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "SQLite cannot add or drop a primary key; doing so needs the table rebuilt, which NSchema.Sqlite does not perform."
+    }
+  }
+}

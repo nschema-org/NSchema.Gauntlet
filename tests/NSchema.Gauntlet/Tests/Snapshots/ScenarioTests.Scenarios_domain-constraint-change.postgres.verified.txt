@@ -1,0 +1,73 @@
+﻿=== actions ===
+AddDomainCheck
+AlterDomainDefault
+AlterDomainNotNull
+DropDomainCheck
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ domain public.score
+    ~ default: <none> → 50
+    ~ nullable: null → not null
+    - check score_positive
+    + check score_bounded
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+ALTER DOMAIN "public"."score" SET DEFAULT 50
+
+-- [2/4]
+ALTER DOMAIN "public"."score" SET NOT NULL
+
+-- [3/4]
+ALTER DOMAIN "public"."score" ADD CONSTRAINT "score_bounded" CHECK (VALUE <= 100)
+
+-- [4/4]
+ALTER DOMAIN "public"."score" DROP CONSTRAINT "score_positive"
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ domain public.score
+    ~ default: <none> → 50
+    ~ nullable: null → not null
+    - check score_positive
+    + check score_bounded
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/4]
+ALTER DOMAIN "public"."score" SET DEFAULT 50
+
+-- [2/4]
+ALTER DOMAIN "public"."score" SET NOT NULL
+
+-- [3/4]
+ALTER DOMAIN "public"."score" ADD CONSTRAINT "score_bounded" CHECK (VALUE <= 100)
+
+-- [4/4]
+ALTER DOMAIN "public"."score" DROP CONSTRAINT "score_positive"
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 changed (4 statements).
+exit: 0
+

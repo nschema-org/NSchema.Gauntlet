@@ -1,0 +1,7 @@
+CREATE DOMAIN {schema}.score AS int NOT NULL CONSTRAINT score_bounded CHECK (VALUE <= 100) DEFAULT 50;
+
+CREATE TABLE {schema}.reviews (
+  id int NOT NULL,
+  rating {schema}.score NOT NULL,
+  CONSTRAINT pk_reviews PRIMARY KEY (id)
+);

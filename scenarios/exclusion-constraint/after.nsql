@@ -1,0 +1,6 @@
+CREATE TABLE {schema}.bookings (
+  id int NOT NULL,
+  during tstzrange NOT NULL,
+  CONSTRAINT pk_bookings PRIMARY KEY (id),
+  CONSTRAINT ex_bookings_slot EXCLUDE USING gist (during WITH &&)
+);

@@ -1,0 +1,16 @@
+CREATE TABLE {schema}.docs (
+  id int NOT NULL,
+  title varchar(100) NOT NULL,
+  CONSTRAINT pk_docs PRIMARY KEY (id),
+  --- A document has to be called something.
+  CONSTRAINT ck_docs_title CHECK (title <> '')
+);
+
+--- Documents by title.
+CREATE INDEX ix_docs_title ON {schema}.docs (title);
+
+--- Leaves a row as it found it.
+CREATE FUNCTION {schema}.touch() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NEW; END $$;
+
+--- Runs before every insert.
+CREATE TRIGGER docs_touch BEFORE INSERT ON {schema}.docs FOR EACH ROW EXECUTE FUNCTION {schema}.touch();

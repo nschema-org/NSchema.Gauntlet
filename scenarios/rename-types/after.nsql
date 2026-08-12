@@ -1,0 +1,19 @@
+CREATE ENUM {schema}.invoice_state ('draft', 'posted');
+
+CREATE DOMAIN {schema}.reference_code AS varchar(10);
+
+CREATE SEQUENCE {schema}.ticket_number (START 100);
+
+CREATE TYPE {schema}.postal_address AS (street varchar(100), zip int);
+
+CREATE TABLE {schema}.invoices (
+  id int NOT NULL,
+  state {schema}.invoice_state NOT NULL,
+  reference {schema}.reference_code NOT NULL,
+  CONSTRAINT pk_invoices PRIMARY KEY (id)
+);
+
+RENAME ENUM {schema}.status TO invoice_state;
+RENAME DOMAIN {schema}.code TO reference_code;
+RENAME SEQUENCE {schema}.ticket_no TO ticket_number;
+RENAME TYPE {schema}.address TO postal_address;

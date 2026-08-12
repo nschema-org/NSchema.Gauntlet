@@ -1,0 +1,91 @@
+﻿=== actions ===
+CreateTrigger
+CreateView
+DropTrigger
+DropView
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.docs
+    - trigger docs_touch
+    + trigger docs_stamp
+
++ view public.doc_names
+
+- view public.doc_titles
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+
+SQL
+───
+-- [1/4]
+DROP VIEW "public"."doc_titles"
+
+-- [2/4]
+DROP TRIGGER "docs_touch" ON "public"."docs"
+
+-- [3/4]
+CREATE TRIGGER "docs_stamp" BEFORE INSERT ON "public"."docs" FOR EACH ROW EXECUTE FUNCTION "public"."touch"()
+
+-- [4/4]
+CREATE VIEW "public"."doc_names" AS SELECT title FROM public.docs
+
+                                                Diagnostics                                                
+╭──────────┬─────────────────────┬────────────────────┬───────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                           │
+├──────────┼─────────────────────┼────────────────────┼───────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropView. │
+╰──────────┴─────────────────────┴────────────────────┴───────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.docs
+    - trigger docs_touch
+    + trigger docs_stamp
+
++ view public.doc_names
+
+- view public.doc_titles
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+
+SQL
+───
+-- [1/4]
+DROP VIEW "public"."doc_titles"
+
+-- [2/4]
+DROP TRIGGER "docs_touch" ON "public"."docs"
+
+-- [3/4]
+CREATE TRIGGER "docs_stamp" BEFORE INSERT ON "public"."docs" FOR EACH ROW EXECUTE FUNCTION "public"."touch"()
+
+-- [4/4]
+CREATE VIEW "public"."doc_names" AS SELECT title FROM public.docs
+
+                                                Diagnostics                                                
+╭──────────┬─────────────────────┬────────────────────┬───────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                           │
+├──────────┼─────────────────────┼────────────────────┼───────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: DropView. │
+╰──────────┴─────────────────────┴────────────────────┴───────────────────────────────────────────────────╯
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 2 added, 1 changed, 2 destroyed (4 statements).
+exit: 0
+

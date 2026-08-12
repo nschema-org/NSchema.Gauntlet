@@ -1,0 +1,112 @@
+﻿=== actions ===
+AlterColumn
+RenameCompositeType
+RenameDomain
+RenameEnum
+RenameSequence
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.invoices
+    ~ state type: public.status → public.invoice_state
+    ~ reference type: public.code → public.reference_code
+
+~ enum public.status → invoice_state
+
+~ domain public.code → reference_code
+
+~ type public.address → postal_address
+
+~ sequence public.ticket_no → ticket_number
+
+Plan: 0 to add, 7 to change, 0 to destroy.
+
+SQL
+───
+-- [1/6]
+ALTER TYPE "public"."status" RENAME TO "invoice_state"
+
+-- [2/6]
+ALTER SEQUENCE "public"."ticket_no" RENAME TO "ticket_number"
+
+-- [3/6]
+ALTER DOMAIN "public"."code" RENAME TO "reference_code"
+
+-- [4/6]
+ALTER TYPE "public"."address" RENAME TO "postal_address"
+
+-- [5/6]
+ALTER TABLE "public"."invoices" ALTER COLUMN "state" TYPE "public"."invoice_state"
+
+-- [6/6]
+ALTER TABLE "public"."invoices" ALTER COLUMN "reference" TYPE "public"."reference_code"
+
+                                                 Diagnostics                                                  
+╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                              │
+├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn. │
+╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.invoices
+    ~ state type: public.status → public.invoice_state
+    ~ reference type: public.code → public.reference_code
+
+~ enum public.status → invoice_state
+
+~ domain public.code → reference_code
+
+~ type public.address → postal_address
+
+~ sequence public.ticket_no → ticket_number
+
+Plan: 0 to add, 7 to change, 0 to destroy.
+
+SQL
+───
+-- [1/6]
+ALTER TYPE "public"."status" RENAME TO "invoice_state"
+
+-- [2/6]
+ALTER SEQUENCE "public"."ticket_no" RENAME TO "ticket_number"
+
+-- [3/6]
+ALTER DOMAIN "public"."code" RENAME TO "reference_code"
+
+-- [4/6]
+ALTER TYPE "public"."address" RENAME TO "postal_address"
+
+-- [5/6]
+ALTER TABLE "public"."invoices" ALTER COLUMN "state" TYPE "public"."invoice_state"
+
+-- [6/6]
+ALTER TABLE "public"."invoices" ALTER COLUMN "reference" TYPE "public"."reference_code"
+
+                                                 Diagnostics                                                  
+╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code               │ Message                                              │
+├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn. │
+╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────╯
+
+NSchema will execute 6 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 7 changed (6 statements).
+exit: 0
+
