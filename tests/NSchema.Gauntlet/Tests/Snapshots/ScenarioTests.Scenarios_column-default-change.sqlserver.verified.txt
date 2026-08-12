@@ -1,0 +1,62 @@
+﻿=== actions ===
+SetColumnDefault
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.settings
+    ~ retries default: 3 → 5
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+DECLARE @df sysname = (
+    SELECT dc.name
+    FROM sys.default_constraints dc
+    INNER JOIN sys.columns c ON c.object_id = dc.parent_object_id AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(N'[dbo].[settings]') AND c.name = N'retries');
+IF @df IS NOT NULL EXEC('ALTER TABLE [dbo].[settings] DROP CONSTRAINT [' + @df + ']');
+
+-- [2/2]
+ALTER TABLE [dbo].[settings] ADD DEFAULT 5 FOR [retries]
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.settings
+    ~ retries default: 3 → 5
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+DECLARE @df sysname = (
+    SELECT dc.name
+    FROM sys.default_constraints dc
+    INNER JOIN sys.columns c ON c.object_id = dc.parent_object_id AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(N'[dbo].[settings]') AND c.name = N'retries');
+IF @df IS NOT NULL EXEC('ALTER TABLE [dbo].[settings] DROP CONSTRAINT [' + @df + ']');
+
+-- [2/2]
+ALTER TABLE [dbo].[settings] ADD DEFAULT 5 FOR [retries]
+
+NSchema will execute 2 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 2 changed (2 statements).
+exit: 0
+

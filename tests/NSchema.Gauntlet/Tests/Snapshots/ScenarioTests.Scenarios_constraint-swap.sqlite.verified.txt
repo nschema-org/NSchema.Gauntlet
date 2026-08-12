@@ -1,0 +1,55 @@
+﻿=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table main.accounts
+    - unique constraint uq_accounts_code
+    + unique constraint uq_accounts_code_balance
+    - check constraint ck_accounts_balance
+    + check constraint ck_accounts_balance
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+                                                                                                                         Diagnostics                                                                                                                         
+╭──────────┬─────────────────────┬──────────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                                 │ Message                                                                                                                                                                           │
+├──────────┼─────────────────────┼──────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot drop a check constraint in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                            │
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot drop a unique constraint in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                           │
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot add a unique constraint to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.       │
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot add a check constraint to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.        │
+│ info     │ destructive-actions │ destructive-change                   │ This plan contains destructive actions: DropUniqueConstraint.                                                                                                                     │
+│ warning  │ data-hazards        │ unique-constraint-over-existing-data │ Unique constraint 'uq_accounts_code_balance' on 'main.accounts' is added over existing columns 'code', 'balance'. The migration will fail if existing rows hold duplicate values. │
+╰──────────┴─────────────────────┴──────────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table main.accounts
+    - unique constraint uq_accounts_code
+    + unique constraint uq_accounts_code_balance
+    - check constraint ck_accounts_balance
+    + check constraint ck_accounts_balance
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+                                                                                                                         Diagnostics                                                                                                                         
+╭──────────┬─────────────────────┬──────────────────────────────────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                                 │ Message                                                                                                                                                                           │
+├──────────┼─────────────────────┼──────────────────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot drop a check constraint in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                            │
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot drop a unique constraint in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.                           │
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot add a unique constraint to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.       │
+│ error    │ sqlite-dialect      │ requires-recreate                    │ Sqlite cannot add a check constraint to an existing table in place; this requires rebuilding the table, which NSchema.Sqlite does not support. Recreate the table instead.        │
+│ info     │ destructive-actions │ destructive-change                   │ This plan contains destructive actions: DropUniqueConstraint.                                                                                                                     │
+│ warning  │ data-hazards        │ unique-constraint-over-existing-data │ Unique constraint 'uq_accounts_code_balance' on 'main.accounts' is added over existing columns 'code', 'balance'. The migration will fail if existing rows hold duplicate values. │
+╰──────────┴─────────────────────┴──────────────────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

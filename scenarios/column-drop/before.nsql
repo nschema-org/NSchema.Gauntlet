@@ -1,0 +1,6 @@
+CREATE TABLE {schema}.sessions (
+  id int NOT NULL,
+  token varchar(64) NOT NULL,
+  user_agent varchar(200),
+  CONSTRAINT pk_sessions PRIMARY KEY (id)
+);

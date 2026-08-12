@@ -1,0 +1,7 @@
+CREATE TABLE {schema}.events (
+  id int NOT NULL,
+  kind varchar(20) NOT NULL,
+  CONSTRAINT pk_events PRIMARY KEY (id)
+);
+
+CREATE INDEX ix_events_kind ON {schema}.events (kind);

@@ -1,0 +1,87 @@
+﻿=== actions ===
+AddCheckConstraint
+AddUniqueConstraint
+DropCheckConstraint
+DropUniqueConstraint
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.accounts
+    - unique constraint uq_accounts_code
+    + unique constraint uq_accounts_code_balance
+    - check constraint ck_accounts_balance
+    + check constraint ck_accounts_balance
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+
+SQL
+───
+-- [1/4]
+ALTER TABLE [dbo].[accounts] DROP CONSTRAINT [ck_accounts_balance]
+
+-- [2/4]
+ALTER TABLE [dbo].[accounts] DROP CONSTRAINT [uq_accounts_code]
+
+-- [3/4]
+ALTER TABLE [dbo].[accounts] ADD CONSTRAINT [uq_accounts_code_balance] UNIQUE ([code], [balance])
+
+-- [4/4]
+ALTER TABLE [dbo].[accounts] ADD CONSTRAINT [ck_accounts_balance] CHECK (balance >= 10)
+                                                                                                                        Diagnostics                                                                                                                         
+╭──────────┬─────────────────────┬──────────────────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                                 │ Message                                                                                                                                                                          │
+├──────────┼─────────────────────┼──────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change                   │ This plan contains destructive actions: DropUniqueConstraint.                                                                                                                    │
+│ warning  │ data-hazards        │ unique-constraint-over-existing-data │ Unique constraint 'uq_accounts_code_balance' on 'dbo.accounts' is added over existing columns 'code', 'balance'. The migration will fail if existing rows hold duplicate values. │
+╰──────────┴─────────────────────┴──────────────────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table dbo.accounts
+    - unique constraint uq_accounts_code
+    + unique constraint uq_accounts_code_balance
+    - check constraint ck_accounts_balance
+    + check constraint ck_accounts_balance
+
+Plan: 2 to add, 1 to change, 2 to destroy.
+
+SQL
+───
+-- [1/4]
+ALTER TABLE [dbo].[accounts] DROP CONSTRAINT [ck_accounts_balance]
+
+-- [2/4]
+ALTER TABLE [dbo].[accounts] DROP CONSTRAINT [uq_accounts_code]
+
+-- [3/4]
+ALTER TABLE [dbo].[accounts] ADD CONSTRAINT [uq_accounts_code_balance] UNIQUE ([code], [balance])
+
+-- [4/4]
+ALTER TABLE [dbo].[accounts] ADD CONSTRAINT [ck_accounts_balance] CHECK (balance >= 10)
+
+NSchema will execute 4 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 2 added, 1 changed, 2 destroyed (4 statements).
+                                                                                                                        Diagnostics                                                                                                                         
+╭──────────┬─────────────────────┬──────────────────────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                                 │ Message                                                                                                                                                                          │
+├──────────┼─────────────────────┼──────────────────────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ info     │ destructive-actions │ destructive-change                   │ This plan contains destructive actions: DropUniqueConstraint.                                                                                                                    │
+│ warning  │ data-hazards        │ unique-constraint-over-existing-data │ Unique constraint 'uq_accounts_code_balance' on 'dbo.accounts' is added over existing columns 'code', 'balance'. The migration will fail if existing rows hold duplicate values. │
+╰──────────┴─────────────────────┴──────────────────────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 0
+

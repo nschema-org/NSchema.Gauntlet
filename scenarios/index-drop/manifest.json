@@ -1,0 +1,9 @@
+{
+  "description": "Drops an index, leaving the table it was on.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": { "outcome": "succeeded" },
+    "sqlserver": { "outcome": "succeeded" },
+    "sqlite": { "outcome": "succeeded" }
+  }
+}

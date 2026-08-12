@@ -1,0 +1,16 @@
+{
+  "description": "Widens a unique constraint and tightens a check: neither can be altered in place, so both are dropped and added back.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "Sqlite cannot add or drop a table constraint; doing so needs the table rebuilt, which NSchema.Sqlite does not perform."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "description": "Changes a column's default, leaving the column itself alone.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "Sqlite cannot change a column's default in place; it needs the table rebuilt, which NSchema.Sqlite does not perform."
+    }
+  }
+}

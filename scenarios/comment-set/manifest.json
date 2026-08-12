@@ -1,0 +1,15 @@
+{
+  "description": "Documents a table, a column and a view. Sqlite stores no comments, so it declares the same schema without them: there, a comment is skipped rather than refused, and a skipped change reappears on every later plan.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "succeeded"
+    },
+    "sqlite": {
+      "outcome": "succeeded"
+    }
+  }
+}

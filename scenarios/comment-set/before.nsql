@@ -1,0 +1,7 @@
+CREATE TABLE {schema}.people (
+  id int NOT NULL,
+  name varchar(100) NOT NULL,
+  CONSTRAINT pk_people PRIMARY KEY (id)
+);
+
+CREATE VIEW {schema}.person_names AS SELECT name FROM {schema}.people;
