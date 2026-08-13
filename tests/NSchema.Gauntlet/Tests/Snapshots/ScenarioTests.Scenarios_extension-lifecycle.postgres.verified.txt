@@ -10,7 +10,7 @@ Migration will be scoped to: (all)
 Computing migration plan...
 Plan
 ────
-~ extension citext comment: "data type for case-insensitive character strings" → "Case-insensitive text, for names people type inconsistently."
+~ extension citext comment: <none> → "Case-insensitive text, for names people type inconsistently."
 
 - extension hstore
 
@@ -48,7 +48,7 @@ Migration will be scoped to: (all)
 Computing migration plan...
 Plan
 ────
-~ extension citext comment: "data type for case-insensitive character strings" → "Case-insensitive text, for names people type inconsistently."
+~ extension citext comment: <none> → "Case-insensitive text, for names people type inconsistently."
 
 - extension hstore
 

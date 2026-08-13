@@ -9,14 +9,14 @@ Computing migration plan...
 Plan
 ────
 ~ table public.orders
-    ~ id identity: start=1, min=1, step=1 → start=1, min=1, step=10
+    ~ id identity: <none> → step=10
 
 Plan: 0 to add, 2 to change, 0 to destroy.
 
 SQL
 ───
 -- [1/1]
-ALTER TABLE "public"."orders" ALTER COLUMN "id" SET MINVALUE 1 SET START 1 SET INCREMENT BY 10 RESTART
+ALTER TABLE "public"."orders" ALTER COLUMN "id" SET INCREMENT BY 10
 exit: 0
 
 === apply ===
@@ -28,14 +28,14 @@ Computing migration plan...
 Plan
 ────
 ~ table public.orders
-    ~ id identity: start=1, min=1, step=1 → start=1, min=1, step=10
+    ~ id identity: <none> → step=10
 
 Plan: 0 to add, 2 to change, 0 to destroy.
 
 SQL
 ───
 -- [1/1]
-ALTER TABLE "public"."orders" ALTER COLUMN "id" SET MINVALUE 1 SET START 1 SET INCREMENT BY 10 RESTART
+ALTER TABLE "public"."orders" ALTER COLUMN "id" SET INCREMENT BY 10
 
 NSchema will execute 1 statement(s) against the database.
 Auto-approve is enabled; skipping confirmation.

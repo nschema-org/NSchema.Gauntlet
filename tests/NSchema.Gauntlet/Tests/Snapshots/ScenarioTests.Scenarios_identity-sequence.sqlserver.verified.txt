@@ -6,7 +6,7 @@ Computing migration plan...
 Plan
 ────
 ~ table dbo.orders
-    ~ id identity: start=1, step=1 → start=1, step=10
+    ~ id identity: <none> → step=10
 
 Plan: 0 to add, 2 to change, 0 to destroy.
                                                                                                        Diagnostics                                                                                                        
@@ -26,7 +26,7 @@ Computing migration plan...
 Plan
 ────
 ~ table dbo.orders
-    ~ id identity: start=1, step=1 → start=1, step=10
+    ~ id identity: <none> → step=10
 
 Plan: 0 to add, 2 to change, 0 to destroy.
                                                                                                        Diagnostics                                                                                                        
