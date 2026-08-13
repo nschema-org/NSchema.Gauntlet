@@ -1,0 +1,17 @@
+{
+  "description": "Changes a stored generated column's expression, which is SetColumnGenerated. Postgres replaces it in place with SET EXPRESSION; the other two engines have no in-place form and say so. A generated expression is opaque SQL the engine rewrites, so this could not settle at all until authored expressions were kept and compared like-for-like.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "changeFailed",
+      "because": "SQL Server cannot change a computed column's expression in place; the plan reports that the table must be rebuilt rather than rendering SQL that would fail."
+    },
+    "sqlite": {
+      "outcome": "changeFailed",
+      "because": "SQLite cannot alter a generated column, so the change needs a table rebuild the plan reports rather than attempts."
+    }
+  }
+}
