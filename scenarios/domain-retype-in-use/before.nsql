@@ -1,0 +1,7 @@
+CREATE DOMAIN {schema}.code AS varchar(10);
+
+CREATE TABLE {schema}.parts (
+    id bigint NOT NULL,
+    reference {schema}.code NOT NULL,
+    CONSTRAINT pk_parts PRIMARY KEY (id)
+);

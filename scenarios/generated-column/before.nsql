@@ -1,0 +1,7 @@
+CREATE TABLE {schema}.boxes (
+  id int NOT NULL,
+  width int NOT NULL,
+  height int NOT NULL,
+  area int GENERATED ALWAYS AS (width * height) STORED,
+  CONSTRAINT pk_boxes PRIMARY KEY (id)
+);

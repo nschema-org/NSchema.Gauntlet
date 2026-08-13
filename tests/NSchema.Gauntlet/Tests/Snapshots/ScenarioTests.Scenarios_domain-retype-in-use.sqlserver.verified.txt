@@ -1,0 +1,58 @@
+﻿=== actions ===
+RecreateDomain
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ domain dbo.code
+    ~ type: varchar(10) → varchar(20) (recreate)
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+DROP TYPE [dbo].[code]
+
+-- [2/2]
+CREATE TYPE [dbo].[code] FROM varchar(20)
+                                                          Diagnostics                                                           
+╭──────────┬────────┬────────────────────────────────┬─────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source │ Code                           │ Message                                                                 │
+├──────────┼────────┼────────────────────────────────┼─────────────────────────────────────────────────────────────────────────┤
+│ error    │ diff   │ recreate-blocked-by-dependents │ 'dbo.parts.reference' depends on 'dbo.code', which this plan recreates. │
+╰──────────┴────────┴────────────────────────────────┴─────────────────────────────────────────────────────────────────────────╯
+exit: 1
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ domain dbo.code
+    ~ type: varchar(10) → varchar(20) (recreate)
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+SQL
+───
+-- [1/2]
+DROP TYPE [dbo].[code]
+
+-- [2/2]
+CREATE TYPE [dbo].[code] FROM varchar(20)
+                                                          Diagnostics                                                           
+╭──────────┬────────┬────────────────────────────────┬─────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source │ Code                           │ Message                                                                 │
+├──────────┼────────┼────────────────────────────────┼─────────────────────────────────────────────────────────────────────────┤
+│ error    │ diff   │ recreate-blocked-by-dependents │ 'dbo.parts.reference' depends on 'dbo.code', which this plan recreates. │
+╰──────────┴────────┴────────────────────────────────┴─────────────────────────────────────────────────────────────────────────╯
+exit: 1
+

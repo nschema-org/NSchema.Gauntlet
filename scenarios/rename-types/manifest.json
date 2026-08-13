@@ -1,6 +1,6 @@
 {
-  "description": "Renames the schema-scoped types via directives, two of them while columns are typed by them. The policy is Allow rather than Error because renaming a type a column uses also re-states that column's type, which counts as a destructive AlterColumn even though the rename already carried it. SQL Server sees only the two types it has.",
-  "destructiveActions": "Allow",
+  "description": "Renames the schema-scoped types via directives, two of them while columns are typed by them. The policy is Error: a rename carries the columns typed by the renamed type with it, so nothing destructive belongs in the plan. It used to also re-state each column's type as an AlterColumn, which is why this scenario once had to allow them. SQL Server sees only the two types it has.",
+  "destructiveActions": "Error",
   "expectations": {
     "postgres": {
       "outcome": "succeeded"

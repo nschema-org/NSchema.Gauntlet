@@ -1,5 +1,5 @@
 {
-  "description": "Widens a domain's base type, which is the one domain change with no in-place form: the domain is dropped and recreated. Nothing is typed by it here, because a domain a column uses cannot be dropped at all and NSchema plans the drop anyway rather than reporting it.",
+  "description": "Widens a domain's base type, which is the one domain change with no in-place form: the domain is dropped and recreated. Nothing is typed by it here, so the recreate is free to happen — which is what keeps DropDomain and CreateDomain exercised. The in-use case, where the recreate cannot happen at all, is domain-retype-in-use.",
   "destructiveActions": "Allow",
   "expectations": {
     "postgres": {

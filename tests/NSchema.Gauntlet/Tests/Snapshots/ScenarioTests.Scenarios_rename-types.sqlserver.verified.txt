@@ -1,5 +1,4 @@
 ﻿=== actions ===
-AlterColumn
 RenameDomain
 RenameSequence
 
@@ -10,32 +9,19 @@ Migration will be scoped to: (all)
 Computing migration plan...
 Plan
 ────
-~ table dbo.invoices
-    ~ reference type: dbo.code → dbo.reference_code
-
 ~ domain dbo.code → reference_code
 
 ~ sequence dbo.ticket_no → ticket_number
 
-Plan: 0 to add, 4 to change, 0 to destroy.
+Plan: 0 to add, 2 to change, 0 to destroy.
 
 SQL
 ───
--- [1/3]
+-- [1/2]
 EXEC sys.sp_rename @objname = N'[dbo].[ticket_no]', @newname = N'ticket_number', @objtype = N'OBJECT'
 
--- [2/3]
+-- [2/2]
 EXEC sys.sp_rename @objname = N'[dbo].[code]', @newname = N'reference_code', @objtype = N'USERDATATYPE'
-
--- [3/3]
-ALTER TABLE [dbo].[invoices] ALTER COLUMN [reference] [dbo].[reference_code] NOT NULL
-
-                                                 Diagnostics                                                  
-╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Code               │ Message                                              │
-├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────┤
-│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn. │
-╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────╯
 exit: 0
 
 === apply ===
@@ -46,37 +32,24 @@ Migration will be scoped to: (all)
 Computing migration plan...
 Plan
 ────
-~ table dbo.invoices
-    ~ reference type: dbo.code → dbo.reference_code
-
 ~ domain dbo.code → reference_code
 
 ~ sequence dbo.ticket_no → ticket_number
 
-Plan: 0 to add, 4 to change, 0 to destroy.
+Plan: 0 to add, 2 to change, 0 to destroy.
 
 SQL
 ───
--- [1/3]
+-- [1/2]
 EXEC sys.sp_rename @objname = N'[dbo].[ticket_no]', @newname = N'ticket_number', @objtype = N'OBJECT'
 
--- [2/3]
+-- [2/2]
 EXEC sys.sp_rename @objname = N'[dbo].[code]', @newname = N'reference_code', @objtype = N'USERDATATYPE'
 
--- [3/3]
-ALTER TABLE [dbo].[invoices] ALTER COLUMN [reference] [dbo].[reference_code] NOT NULL
-
-                                                 Diagnostics                                                  
-╭──────────┬─────────────────────┬────────────────────┬──────────────────────────────────────────────────────╮
-│ Severity │ Source              │ Code               │ Message                                              │
-├──────────┼─────────────────────┼────────────────────┼──────────────────────────────────────────────────────┤
-│ info     │ destructive-actions │ destructive-change │ This plan contains destructive actions: AlterColumn. │
-╰──────────┴─────────────────────┴────────────────────┴──────────────────────────────────────────────────────╯
-
-NSchema will execute 3 statement(s) against the database.
+NSchema will execute 2 statement(s) against the database.
 Auto-approve is enabled; skipping confirmation.
 Applying the migration plan...
 Updating state store...
-✔ Apply complete. 4 changed (3 statements).
+✔ Apply complete. 2 changed (2 statements).
 exit: 0
 
