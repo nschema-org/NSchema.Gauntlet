@@ -1,0 +1,46 @@
+﻿=== actions ===
+SetColumnGenerated
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.boxes
+    ~ area generated: width * height → width * height * 2
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+ALTER TABLE "public"."boxes" ALTER COLUMN "area" SET EXPRESSION AS (width * height * 2)
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.boxes
+    ~ area generated: width * height → width * height * 2
+
+Plan: 0 to add, 2 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+ALTER TABLE "public"."boxes" ALTER COLUMN "area" SET EXPRESSION AS (width * height * 2)
+
+NSchema will execute 1 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 2 changed (1 statement).
+exit: 0
+

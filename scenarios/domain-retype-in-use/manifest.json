@@ -1,0 +1,18 @@
+{
+  "description": "Widens a domain a column is typed by. A retype has no in-place form, so the domain must be dropped and recreated, and no engine will drop a type out from under a column. The plan says so rather than rendering a drop that fails part-way through the apply. The free case, where nothing is typed by the domain, is domain-retype.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "changeFailed",
+      "because": "The domain cannot be recreated while parts.reference is typed by it; the plan reports recreate-blocked-by-dependents."
+    },
+    "sqlserver": {
+      "outcome": "changeFailed",
+      "because": "The domain cannot be recreated while parts.reference is typed by it; the plan reports recreate-blocked-by-dependents."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no domain type, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}
