@@ -1,5 +1,5 @@
 {
-  "pipeline": "dotnet",
+  "workflow": "dotnet",
   "build": {
     "project": "src/NSchema.Gauntlet/NSchema.Gauntlet.csproj"
   }
