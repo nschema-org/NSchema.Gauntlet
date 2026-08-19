@@ -39,4 +39,40 @@ jobs:
         run: dotnet ritten check
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      id-token: write
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Run deployment
+        run: dotnet ritten deploy --auto-approve ${{ inputs['dry-run'] && '--dry-run' || '' }}
+        shell: bash
+        env:
+          RITTEN_NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+          RITTEN_COMMIT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
