@@ -1,0 +1,17 @@
+{
+  "description": "Switches a publication from a list of tables to every table. There is no in-place form, so it is dropped and created again, which is destructive because the drop cuts off its subscribers.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "NSchema.SqlServer does not render publications, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no publications, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

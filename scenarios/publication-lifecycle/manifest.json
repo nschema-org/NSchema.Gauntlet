@@ -1,0 +1,17 @@
+{
+  "description": "Narrows a publication to some columns and rows of one table, adds a second table, restricts its operations and documents it; creates a publication over a whole schema; and drops a third. The filter reads a column outside the primary key, so the plan warns that updates and deletes may be refused. Publications are database-global, and dropping one cuts off its subscribers, so the scenario allows destructive actions.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "NSchema.SqlServer does not render publications, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no publications, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

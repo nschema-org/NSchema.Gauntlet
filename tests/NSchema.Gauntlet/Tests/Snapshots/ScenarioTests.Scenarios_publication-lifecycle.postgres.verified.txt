@@ -1,0 +1,121 @@
+﻿=== actions ===
+AddPublicationTable
+CreatePublication
+DropPublication
+DropPublicationTable
+SetPublicationComment
+SetPublicationOperations
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ publication audit_feed ("Every table in the schema, present and future, for the audit store.")
+    + tables in schema public
+
+- publication customer_feed
+
+~ publication orders_feed ("Order changes for the warehouse, drafts excluded.")
+    + table public.order_lines
+    ~ table public.orders → table public.orders (id, status) where (status <> 'draft')
+    ~ publish: insert, update, delete, truncate → insert, update
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/8]
+DROP PUBLICATION "customer_feed"
+
+-- [2/8]
+ALTER PUBLICATION "orders_feed" DROP TABLE "public"."orders"
+
+-- [3/8]
+CREATE PUBLICATION "audit_feed" FOR TABLES IN SCHEMA "public"
+
+-- [4/8]
+ALTER PUBLICATION "orders_feed" ADD TABLE "public"."order_lines"
+
+-- [5/8]
+ALTER PUBLICATION "orders_feed" ADD TABLE "public"."orders" ("id", "status") WHERE (status <> 'draft')
+
+-- [6/8]
+ALTER PUBLICATION "orders_feed" SET (publish = 'insert, update')
+
+-- [7/8]
+COMMENT ON PUBLICATION "audit_feed" IS $comment$Every table in the schema, present and future, for the audit store.$comment$
+
+-- [8/8]
+COMMENT ON PUBLICATION "orders_feed" IS $comment$Order changes for the warehouse, drafts excluded.$comment$
+                                                                                                   Diagnostics                                                                                                    
+╭──────────┬─────────────────────┬─────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                    │ Message                                                                                                                                             │
+├──────────┼─────────────────────┼─────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ warning  │ replication         │ filter-outside-identity │ Publication 'orders_feed' filters 'public.orders' on 'status', which its row identity does not include, so its updates and deletes may be rejected. │
+│ info     │ destructive-actions │ destructive-change      │ This plan contains destructive actions: DropPublication.                                                                                            │
+╰──────────┴─────────────────────┴─────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ publication audit_feed ("Every table in the schema, present and future, for the audit store.")
+    + tables in schema public
+
+- publication customer_feed
+
+~ publication orders_feed ("Order changes for the warehouse, drafts excluded.")
+    + table public.order_lines
+    ~ table public.orders → table public.orders (id, status) where (status <> 'draft')
+    ~ publish: insert, update, delete, truncate → insert, update
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+SQL
+───
+-- [1/8]
+DROP PUBLICATION "customer_feed"
+
+-- [2/8]
+ALTER PUBLICATION "orders_feed" DROP TABLE "public"."orders"
+
+-- [3/8]
+CREATE PUBLICATION "audit_feed" FOR TABLES IN SCHEMA "public"
+
+-- [4/8]
+ALTER PUBLICATION "orders_feed" ADD TABLE "public"."order_lines"
+
+-- [5/8]
+ALTER PUBLICATION "orders_feed" ADD TABLE "public"."orders" ("id", "status") WHERE (status <> 'draft')
+
+-- [6/8]
+ALTER PUBLICATION "orders_feed" SET (publish = 'insert, update')
+
+-- [7/8]
+COMMENT ON PUBLICATION "audit_feed" IS $comment$Every table in the schema, present and future, for the audit store.$comment$
+
+-- [8/8]
+COMMENT ON PUBLICATION "orders_feed" IS $comment$Order changes for the warehouse, drafts excluded.$comment$
+
+NSchema will execute 8 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 added, 1 changed, 1 destroyed (8 statements).
+                                                                                                   Diagnostics                                                                                                    
+╭──────────┬─────────────────────┬─────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source              │ Code                    │ Message                                                                                                                                             │
+├──────────┼─────────────────────┼─────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ warning  │ replication         │ filter-outside-identity │ Publication 'orders_feed' filters 'public.orders' on 'status', which its row identity does not include, so its updates and deletes may be rejected. │
+│ info     │ destructive-actions │ destructive-change      │ This plan contains destructive actions: DropPublication.                                                                                            │
+╰──────────┴─────────────────────┴─────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 0
+

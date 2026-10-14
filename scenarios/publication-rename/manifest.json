@@ -1,0 +1,17 @@
+{
+  "description": "Renames a publication through a directive, which is a rename rather than a drop and a create. Its subscribers name it and are not managed here, so the plan warns that they must be updated separately.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "NSchema.SqlServer does not render publications, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no publications, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

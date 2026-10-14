@@ -1,0 +1,21 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  status varchar(20) NOT NULL,
+  total int NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.order_lines (
+  id int NOT NULL,
+  order_id int NOT NULL,
+  CONSTRAINT pk_order_lines PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.customers (
+  id int NOT NULL,
+  CONSTRAINT pk_customers PRIMARY KEY (id)
+);
+
+CREATE PUBLICATION orders_feed FOR TABLE {schema}.orders;
+
+CREATE PUBLICATION customer_feed FOR TABLE {schema}.customers;

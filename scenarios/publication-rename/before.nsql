@@ -1,0 +1,7 @@
+CREATE TABLE {schema}.orders (
+  id int NOT NULL,
+  status varchar(20) NOT NULL,
+  CONSTRAINT pk_orders PRIMARY KEY (id)
+);
+
+CREATE PUBLICATION legacy_feed FOR TABLE {schema}.orders;

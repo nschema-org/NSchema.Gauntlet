@@ -11,7 +11,7 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
 {
     // Web defaults give camelCase and case-insensitive properties, but not string enums — a manifest
     // naming its policy has to be told how to read one.
-    private static readonly JsonSerializerOptions _manifest = new(JsonSerializerDefaults.Web)
+    private static readonly JsonSerializerOptions Manifest = new(JsonSerializerDefaults.Web)
     {
         Converters = { new JsonStringEnumConverter() },
     };
@@ -34,7 +34,7 @@ public sealed class ScenarioCatalog(string root, ScenarioCatalogSettings setting
         var directory = Path.Combine(CatalogDirectory(), name.Value);
         var manifest = JsonSerializer.Deserialize<ScenarioManifest>(
             File.ReadAllText(Path.Combine(directory, settings.Manifest)),
-            _manifest) ?? throw new InvalidOperationException($"Scenario '{name}' has an empty manifest.");
+            Manifest) ?? throw new InvalidOperationException($"Scenario '{name}' has an empty manifest.");
 
         return new Scenario
         {

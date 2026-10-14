@@ -9,7 +9,7 @@ namespace NSchema.Gauntlet.Services.Corpus;
 /// </summary>
 public sealed class CorpusCatalog(string root, CorpusCatalogSettings settings)
 {
-    private static readonly JsonSerializerOptions _manifest = new(JsonSerializerDefaults.Web)
+    private static readonly JsonSerializerOptions Manifest = new(JsonSerializerDefaults.Web)
     {
         Converters = { new JsonStringEnumConverter() },
     };
@@ -32,7 +32,7 @@ public sealed class CorpusCatalog(string root, CorpusCatalogSettings settings)
         var directory = Path.Combine(CatalogDirectory(), name.Value);
         var manifest = JsonSerializer.Deserialize<CorpusManifest>(
             File.ReadAllText(Path.Combine(directory, settings.Manifest)),
-            _manifest) ?? throw new InvalidOperationException($"Corpus case '{name}' has an empty manifest.");
+            Manifest) ?? throw new InvalidOperationException($"Corpus case '{name}' has an empty manifest.");
 
         var ddl = Directory
             .EnumerateFiles(directory, "*.sql")

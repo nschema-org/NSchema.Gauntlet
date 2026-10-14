@@ -1,0 +1,36 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table main.orders
+    + id int not null
+    + status varchar(20) not null
+
+    ~ replica identity: default → full
+
++ publication orders_feed
+    + table main.orders where (status <> 'draft')
+
+Plan: 4 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/1]
+CREATE TABLE "main"."orders" (
+    "id" INTEGER NOT NULL,
+    "status" varchar(20) NOT NULL,
+    CONSTRAINT "pk_orders" PRIMARY KEY ("id")
+)
+                                                Diagnostics                                                 
+╭──────────┬─────────────┬────────────────────┬────────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Code               │ Message                                                    │
+├──────────┼─────────────┼────────────────────┼────────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ unsupported-action │ Sqlite does not support the 'set replica identity' action. │
+│ error    │ sql-dialect │ unsupported-action │ Sqlite does not support the 'create publication' action.   │
+╰──────────┴─────────────┴────────────────────┴────────────────────────────────────────────────────────────╯
+exit: 1
+
