@@ -1,0 +1,19 @@
+CREATE TABLE {schema}.audit_log (
+  id int NOT NULL,
+  CONSTRAINT pk_audit_log PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.ledger (
+  id int NOT NULL,
+  reference varchar(20) NOT NULL,
+  CONSTRAINT pk_ledger PRIMARY KEY (id)
+);
+
+CREATE TABLE {schema}.scratch (
+  id int NOT NULL
+) REPLICA IDENTITY FULL;
+
+CREATE TABLE {schema}.archive (
+  id int NOT NULL,
+  CONSTRAINT pk_archive PRIMARY KEY (id)
+) REPLICA IDENTITY FULL;

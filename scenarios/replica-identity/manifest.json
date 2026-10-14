@@ -1,0 +1,17 @@
+{
+  "description": "Moves four tables between replica identities: the default to full, the default to an index created in the same plan (so the identity follows the index), full to nothing, and full back to the default. Omitting the clause is the engine's default, so the last table settles only if the engine's default reads back as undeclared.",
+  "destructiveActions": "Error",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "NSchema.SqlServer does not render replica identity, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no replica identity, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

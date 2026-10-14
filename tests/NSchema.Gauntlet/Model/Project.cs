@@ -6,6 +6,7 @@ namespace NSchema.Gauntlet.Model;
 public sealed class Project
 {
     private const string SchemaFile = "schema.sql";
+    private static readonly string[] ProjectFiles = ["*.nsql", "*.sql"];
 
     private readonly string _schemaFile;
     private readonly string _databaseFile;
@@ -75,8 +76,9 @@ public sealed class Project
         }
     }
 
-    // Every .sql file the project declares, which is all of them but its own configuration.
-    private IEnumerable<string> Declarations() => System.IO.Directory
-        .EnumerateFiles(Directory, "*.sql", SearchOption.AllDirectories)
+    // Every project file, which is all of them but its own configuration. The CLI reads both extensions, and import
+    // writes .nsql, so reading only one would see an imported project as empty.
+    private IEnumerable<string> Declarations() => ProjectFiles
+        .SelectMany(pattern => System.IO.Directory.EnumerateFiles(Directory, pattern, SearchOption.AllDirectories))
         .Where(file => file != _databaseFile && file != _stateFile);
 }

@@ -1,0 +1,105 @@
+﻿=== actions ===
+CreateIndex
+SetReplicaIdentity
+
+=== plan ===
+Planning schema migration. No changes will be applied to the database.
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.archive
+    ~ replica identity: full → default
+
+~ table public.audit_log
+    ~ replica identity: default → full
+
+~ table public.ledger
+    ~ replica identity: default → using index ux_ledger_reference
+    + index ux_ledger_reference
+
+~ table public.scratch
+    ~ replica identity: full → nothing
+
+Plan: 1 to add, 4 to change, 0 to destroy.
+
+SQL
+───
+-- [1/5]
+CREATE UNIQUE INDEX "ux_ledger_reference" ON "public"."ledger" ("reference")
+
+-- [2/5]
+ALTER TABLE "public"."archive" REPLICA IDENTITY DEFAULT
+
+-- [3/5]
+ALTER TABLE "public"."audit_log" REPLICA IDENTITY FULL
+
+-- [4/5]
+ALTER TABLE "public"."ledger" REPLICA IDENTITY USING INDEX "ux_ledger_reference"
+
+-- [5/5]
+ALTER TABLE "public"."scratch" REPLICA IDENTITY NOTHING
+                                                                                                   Diagnostics                                                                                                    
+╭──────────┬──────────────┬─────────────────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source       │ Code                            │ Message                                                                                                                                            │
+├──────────┼──────────────┼─────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ warning  │ schema-lint  │ missing-primary-key             │ Table 'public.scratch' has no primary key.                                                                                                         │
+│ warning  │ data-hazards │ unique-index-over-existing-data │ Unique index 'ux_ledger_reference' on 'public.ledger' is added over existing data. The migration will fail if existing rows hold duplicate values. │
+╰──────────┴──────────────┴─────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 0
+
+=== apply ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
+~ table public.archive
+    ~ replica identity: full → default
+
+~ table public.audit_log
+    ~ replica identity: default → full
+
+~ table public.ledger
+    ~ replica identity: default → using index ux_ledger_reference
+    + index ux_ledger_reference
+
+~ table public.scratch
+    ~ replica identity: full → nothing
+
+Plan: 1 to add, 4 to change, 0 to destroy.
+
+SQL
+───
+-- [1/5]
+CREATE UNIQUE INDEX "ux_ledger_reference" ON "public"."ledger" ("reference")
+
+-- [2/5]
+ALTER TABLE "public"."archive" REPLICA IDENTITY DEFAULT
+
+-- [3/5]
+ALTER TABLE "public"."audit_log" REPLICA IDENTITY FULL
+
+-- [4/5]
+ALTER TABLE "public"."ledger" REPLICA IDENTITY USING INDEX "ux_ledger_reference"
+
+-- [5/5]
+ALTER TABLE "public"."scratch" REPLICA IDENTITY NOTHING
+
+NSchema will execute 5 statement(s) against the database.
+Auto-approve is enabled; skipping confirmation.
+Applying the migration plan...
+Updating state store...
+✔ Apply complete. 1 added, 4 changed (5 statements).
+                                                                                                   Diagnostics                                                                                                    
+╭──────────┬──────────────┬─────────────────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Severity │ Source       │ Code                            │ Message                                                                                                                                            │
+├──────────┼──────────────┼─────────────────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ warning  │ schema-lint  │ missing-primary-key             │ Table 'public.scratch' has no primary key.                                                                                                         │
+│ warning  │ data-hazards │ unique-index-over-existing-data │ Unique index 'ux_ledger_reference' on 'public.ledger' is added over existing data. The migration will fail if existing rows hold duplicate values. │
+╰──────────┴──────────────┴─────────────────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit: 0
+

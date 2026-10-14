@@ -1,0 +1,59 @@
+﻿=== bootstrap ===
+Applying schema migration. Changes will be applied to the database.
+Updating state store...
+Loading project...
+Migration will be scoped to: (all)
+Computing migration plan...
+Plan
+────
++ table main.customers
+    + id int not null
+
++ table main.order_lines
+    + id int not null
+    + order_id int not null
+
++ table main.orders
+    + id int not null
+    + status varchar(20) not null
+    + total int not null
+
++ publication customer_feed
+    + table main.customers
+
++ publication orders_feed
+    + table main.orders
+
+Plan: 11 to add, 0 to change, 0 to destroy.
+
+SQL
+───
+-- [1/3]
+CREATE TABLE "main"."customers" (
+    "id" INTEGER NOT NULL,
+    CONSTRAINT "pk_customers" PRIMARY KEY ("id")
+)
+
+-- [2/3]
+CREATE TABLE "main"."order_lines" (
+    "id" INTEGER NOT NULL,
+    "order_id" INTEGER NOT NULL,
+    CONSTRAINT "pk_order_lines" PRIMARY KEY ("id")
+)
+
+-- [3/3]
+CREATE TABLE "main"."orders" (
+    "id" INTEGER NOT NULL,
+    "status" varchar(20) NOT NULL,
+    "total" INTEGER NOT NULL,
+    CONSTRAINT "pk_orders" PRIMARY KEY ("id")
+)
+                                               Diagnostics                                                
+╭──────────┬─────────────┬────────────────────┬──────────────────────────────────────────────────────────╮
+│ Severity │ Source      │ Code               │ Message                                                  │
+├──────────┼─────────────┼────────────────────┼──────────────────────────────────────────────────────────┤
+│ error    │ sql-dialect │ unsupported-action │ Sqlite does not support the 'create publication' action. │
+│ error    │ sql-dialect │ unsupported-action │ Sqlite does not support the 'create publication' action. │
+╰──────────┴─────────────┴────────────────────┴──────────────────────────────────────────────────────────╯
+exit: 1
+

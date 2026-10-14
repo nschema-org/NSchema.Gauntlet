@@ -1,0 +1,17 @@
+{
+  "description": "Widens a column that a publication's row filter reads, while the publication itself is unchanged. Postgres will not retype a column a publication filter depends on, so the table is taken out of the publication before the change and put back after it. The table's identity is full, so the filter is covered and the plan raises no replication warning.",
+  "destructiveActions": "Allow",
+  "expectations": {
+    "postgres": {
+      "outcome": "succeeded"
+    },
+    "sqlserver": {
+      "outcome": "bootstrapFailed",
+      "because": "NSchema.SqlServer does not render publications or replica identity, so the scenario's bootstrap state cannot be expressed."
+    },
+    "sqlite": {
+      "outcome": "bootstrapFailed",
+      "because": "SQLite has no publications or replica identity, so the scenario's bootstrap state cannot be expressed."
+    }
+  }
+}

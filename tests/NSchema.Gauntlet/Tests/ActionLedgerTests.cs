@@ -8,21 +8,21 @@ namespace NSchema.Gauntlet.Tests;
 /// </summary>
 public sealed class ActionLedgerTests
 {
-    private static readonly EngineName _postgres = EngineName.From("postgres");
-    private static readonly EngineName _sqlite = EngineName.From("sqlite");
+    private static readonly EngineName Postgres = EngineName.From("postgres");
+    private static readonly EngineName Sqlite = EngineName.From("sqlite");
 
-    private static readonly string[] _surface = ["AddColumn", "CreateTable", "DropTable"];
+    private static readonly string[] Surface = ["AddColumn", "CreateTable", "DropTable"];
 
     [Fact]
     public void Describe_MarksOnlyWhatEachEngineExercised()
     {
         // Arrange
         var ledger = new ActionLedger();
-        ledger.Record(_postgres, ["CreateTable", "AddColumn"]);
-        ledger.Record(_sqlite, ["CreateTable"]);
+        ledger.Record(Postgres, ["CreateTable", "AddColumn"]);
+        ledger.Record(Sqlite, ["CreateTable"]);
 
         // Act
-        var report = ledger.Describe(_surface, [_postgres, _sqlite]);
+        var report = ledger.Describe(Surface, [Postgres, Sqlite]);
 
         // Assert — one engine's coverage is not the other's, which is the whole reason the axis exists.
         report.ShouldContain("| CreateTable | x | x |");
@@ -38,10 +38,10 @@ public sealed class ActionLedgerTests
         // Arrange — an engine whose cases were filtered out still belongs in the table, or its absence reads as
         // full coverage to anyone scanning the rows.
         var ledger = new ActionLedger();
-        ledger.Record(_postgres, ["CreateTable"]);
+        ledger.Record(Postgres, ["CreateTable"]);
 
         // Act
-        var report = ledger.Describe(_surface, [_postgres, _sqlite]);
+        var report = ledger.Describe(Surface, [Postgres, Sqlite]);
 
         // Assert
         report.ShouldContain("- sqlite: 0/3 exercised.");
@@ -54,10 +54,10 @@ public sealed class ActionLedgerTests
         // so an action in one and not the other means they were read from different builds. Silently dropping it
         // would hide exactly the drift this harness keeps getting caught by.
         var ledger = new ActionLedger();
-        ledger.Record(_postgres, ["CreateTable", "CreateSomethingNewer"]);
+        ledger.Record(Postgres, ["CreateTable", "CreateSomethingNewer"]);
 
         // Act
-        var report = ledger.Describe(_surface, [_postgres]);
+        var report = ledger.Describe(Surface, [Postgres]);
 
         // Assert
         report.ShouldContain("CreateSomethingNewer");
@@ -73,7 +73,7 @@ public sealed class ActionLedgerTests
         // Assert — a run that recorded nothing has no report to write, rather than one claiming zero coverage.
         ledger.IsEmpty.ShouldBeTrue();
 
-        ledger.Record(_postgres, []);
+        ledger.Record(Postgres, []);
         ledger.IsEmpty.ShouldBeFalse();
     }
 }
