@@ -23,7 +23,7 @@
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.16.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.16.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="32.0.1" />
+    <PackageVersion Include="Verify.XunitV3" Version="33.3.4" />
     <PackageVersion Include="Vogen" Version="8.0.7" />
     <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
